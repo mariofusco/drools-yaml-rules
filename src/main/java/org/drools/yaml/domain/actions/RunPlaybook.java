@@ -3,7 +3,7 @@ package org.drools.yaml.domain.actions;
 import org.drools.model.Drools;
 import org.drools.yaml.RulesExecutor;
 
-public class YamlRunPlaybook implements Action {
+public class RunPlaybook implements Action {
     private String name;
 
     public String getName() {
@@ -16,7 +16,7 @@ public class YamlRunPlaybook implements Action {
 
     @Override
     public String toString() {
-        return "YamlRunPlaybook{" +
+        return "RunPlaybook{" +
                 "name='" + name + '\'' +
                 '}';
     }

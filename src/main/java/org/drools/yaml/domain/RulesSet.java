@@ -2,11 +2,11 @@ package org.drools.yaml.domain;
 
 import java.util.List;
 
-public class YamlRulesSet {
+public class RulesSet {
     private String name;
     private String hosts;
-    private List<YamlSource> sources;
-    private List<YamlRule> host_rules;
+    private List<Source> sources;
+    private List<Rule> host_rules;
 
     public String getName() {
         return name;
@@ -24,25 +24,25 @@ public class YamlRulesSet {
         this.hosts = hosts;
     }
 
-    public List<YamlRule> getHost_rules() {
+    public List<Rule> getHost_rules() {
         return host_rules;
     }
 
-    public void setHost_rules(List<YamlRule> host_rules) {
+    public void setHost_rules(List<Rule> host_rules) {
         this.host_rules = host_rules;
     }
 
-    public List<YamlSource> getSources() {
+    public List<Source> getSources() {
         return sources;
     }
 
-    public void setSources(List<YamlSource> sources) {
+    public void setSources(List<Source> sources) {
         this.sources = sources;
     }
 
     @Override
     public String toString() {
-        return "YamlRulesSet{" +
+        return "RulesSet{" +
                 "name='" + name + '\'' +
                 ", hosts='" + hosts + '\'' +
                 ", sources=" + sources +

@@ -3,19 +3,14 @@ package org.drools.yaml;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.drools.yaml.domain.YamlRulesSet;
+import org.drools.yaml.domain.RulesSet;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class YamlTest {
 
     private static final String YAML1 =
-            "  name: Test rules4\n" +
-            "  hosts: all\n" +
-            "  sources:\n" +
-            "    - name: sensu\n" +
-            "      topic: sensuprod\n" +
-            "      url: prod\n" +
-            "      schema: sensu/v1\n" +
             "  host_rules:\n" +
             "    - name:\n" +
             "      condition: sensu.data.i == 1\n" +
@@ -48,13 +43,14 @@ public class YamlTest {
     @Test
     public void testReadYaml() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        YamlRulesSet rulesSet = mapper.readValue(YAML1, YamlRulesSet.class);
+        RulesSet rulesSet = mapper.readValue(YAML1, RulesSet.class);
         System.out.println(rulesSet);
     }
 
     @Test
     public void testExecuteRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.create(YAML1);
-        rulesExecutor.process( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        RulesExecutor rulesExecutor = RulesExecutor.createFromYaml(YAML1);
+        int executedRules = rulesExecutor.execute( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        assertEquals( 2, executedRules );
     }
 }

@@ -1,6 +1,6 @@
 package org.drools.yaml.domain;
 
-public class YamlSource {
+public class Source {
     private String name;
     private String topic;
     private String url;
@@ -40,7 +40,7 @@ public class YamlSource {
 
     @Override
     public String toString() {
-        return "YamlSource{" +
+        return "Source{" +
                 "name='" + name + '\'' +
                 ", topic='" + topic + '\'' +
                 ", url='" + url + '\'' +

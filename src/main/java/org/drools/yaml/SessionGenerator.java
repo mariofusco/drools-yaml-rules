@@ -2,11 +2,10 @@ package org.drools.yaml;
 
 import org.drools.model.Prototype;
 import org.drools.model.PrototypeDSL;
-import org.drools.model.Rule;
 import org.drools.model.impl.ModelImpl;
 import org.drools.modelcompiler.builder.KieBaseBuilder;
-import org.drools.yaml.domain.YamlRule;
-import org.drools.yaml.domain.YamlRulesSet;
+import org.drools.yaml.domain.Rule;
+import org.drools.yaml.domain.RulesSet;
 import org.drools.yaml.rulesmodel.ParsedCondition;
 import org.drools.yaml.rulesmodel.PrototypeFactory;
 import org.kie.api.KieBase;
@@ -26,27 +25,27 @@ public class SessionGenerator {
 
     private final PrototypeFactory prototypeFactory = new PrototypeFactory();
 
-    private final YamlRulesSet rulesSet;
+    private final RulesSet rulesSet;
 
-    public SessionGenerator(YamlRulesSet rulesSet) {
+    public SessionGenerator(RulesSet rulesSet) {
         this.rulesSet = rulesSet;
     }
 
     public KieSession build(RulesExecutor rulesExecutor) {
         ModelImpl model = new ModelImpl();
-        rulesSet.getHost_rules().stream().map(yamlRule -> toExecModelRule(yamlRule, rulesExecutor)).forEach(model::addRule);
+        rulesSet.getHost_rules().stream().map(rule -> toExecModelRule(rule, rulesExecutor)).forEach(model::addRule);
         KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model );
         return kieBase.newKieSession();
     }
 
-    private Rule toExecModelRule(YamlRule yamlRule, RulesExecutor rulesExecutor) {
-        String ruleName = yamlRule.getName();
+    private org.drools.model.Rule toExecModelRule(Rule rule, RulesExecutor rulesExecutor) {
+        String ruleName = rule.getName();
         if (ruleName == null) {
             ruleName = "R" + counter++;
         }
 
-        var pattern = condition2Pattern(yamlRule.getCondition());
-        var consequence = execute(drools -> yamlRule.getAction().execute(rulesExecutor, drools));
+        var pattern = condition2Pattern(rule.getCondition());
+        var consequence = execute(drools -> rule.getAction().execute(rulesExecutor, drools));
 
         return rule( ruleName ).build(pattern, consequence);
     }

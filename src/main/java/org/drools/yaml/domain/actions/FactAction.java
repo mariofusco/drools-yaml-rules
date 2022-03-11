@@ -2,7 +2,7 @@ package org.drools.yaml.domain.actions;
 
 import java.util.Map;
 
-public abstract class YamlFactAction implements Action {
+public abstract class FactAction implements Action {
     private String ruleset;
     private Map<String, Object> fact;
 

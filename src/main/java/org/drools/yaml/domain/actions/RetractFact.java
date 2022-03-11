@@ -3,11 +3,11 @@ package org.drools.yaml.domain.actions;
 import org.drools.model.Drools;
 import org.drools.yaml.RulesExecutor;
 
-public class YamlAssertFact extends YamlFactAction {
+public class RetractFact extends FactAction {
 
     @Override
     public String toString() {
-        return "YamlAssertFact{" +
+        return "RetractFact{" +
                 "ruleset='" + getRuleset() + '\'' +
                 ", fact=" + getFact() +
                 '}';
@@ -15,7 +15,6 @@ public class YamlAssertFact extends YamlFactAction {
 
     @Override
     public void execute(RulesExecutor rulesExecutor, Drools drools) {
-        System.out.println("Asserting " + getFact());
-        rulesExecutor.processFacts(getFact());
+        System.out.println("Retracting " + getFact());
     }
 }

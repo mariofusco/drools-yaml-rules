@@ -13,16 +13,40 @@
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     <version.drools>8.19.0-SNAPSHOT</version.drools>
+    <version.quarkus>2.7.4.Final</version.quarkus>
     <version.junit>4.13.2</version.junit>
     <version.jackson>2.13.1</version.jackson>
     <version.json>20211205</version.json>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>${version.quarkus}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-jackson</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-engine</artifactId>
+      <artifactId>drools-model-compiler</artifactId>
       <version>${version.drools}</version>
     </dependency>
 
@@ -44,6 +68,54 @@
       <version>${version.junit}</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>11</source>
+          <target>11</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>native</id>
+      <properties>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
+      <activation>
+        <property>
+          <name>native</name>
+        </property>
+      </activation>
+    </profile>
+  </profiles>
 </project>

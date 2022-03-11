@@ -1,9 +1,9 @@
 package org.drools.yaml.domain;
 
-public class YamlRule {
+public class Rule {
     private String name;
     private String condition;
-    private YamlRuleAction action;
+    private RuleAction action;
 
     public String getName() {
         return name;
@@ -21,17 +21,17 @@ public class YamlRule {
         this.condition = condition;
     }
 
-    public YamlRuleAction getAction() {
+    public RuleAction getAction() {
         return action;
     }
 
-    public void setAction(YamlRuleAction action) {
+    public void setAction(RuleAction action) {
         this.action = action;
     }
 
     @Override
     public String toString() {
-        return "YamlRule{" +
+        return "Rule{" +
                 "name='" + name + '\'' +
                 ", condition='" + condition + '\'' +
                 ", action='" + action + '\'' +
