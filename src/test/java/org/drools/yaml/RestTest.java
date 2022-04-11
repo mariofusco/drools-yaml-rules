@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTest
 public class RestTest {
 
-    private static final String JSON_RULES =
+    private static final String JSON_RULES_1 =
             "{\n" +
             "  \"host_rules\": [\n" +
             "    {\n" +
@@ -83,7 +83,7 @@ public class RestTest {
     public void testProcess() {
         // return the id of the newly generated RulesExecutor
         long id = given()
-                .body(JSON_RULES)
+                .body(JSON_RULES_1)
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/create-rules-executor").as(long.class);
@@ -138,7 +138,7 @@ public class RestTest {
     public void testExecute() {
         // return the id of the newly generated RulesExecutor
         long id = given()
-                .body(JSON_RULES)
+                .body(JSON_RULES_1)
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/create-rules-executor").as(long.class); // returns the number of processed rules
@@ -151,5 +151,72 @@ public class RestTest {
                 .then()
                 .statusCode(200)
                 .body(is("2")); // returns the number of executed rules
+    }
+
+    private static final String JSON_RULES_2 =
+            "{\n" +
+            "   \"host_rules\":[\n" +
+            "      {\n" +
+            "         \"name\":\"R1\",\n" +
+            "         \"condition\":\"sensu.data.i == 1\"\n" +
+            "      },\n" +
+            "      {\n" +
+            "         \"name\":\"R2\",\n" +
+            "         \"condition\":{\n" +
+            "            \"all\":[\n" +
+            "               \"sensu.data.i == 3\",\n" +
+            "               \"j == 2\"\n" +
+            "            ]\n" +
+            "         }\n" +
+            "      },\n" +
+            "      {\n" +
+            "         \"name\":\"R3\",\n" +
+            "         \"condition\":{\n" +
+            "            \"any\":[\n" +
+            "               {\n" +
+            "                  \"all\":[\n" +
+            "                     \"sensu.data.i == 3\",\n" +
+            "                     \"j == 2\"\n" +
+            "                  ]\n" +
+            "               },\n" +
+            "               {\n" +
+            "                  \"all\":[\n" +
+            "                     \"sensu.data.i == 4\",\n" +
+            "                     \"j == 3\"\n" +
+            "                  ]\n" +
+            "               }\n" +
+            "            ]\n" +
+            "         }\n" +
+            "      }\n" +
+            "   ]\n" +
+            "}";
+
+    @Test
+    public void testProcessWithLogicalOperators() {
+        // return the id of the newly generated RulesExecutor
+        long id = given()
+                .body(JSON_RULES_2)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/create-rules-executor").as(long.class);
+
+        given()
+                .body( "{ \"facts\": [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }" )
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/rules-executors/" + id + "/process")
+                .then()
+                .statusCode(200)
+                .body(is("[]"));
+
+        given()
+                .body( "{ \"sensu\": { \"data\": { \"i\":4 } } }" )
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/rules-executors/" + id + "/process")
+                .then()
+                .statusCode(200)
+                .body("ruleName", hasItem("R3"),
+                        "facts.j", hasItem(3));
     }
 }

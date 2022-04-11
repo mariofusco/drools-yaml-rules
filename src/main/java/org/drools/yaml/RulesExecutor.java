@@ -104,23 +104,34 @@ public class RulesExecutor {
     }
 
     public void processFacts(Map<String, Object> factMap) {
-        for (Map.Entry<String, Object> entry : factMap.entrySet()) {
-            if (entry.getValue() instanceof Map) {
-                Prototype prototype = sessionGenerator.getPrototype(entry.getKey());
-                Fact fact = createMapBasedFact( prototype );
-                populateFact(fact, (Map) entry.getValue(), "");
-                ksession.insert(fact);
-            } else {
-                if (globalFactHandle == null) {
-                    Prototype prototype = sessionGenerator.getPrototype(GLOBAL_MAP_FIELD);
-                    Fact fact = createMapBasedFact( prototype );
-                    fact.set(entry.getKey(), entry.getValue());
-                    this.globalFactHandle = ksession.insert(fact);
+        if (factMap.size() != 1) {
+            throw new IllegalArgumentException("Expecting a map with only one entry, but found: " + factMap );
+        }
+        Map.Entry<String, Object> entry = factMap.entrySet().iterator().next();
+        if (entry.getValue() instanceof Iterable) {
+            for (Object item : (Iterable) entry.getValue()) {
+                if (item instanceof Map) {
+                    processFacts( (Map<String, Object>) item );
                 } else {
-                    Fact fact = (Fact) ((InternalFactHandle) globalFactHandle).getObject();
-                    fact.set(entry.getKey(), entry.getValue());
-                    ksession.update(globalFactHandle, fact);
+                    throw new IllegalArgumentException("Expecting a map, but found: " + item );
                 }
+            }
+        } else if (entry.getValue() instanceof Map) {
+            Prototype prototype = sessionGenerator.getPrototype(entry.getKey());
+            Fact fact = createMapBasedFact( prototype );
+            populateFact(fact, (Map) entry.getValue(), "");
+            ksession.insert(fact);
+        } else {
+            // single value fact like 'j = 1' are represented as field of a special map based object also inserted in the working memory
+            if (globalFactHandle == null) {
+                Prototype prototype = sessionGenerator.getPrototype(GLOBAL_MAP_FIELD);
+                Fact fact = createMapBasedFact( prototype );
+                fact.set(entry.getKey(), entry.getValue());
+                this.globalFactHandle = ksession.insert(fact);
+            } else {
+                Fact fact = (Fact) ((InternalFactHandle) globalFactHandle).getObject();
+                fact.set(entry.getKey(), entry.getValue());
+                ksession.update(globalFactHandle, fact);
             }
         }
     }

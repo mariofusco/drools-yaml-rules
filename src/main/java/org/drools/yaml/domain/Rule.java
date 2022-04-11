@@ -1,8 +1,11 @@
 package org.drools.yaml.domain;
 
+import org.drools.yaml.domain.actions.RuleAction;
+import org.drools.yaml.domain.conditions.Condition;
+
 public class Rule {
     private String name;
-    private String condition;
+    private Condition condition;
     private RuleAction action;
 
     public String getName() {
@@ -13,11 +16,11 @@ public class Rule {
         this.name = name;
     }
 
-    public String getCondition() {
+    public Condition getCondition() {
         return condition;
     }
 
-    public void setCondition(String condition) {
+    public void setCondition(Condition condition) {
         this.condition = condition;
     }
 

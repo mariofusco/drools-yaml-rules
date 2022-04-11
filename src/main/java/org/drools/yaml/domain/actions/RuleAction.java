@@ -1,14 +1,9 @@
-package org.drools.yaml.domain;
+package org.drools.yaml.domain.actions;
 
 import java.util.List;
 
 import org.drools.model.Drools;
 import org.drools.yaml.RulesExecutor;
-import org.drools.yaml.domain.actions.Action;
-import org.drools.yaml.domain.actions.AssertFact;
-import org.drools.yaml.domain.actions.PostEvent;
-import org.drools.yaml.domain.actions.RetractFact;
-import org.drools.yaml.domain.actions.RunPlaybook;
 
 public class RuleAction implements Action {
 

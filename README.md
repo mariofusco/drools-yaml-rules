@@ -63,59 +63,86 @@ Creates a rules executor with the set of rules defined in the json payload as in
 
 ```sh
 curl -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{
-  "host_rules": [
-    {
-      "name": "R1",
-      "condition": "sensu.data.i == 1",
-      "action": {
-        "assert_fact": {
-          "ruleset": "Test rules4",
-          "fact": {
-            "j": 1
-          }
-        }
+   "host_rules":[
+      {
+         "name":"R1",
+         "condition":"sensu.data.i == 1",
+         "action":{
+            "assert_fact":{
+               "ruleset":"Test rules4",
+               "fact":{
+                  "j":1
+               }
+            }
+         }
+      },
+      {
+         "name":"R2",
+         "condition":"sensu.data.i == 2",
+         "action":{
+            "run_playbook":[
+               {
+                  "name":"hello_playbook.yml"
+               }
+            ]
+         }
+      },
+      {
+         "name":"R3",
+         "condition":{
+            "any":[
+               {
+                  "all":[
+                     "sensu.data.i == 3",
+                     "j == 2"
+                  ]
+               },
+               {
+                  "all":[
+                     "sensu.data.i == 4",
+                     "j == 3"
+                  ]
+               }
+            ]
+         },
+         "action":{
+            "retract_fact":{
+               "ruleset":"Test rules4",
+               "fact":{
+                  "j":3
+               }
+            }
+         }
+      },
+      {
+         "name":"R4",
+         "condition":"j == 1",
+         "action":{
+            "post_event":{
+               "ruleset":"Test rules4",
+               "fact":{
+                  "j":4
+               }
+            }
+         }
       }
-    },
-    {
-      "name": "R2",
-      "condition": "sensu.data.i == 2",
-      "action": {
-        "run_playbook": [
-          {
-            "name": "hello_playbook.yml"
-          }
-        ]
-      }
-    },
-    {
-      "name": "R3",
-      "condition": "sensu.data.i == 3",
-      "action": {
-        "retract_fact": {
-          "ruleset": "Test rules4",
-          "fact": {
-            "j": 3
-          }
-        }
-      }
-    },
-    {
-      "name": "R4",
-      "condition": "j == 1",
-      "action": {
-        "post_event": {
-          "ruleset": "Test rules4",
-          "fact": {
-            "j": 4
-          }
-        }
-      }
-    }
-  ]
+   ]
 }' http://localhost:8080/create-rules-executor
 ```
 
 As response it will return a simple number which is the identifier of the generated rules executor. Use this number in the URL of subsequent calls to that executor.
+
+Note that the condition activating the rule can be a simple one, made only by one single constraint, or a nested combination of `AND` and `OR` like in `R3`. There `all` means that all conditions must be met in order to activate the rule, so it's equivalent to a `AND`, while `any` means that any of them is sufficient, equivalent to a `OR`.
+
+### POST /rules-executors/{id}/execute
+
+Processes the event passed in the json payload, also executing the consequences of the rules (actions) that it activates.
+
+```
+curl -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "sensu": { "data": { "i":1 } } }' http://localhost:8080/rules-executors/1/execute
+```
+
+This call, other than having the side-effect of actually executing the activated rules, returns a value representing the number of executed rules.
 
 ### POST /rules-executors/{id}/process
 
@@ -143,12 +170,4 @@ Example response:
 ]
 ```
 
-### POST /rules-executors/{id}/execute
-
-Processes the event passed in the json payload, also executing the consequences of the rules (actions) that it activates.
-
-```
-curl -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "sensu": { "data": { "i":1 } } }' http://localhost:8080/rules-executors/1/execute
-```
-
-This call, other than having the side-effect of actually executing the activated rules, returns a value representing the number of executed rules.
+Note that if the engine is used only in this way, i.e. only to evaluate rules but not to fire them, the rules actions are useless and they can be safely omitted in the json payload defining the rule set.  
