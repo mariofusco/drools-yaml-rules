@@ -7,7 +7,13 @@
   <groupId>org.drools</groupId>
   <artifactId>drools-yaml-rules</artifactId>
   <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
+  <modules>
+    <module>drools-yaml-rules-core</module>
+    <module>drools-yaml-rules-durable</module>
+  </modules>
+  
   <name>Drools :: YAML Rules</name>
 
   <properties>
@@ -98,6 +104,7 @@
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
+        <version>${version.quarkus}</version>
         <executions>
           <execution>
             <goals>
