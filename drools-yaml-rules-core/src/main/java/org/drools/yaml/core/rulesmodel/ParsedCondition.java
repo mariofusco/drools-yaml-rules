@@ -88,6 +88,15 @@ public class ParsedCondition {
     }
 
     private Object parseRightOperand(String right) {
+        if (right.equals("null")) {
+            return null;
+        }
+        if (right.equals("true")) {
+            return true;
+        }
+        if (right.equals("false")) {
+            return false;
+        }
         if (right.startsWith("\"")) {
             return right.substring(1, right.length()-1);
         }

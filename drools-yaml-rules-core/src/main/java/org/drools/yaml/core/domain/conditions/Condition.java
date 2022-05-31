@@ -1,5 +1,6 @@
 package org.drools.yaml.core.domain.conditions;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Condition {
@@ -14,6 +15,14 @@ public class Condition {
 
     public Condition(String single) {
         this.single = single;
+    }
+
+    public Condition(Condition... all) {
+        this(Arrays.asList(all));
+    }
+
+    public Condition(List<Condition> all) {
+        this.all = all;
     }
 
     public List<Condition> getAll() {

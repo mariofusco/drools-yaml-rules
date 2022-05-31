@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.test.junit.QuarkusTest;
 import org.drools.yaml.core.RulesExecutor;
 import org.drools.yaml.core.domain.Rule;
 import org.drools.yaml.core.domain.RuleMatch;
@@ -16,6 +17,7 @@ import org.kie.api.runtime.rule.Match;
 
 import static org.junit.Assert.assertEquals;
 
+@QuarkusTest
 public class LogicalOperatorsTest {
 
     private static final String JSON1 =

@@ -93,6 +93,7 @@ public class DurableRule {
         if (value.size() != 1) {
             throw new UnsupportedOperationException();
         }
+
         Map.Entry<String,?> e = value.entrySet().iterator().next();
         String operator = "==";
         if (e.getValue() instanceof Map) {
@@ -103,12 +104,22 @@ public class DurableRule {
             }
             e = value.entrySet().iterator().next();
         }
+
         String rightValue = e.getValue() instanceof String ? "\"" + e.getValue() + "\"" : "" + e.getValue();
+
+        if (operator.equals("!=")) {
+            return new Condition(
+                    new Condition(e.getKey() + " != null"),
+                    new Condition(e.getKey() + " " + operator + " " + rightValue));
+        }
+
         return new Condition(e.getKey() + " " + operator + " " + rightValue);
     }
 
     private String decodeOperator(String op) {
         switch (op) {
+            case "$eq":
+                return "==";
             case "$lt":
                 return "<";
             case "$gt":

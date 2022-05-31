@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
 public class DurableRestTest {
@@ -87,7 +88,6 @@ public class DurableRestTest {
             "   }\n" +
             "}";
 
-
     @Test
     public void testProcess() {
         // return the id of the newly generated RulesExecutor
@@ -113,7 +113,72 @@ public class DurableRestTest {
                 .post("/rules-durable-executors/" + id + "/process")
                 .then()
                 .statusCode(200)
-                .body("ruleName", hasItem("R3"),
-                        "facts.j", hasItem(3));
+                .body("R3", notNullValue(),
+                        "R3.j", hasItem(3));
+    }
+
+    private static final String DURABLE_RULES_JSON_2 =
+            "{\n" +
+            "   \"myrules\":{\n" +
+            "      \"R1\":{\n" +
+            "         \"all\":[\n" +
+            "            {\n" +
+            "               \"m\":{\n" +
+            "                  \"payload.text\": \"GET\"\n" +
+            "               }\n" +
+            "            }\n" +
+            "         ],\n" +
+            "         \"run\": \"exec first\"\n" +
+            "      },\n" +
+            "      \"R2\":{\n" +
+            "         \"all\":[\n" +
+            "            {\n" +
+            "               \"m\":{\n" +
+            "                  \"$neq\":{\n" +
+            "                     \"payload.text\": \"GET\"\n" +
+            "                  }\n" +
+            "               }\n" +
+            "            }\n" +
+            "         ],\n" +
+            "         \"run\": \"exec second\"\n" +
+            "      }\n" +
+            "   }\n" +
+            "}";
+
+    @Test
+    public void testProcessWithMissingValue() {
+        // return the id of the newly generated RulesExecutor
+        long id = given()
+                .body(DURABLE_RULES_JSON_2)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/create-durable-rules-executor").as(long.class);
+
+//        [{
+//            "R1":{
+//                "payload":{
+//                    "text":"GET"
+//                }
+//            }
+//
+//        }]
+
+        given()
+                .body( "{ \"payload\": { \"text\": \"GET\" } }" )
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/rules-durable-executors/" + id + "/process")
+                .then()
+                .statusCode(200)
+                .body("R1", notNullValue());
+
+        given()
+                .body( "{ \"payload\": { \"value\": \"GET\" } }" )
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/rules-durable-executors/" + id + "/process")
+                .then()
+                .statusCode(200)
+                .body(is("[]"));
     }
 }

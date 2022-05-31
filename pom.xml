@@ -21,11 +21,12 @@
     <maven.compiler.source>11</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.drools>8.21.0.Beta</version.drools>
+    <version.drools>8.23.0-SNAPSHOT</version.drools>
     <version.quarkus>2.7.4.Final</version.quarkus>
     <version.junit>4.13.2</version.junit>
     <version.jackson>2.13.1</version.jackson>
     <version.json>20211205</version.json>
+    <version.surefire.plugin>3.0.0-M5</version.surefire.plugin>
   </properties>
 
   <dependencyManagement>
@@ -93,37 +94,18 @@
 
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-          </systemPropertyVariables>
-        </configuration>
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <id>default-test</id>-->
-<!--            <goals>-->
-<!--              <goal>test</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <excludedGroups>io.quarkus.test.junit.QuarkusTest</excludedGroups>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--          <execution>-->
-<!--            <id>quarkus-test</id>-->
-<!--            <goals>-->
-<!--              <goal>test</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <groups>io.quarkus.test.junit.QuarkusTest</groups>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--        </executions>-->
-      </plugin>
+<!--      <plugin>-->
+<!--        <artifactId>maven-surefire-plugin</artifactId>-->
+<!--        <version>${version.surefire.plugin}</version>-->
+<!--        <configuration>-->
+<!--          <systemPropertyVariables>-->
+<!--            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>-->
+<!--          </systemPropertyVariables>-->
+<!--        </configuration>-->
+<!--      </plugin>-->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.8.1</version>
         <configuration>
           <source>11</source>
           <target>11</target>

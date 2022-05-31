@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.drools.yaml.core.RulesExecutorContainer;
 import org.drools.yaml.core.domain.RuleMatch;
+import org.drools.yaml.durable.domain.DurableRuleMatch;
 
 @Path("/rules-durable-executors/{id}/process")
 public class ProcessFactsDurableEndpoint {
@@ -19,8 +20,8 @@ public class ProcessFactsDurableEndpoint {
     @POST()
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<RuleMatch> executeQuery(@PathParam("id") long id, Map<String, Object> factMap) {
+    public List<Map<String, Map>> executeQuery(@PathParam("id") long id, Map<String, Object> factMap) {
         return RulesExecutorContainer.INSTANCE.get(id).process(factMap).stream()
-                .map(RuleMatch::from).collect(Collectors.toList());
+                .map(DurableRuleMatch::from).collect(Collectors.toList());
     }
 }
