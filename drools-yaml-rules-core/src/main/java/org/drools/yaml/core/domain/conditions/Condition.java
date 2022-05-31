@@ -10,11 +10,17 @@ public class Condition {
     private List<Condition> all;
     private List<Condition> any;
     private String single;
+    private String patternBinding;
 
     public Condition() { }
 
     public Condition(String single) {
         this.single = single;
+    }
+
+    public Condition(String single, String patternBinding) {
+        this.single = single;
+        this.patternBinding = patternBinding;
     }
 
     public Condition(Condition... all) {
@@ -49,6 +55,10 @@ public class Condition {
         this.single = single;
     }
 
+    public String getPatternBinding() {
+        return patternBinding;
+    }
+
     public Type getType() {
         if (all != null) {
             return Type.ALL;
@@ -67,6 +77,6 @@ public class Condition {
         if (any != null) {
             return "OR_Condition{" + any + '}';
         }
-        return "Condition{'" + single + "'}";
+        return "Condition{'" + (patternBinding != null ? patternBinding + ": " : "") + single + "'}";
     }
 }

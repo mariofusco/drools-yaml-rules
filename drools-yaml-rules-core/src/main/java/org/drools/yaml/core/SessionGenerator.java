@@ -67,7 +67,7 @@ public class SessionGenerator {
             case ALL:
                 return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, condition.getAll().stream().map(subC -> condition2Pattern(ruleContext, subC)).toArray(ViewItem[]::new));
             case SINGLE:
-                return singleCondition2Pattern(ruleContext, condition.getSingle());
+                return singleCondition2Pattern(ruleContext, condition);
         }
         throw new UnsupportedOperationException();
     }
@@ -79,9 +79,10 @@ public class SessionGenerator {
         return pattern;
     }
 
-    private ViewItem singleCondition2Pattern(RuleContext ruleContext, String condition) {
-        ParsedCondition parsedCondition = parse(condition);
-        var pattern = ruleContext.getOrCreatePattern(parsedCondition.getLeftVar());
+    private ViewItem singleCondition2Pattern(RuleContext ruleContext, Condition condition) {
+        ParsedCondition parsedCondition = parse(condition.getSingle());
+        String binding = condition.getPatternBinding() == null || parsedCondition.getLeftVar().equals(GLOBAL_MAP_FIELD) ? parsedCondition.getLeftVar() : condition.getPatternBinding();
+        var pattern = ruleContext.getOrCreatePattern(binding, parsedCondition.getLeftVar());
         pattern.expr(parsedCondition.getLeftField(), parsedCondition.getOperator(), parsedCondition.getRight());
         return pattern;
     }
@@ -99,8 +100,8 @@ public class SessionGenerator {
             this.prototypeFactory = prototypeFactory;
         }
 
-        public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String name) {
-            return patterns.computeIfAbsent(name, n -> protoPattern( variable(prototypeFactory.getPrototype(n), n)));
+        public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name) {
+            return patterns.computeIfAbsent(binding, b -> protoPattern( variable(prototypeFactory.getPrototype(name), b)));
         }
 
         public void pushContext() {

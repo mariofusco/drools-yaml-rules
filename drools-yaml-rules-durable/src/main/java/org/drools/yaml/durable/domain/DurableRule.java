@@ -113,7 +113,7 @@ public class DurableRule {
                     new Condition(e.getKey() + " " + operator + " " + rightValue));
         }
 
-        return new Condition(e.getKey() + " " + operator + " " + rightValue);
+        return new Condition(e.getKey() + " " + operator + " " + rightValue, entry.getKey());
     }
 
     private String decodeOperator(String op) {

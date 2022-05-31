@@ -92,10 +92,24 @@ public class DurableRulesJsonTest {
         Assert.assertEquals( "R3", ruleMatch.getRuleName() );
         Assert.assertEquals( 3, ruleMatch.getFacts().get("j") );
 
-        RuleMatch.MatchedFact sensu = (RuleMatch.MatchedFact) ruleMatch.getFacts().get("sensu");
+        RuleMatch.MatchedFact sensu = (RuleMatch.MatchedFact) ruleMatch.getFacts().get("first");
         Assert.assertEquals( "sensu", sensu.getType() );
         Assert.assertEquals( 4, sensu.getValues().get("data.i") );
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testProcessWithAnd() {
+        String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m_0\": {\"payload.provisioningState\": \"Succeeded\"}}, {\"m_1\": {\"payload.provisioningState\": \"Deleted\"}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+
+        List<Match> matchedRules = rulesExecutor.process( "{ \"payload\": { \"provisioningState\": \"Succeeded\" } }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.process( "{ \"payload\": { \"provisioningState\": \"Deleted\" } }" );
+        assertEquals( 1, matchedRules.size() );
+    }
+
 }
