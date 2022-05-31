@@ -1,12 +1,13 @@
-package org.drools.yaml.domain;
+package org.drools.yaml.domain.rulesset;
 
-import org.drools.yaml.domain.actions.RuleAction;
-import org.drools.yaml.domain.conditions.Condition;
+import org.drools.yaml.domain.rulesset.actions.Action;
+import org.drools.yaml.domain.rulesset.actions.RuleAction;
+import org.drools.yaml.domain.rulesset.conditions.Condition;
 
 public class Rule {
     private String name;
     private Condition condition;
-    private RuleAction action;
+    private Action action;
 
     public String getName() {
         return name;
@@ -24,11 +25,15 @@ public class Rule {
         this.condition = condition;
     }
 
-    public RuleAction getAction() {
+    public Action getAction() {
         return action;
     }
 
     public void setAction(RuleAction action) {
+        this.action = action;
+    }
+
+    public void setGenericAction(Action action) {
         this.action = action;
     }
 

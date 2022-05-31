@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiFunction;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,7 +13,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.facttemplates.Fact;
 import org.drools.model.Prototype;
-import org.drools.yaml.domain.RulesSet;
+import org.drools.yaml.domain.durable.DurableRules;
+import org.drools.yaml.domain.rulesset.RulesSet;
 import org.json.JSONObject;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
@@ -34,6 +36,36 @@ public class RulesExecutor {
         }
     }
 
+    public enum RuleNotation {
+        RULES_SET(RuleNotation::readRulesSet), DURABLE_RULES(RuleNotation::readDurableRules);
+
+        private final BiFunction<ObjectMapper, String, RulesSet> reader;
+
+        RuleNotation(BiFunction<ObjectMapper, String, RulesSet> reader) {
+            this.reader = reader;
+        }
+
+        RulesSet toRulesSet(RuleFormat format, String text) {
+            return reader.apply( new ObjectMapper( format.getJsonFactory() ), text );
+        }
+
+        private static RulesSet readRulesSet(ObjectMapper mapper, String text) {
+            try {
+                return mapper.readValue(text, RulesSet.class );
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private static RulesSet readDurableRules(ObjectMapper mapper, String text) {
+            try {
+                return mapper.readValue(text, DurableRules.class ).toRulesSet();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     private final SessionGenerator sessionGenerator;
     private final KieSession ksession;
     private final long id;
@@ -47,21 +79,23 @@ public class RulesExecutor {
     }
 
     public static RulesExecutor createFromYaml(String yaml) {
-        return create(RuleFormat.YAML, yaml);
+        return createFromYaml(RuleNotation.RULES_SET, yaml);
+    }
+
+    public static RulesExecutor createFromYaml(RuleNotation notation, String yaml) {
+        return create(RuleFormat.YAML, notation, yaml);
     }
 
     public static RulesExecutor createFromJson(String json) {
-        return create(RuleFormat.JSON, json);
+        return createFromJson(RuleNotation.RULES_SET, json);
     }
 
-    private static RulesExecutor create(RuleFormat format, String text) {
-        try {
-            ObjectMapper mapper = new ObjectMapper( format.getJsonFactory() );
-            RulesSet rulesSet = mapper.readValue( text, RulesSet.class );
-            return createRulesExecutor(rulesSet);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    public static RulesExecutor createFromJson(RuleNotation notation, String json) {
+        return create(RuleFormat.JSON, notation, json);
+    }
+
+    private static RulesExecutor create(RuleFormat format, RuleNotation notation, String text) {
+        return createRulesExecutor( notation.toRulesSet( format, text ) );
     }
 
     public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {

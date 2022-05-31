@@ -1,4 +1,4 @@
-package org.drools.yaml.domain.conditions;
+package org.drools.yaml.domain.rulesset.conditions;
 
 import java.util.List;
 
@@ -48,5 +48,16 @@ public class Condition {
             return Type.ANY;
         }
         return Type.SINGLE;
+    }
+
+    @Override
+    public String toString() {
+        if (all != null) {
+            return "AND_Condition{" + all + '}';
+        }
+        if (any != null) {
+            return "OR_Condition{" + any + '}';
+        }
+        return "Condition{'" + single + "'}";
     }
 }

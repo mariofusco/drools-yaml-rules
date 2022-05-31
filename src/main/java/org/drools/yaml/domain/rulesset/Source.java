@@ -1,4 +1,4 @@
-package org.drools.yaml.domain;
+package org.drools.yaml.domain.rulesset;
 
 public class Source {
     private String name;

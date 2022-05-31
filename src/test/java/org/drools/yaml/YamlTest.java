@@ -3,7 +3,7 @@ package org.drools.yaml;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.drools.yaml.domain.RulesSet;
+import org.drools.yaml.domain.rulesset.RulesSet;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

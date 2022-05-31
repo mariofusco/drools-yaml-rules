@@ -5,7 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.drools.yaml.domain.RulesSet;
+import org.drools.yaml.domain.rulesset.RulesSet;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 

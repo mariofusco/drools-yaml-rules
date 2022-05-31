@@ -6,7 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.drools.yaml.domain.RulesSet;
+import org.drools.yaml.domain.rulesset.RulesSet;
 
 import static org.drools.yaml.RulesExecutor.createRulesExecutor;
 

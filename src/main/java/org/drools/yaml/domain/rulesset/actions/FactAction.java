@@ -1,4 +1,4 @@
-package org.drools.yaml.domain.actions;
+package org.drools.yaml.domain.rulesset.actions;
 
 import java.util.Map;
 

@@ -6,10 +6,10 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.drools.yaml.domain.Rule;
-import org.drools.yaml.domain.RuleMatch;
-import org.drools.yaml.domain.RulesSet;
-import org.drools.yaml.domain.conditions.Condition;
+import org.drools.yaml.domain.rulesset.Rule;
+import org.drools.yaml.domain.rulesset.RuleMatch;
+import org.drools.yaml.domain.rulesset.RulesSet;
+import org.drools.yaml.domain.rulesset.conditions.Condition;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 

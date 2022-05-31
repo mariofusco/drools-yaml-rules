@@ -11,7 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.drools.yaml.RulesExecutorContainer;
-import org.drools.yaml.domain.RuleMatch;
+import org.drools.yaml.domain.rulesset.RuleMatch;
 
 @Path("/rules-executors/{id}/process")
 public class ProcessFactsEndpoint {
