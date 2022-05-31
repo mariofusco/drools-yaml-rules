@@ -103,7 +103,8 @@ public class DurableRule {
             }
             e = value.entrySet().iterator().next();
         }
-        return new Condition(e.getKey() + " " + operator + " " + e.getValue());
+        String rightValue = e.getValue() instanceof String ? "\"" + e.getValue() + "\"" : "" + e.getValue();
+        return new Condition(e.getKey() + " " + operator + " " + rightValue);
     }
 
     private String decodeOperator(String op) {
