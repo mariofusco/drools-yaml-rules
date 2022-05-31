@@ -94,6 +94,34 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+          </systemPropertyVariables>
+        </configuration>
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>default-test</id>-->
+<!--            <goals>-->
+<!--              <goal>test</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--              <excludedGroups>io.quarkus.test.junit.QuarkusTest</excludedGroups>-->
+<!--            </configuration>-->
+<!--          </execution>-->
+<!--          <execution>-->
+<!--            <id>quarkus-test</id>-->
+<!--            <goals>-->
+<!--              <goal>test</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--              <groups>io.quarkus.test.junit.QuarkusTest</groups>-->
+<!--            </configuration>-->
+<!--          </execution>-->
+<!--        </executions>-->
+      </plugin>
+      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
