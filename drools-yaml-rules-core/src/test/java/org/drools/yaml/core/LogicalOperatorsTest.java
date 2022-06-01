@@ -2,6 +2,7 @@ package org.drools.yaml.core;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -103,9 +104,7 @@ public class LogicalOperatorsTest {
         assertEquals( "R3", ruleMatch.getRuleName() );
         assertEquals( 3, ruleMatch.getFacts().get("j") );
 
-        RuleMatch.MatchedFact sensu = (RuleMatch.MatchedFact) ruleMatch.getFacts().get("sensu");
-        assertEquals( "sensu", sensu.getType() );
-        assertEquals( 4, sensu.getValues().get("data.i") );
+        assertEquals( 4, ((Map) ((Map) ruleMatch.getFacts().get("sensu")).get("data")).get("i") );
 
         rulesExecutor.dispose();
     }

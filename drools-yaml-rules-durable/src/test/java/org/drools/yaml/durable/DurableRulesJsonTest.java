@@ -1,6 +1,7 @@
 package org.drools.yaml.durable;
 
 import java.util.List;
+import java.util.Map;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.drools.yaml.core.RulesExecutor;
@@ -90,11 +91,9 @@ public class DurableRulesJsonTest {
 
         RuleMatch ruleMatch = RuleMatch.from( matchedRules.get(0) );
         Assert.assertEquals( "R3", ruleMatch.getRuleName() );
-        Assert.assertEquals( 3, ruleMatch.getFacts().get("j") );
+        Assert.assertEquals( 3, ((Map) ruleMatch.getFacts().get("second")).get("j") );
 
-        RuleMatch.MatchedFact sensu = (RuleMatch.MatchedFact) ruleMatch.getFacts().get("first");
-        Assert.assertEquals( "sensu", sensu.getType() );
-        Assert.assertEquals( 4, sensu.getValues().get("data.i") );
+        assertEquals( 4, ((Map) ((Map) ((Map) ruleMatch.getFacts().get("first")).get("sensu")).get("data")).get("i") );
 
         rulesExecutor.dispose();
     }
@@ -124,5 +123,14 @@ public class DurableRulesJsonTest {
         matchedRules = rulesExecutor.process( "{ \"subject\": { \"x\": \"Succeeded\" } }" );
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
+    }
+
+    @Test
+    public void testProcessWithNestedValues() {
+        String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"subject\": {\"x\": \"Kermit\"}, \"predicate\": \"eats\", \"object\": \"flies\"}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        List<Match> matchedRules = rulesExecutor.process( "{ \"subject\": { \"x\": \"Kermit\" }, \"predicate\": \"eats\", \"object\": \"flies\" }" );
+        assertEquals( 1, matchedRules.size() );
     }
 }

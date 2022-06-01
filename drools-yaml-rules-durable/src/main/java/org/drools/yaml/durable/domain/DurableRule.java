@@ -3,6 +3,7 @@ package org.drools.yaml.durable.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.drools.yaml.core.domain.Rule;
 import org.drools.yaml.core.domain.conditions.Condition;
@@ -54,7 +55,7 @@ public class DurableRule {
         for (Map<String,?> map : conditionMap) {
             for (Map.Entry<String,?> entry : map.entrySet()) {
                 if ( entry.getValue() instanceof Map ) {
-                    conditions.add( mapEntryToCondition(entry) );
+                    conditions.addAll( mapEntryToConditions(entry) );
                 } else if ( entry.getValue() instanceof List ) {
                     conditions.add( listEntryToCondition(entry) );
                 } else {
@@ -88,40 +89,42 @@ public class DurableRule {
         return toCondition(nestedConditionIsAny, (List<Map<String, ?>>) entry.getValue());
     }
 
-    private Condition mapEntryToCondition(Map.Entry<String, ?> conditionEntry) {
-        Map<String,?> value = (Map) conditionEntry.getValue();
-        if (value.size() != 1) {
-            throw new UnsupportedOperationException();
-        }
-
-        Map.Entry<String,?> entry = value.entrySet().iterator().next();
+    private List<Condition> mapEntryToConditions(Map.Entry<String, ?> conditionEntry) {
         String binding = conditionEntry.getKey();
-        if (!(entry.getValue() instanceof Map)) {
-            String rightValue = entry.getValue() instanceof String ? "\"" + entry.getValue() + "\"" : "" + entry.getValue();
-            return new Condition(entry.getKey() + " == " + rightValue, binding);
-        }
-
-        value = (Map) entry.getValue();
-        if (value.size() != 1) {
-            throw new UnsupportedOperationException();
-        }
-
-        Map.Entry<String,?> e = value.entrySet().iterator().next();
-        String rightValue = e.getValue() instanceof String ? "\"" + e.getValue() + "\"" : "" + e.getValue();
-        return createCondition(binding, e.getKey(), entry.getKey(), rightValue);
+        Map<String,?> value = (Map) conditionEntry.getValue();
+        return value.entrySet().stream().map(e -> mapEntryToCondition(binding, e)).collect(Collectors.toList());
     }
 
-    private Condition createCondition(String binding, String leftValue, String operator, String rightValue) {
-        String decodedOp = null;
+    private Condition mapEntryToCondition(String binding, Map.Entry<String, ?> entry) {
+        if (!(entry.getValue() instanceof Map)) {
+            return new Condition(entry.getKey() + " == " + toRightValue(entry.getValue()), binding);
+        }
+
+        Map<String, ?> value = (Map) entry.getValue();
+        if (value.size() != 1) {
+            throw new UnsupportedOperationException();
+        }
+        Map.Entry<String, ?> e = value.entrySet().iterator().next();
+
+        if ( isOperator(entry.getKey()) ) {
+            return createOperatorCondition(binding, e.getKey(), entry.getKey(), toRightValue(e.getValue()));
+        }
+
+        String leftValue = entry.getKey() + "." + e.getKey();
+        return new Condition(leftValue + " == " + toRightValue(e.getValue()), binding);
+    }
+
+    private Condition createOperatorCondition(String binding, String leftValue, String operator, String rightValue) {
+        String decodedOp;
         switch (operator) {
             case "$neq":
                 return new Condition(
-                        new Condition(leftValue + " != null"),
-                        new Condition(leftValue + " != " + rightValue));
+                        new Condition(leftValue + " != null", binding),
+                        new Condition(leftValue + " != " + rightValue, binding));
             case "$ex":
-                return new Condition(leftValue + " != null");
+                return new Condition(leftValue + " != null", binding);
             case "$nex":
-                return new Condition(leftValue + " == null");
+                return new Condition(leftValue + " == null", binding);
             case "$eq":
                 decodedOp = "==";
                 break;
@@ -142,5 +145,13 @@ public class DurableRule {
         }
 
         return new Condition(leftValue + " " + decodedOp + " " + rightValue, binding);
+    }
+
+    private String toRightValue(Object value) {
+        return value instanceof String ? "\"" + value + "\"" : "" + value;
+    }
+
+    private boolean isOperator(String operator) {
+        return operator.startsWith("$");
     }
 }

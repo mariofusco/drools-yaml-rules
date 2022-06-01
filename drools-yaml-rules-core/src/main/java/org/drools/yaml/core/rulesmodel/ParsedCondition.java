@@ -2,28 +2,15 @@ package org.drools.yaml.core.rulesmodel;
 
 import org.drools.model.Index.ConstraintType;
 
-import static org.drools.yaml.core.SessionGenerator.GLOBAL_MAP_FIELD;
-
 public class ParsedCondition {
 
-    private static final String DEFAULT_VAR = GLOBAL_MAP_FIELD;
-
-    private String leftVar;
-    private String leftField;
+    private String left;
     private ConstraintType operator;
     private Object right;
 
     private ParsedCondition(String condition) {
         int pos = findOperatorPos(condition);
-        String left = condition.substring(0, pos).trim();
-        int leftDotPos = left.indexOf('.');
-        if (leftDotPos < 0) {
-            this.leftVar = DEFAULT_VAR;
-            this.leftField = left;
-        } else {
-            this.leftVar = left.substring(0, leftDotPos).trim();
-            this.leftField = left.substring(leftDotPos+1).trim();
-        }
+        this.left = condition.substring(0, pos).trim();
         this.right = parseRightOperand( condition.substring(pos+2).trim() );
     }
 
@@ -31,12 +18,8 @@ public class ParsedCondition {
         return new ParsedCondition(condition);
     }
 
-    public String getLeftVar() {
-        return leftVar;
-    }
-
-    public String getLeftField() {
-        return leftField;
+    public String getLeft() {
+        return left;
     }
 
     public ConstraintType getOperator() {

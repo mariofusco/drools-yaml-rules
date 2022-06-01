@@ -114,7 +114,7 @@ public class DurableRestTest {
                 .then()
                 .statusCode(200)
                 .body("R3", notNullValue(),
-                        "R3.j", hasItem(3));
+                        "R3.second.j", hasItem(3));
     }
 
     private static final String JSON_WITH_NEQ_ON_MISSING_VALUE =
@@ -170,7 +170,8 @@ public class DurableRestTest {
                 .post("/rules-durable-executors/" + id + "/process")
                 .then()
                 .statusCode(200)
-                .body("R1", notNullValue());
+                .body("R1", notNullValue(),
+                        "R1.payload.text", hasItem("GET"));
 
         given()
                 .body( "{ \"payload\": { \"value\": \"GET\" } }" )

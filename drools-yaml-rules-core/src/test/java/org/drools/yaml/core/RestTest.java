@@ -93,9 +93,8 @@ public class RestTest {
 //                "ruleName": "R1",
 //                "facts": {
 //                    "sensu": {
-//                        "type": "sensu",
-//                        "values": {
-//                            "data.i": 1
+//                        "data": {
+//                            "i": 1
 //                        }
 //                    }
 //                }
@@ -110,8 +109,7 @@ public class RestTest {
                 .then()
                 .statusCode(200)
                 .body("ruleName", hasItem("R1"),
-                      "facts.sensu.type", hasItem("sensu"),
-                      "facts.sensu.values.\"data.i\"", hasItem(1));
+                      "facts.sensu.data.i", hasItem(1));
 
 //        [
 //            {

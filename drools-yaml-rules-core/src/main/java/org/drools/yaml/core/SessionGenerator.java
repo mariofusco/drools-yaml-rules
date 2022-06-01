@@ -28,7 +28,7 @@ import static org.drools.yaml.core.rulesmodel.ParsedCondition.parse;
 
 public class SessionGenerator {
 
-    public static final String GLOBAL_MAP_FIELD = "global_map";
+    public static final String PROTOTYPE_NAME = "DROOLS_PROTOTYPE";
 
     private static int counter = 0;
 
@@ -81,13 +81,16 @@ public class SessionGenerator {
 
     private ViewItem singleCondition2Pattern(RuleContext ruleContext, Condition condition) {
         ParsedCondition parsedCondition = parse(condition.getSingle());
-        String binding = condition.getPatternBinding() == null || parsedCondition.getLeftVar().equals(GLOBAL_MAP_FIELD) ? parsedCondition.getLeftVar() : condition.getPatternBinding();
-        var pattern = ruleContext.getOrCreatePattern(binding, parsedCondition.getLeftVar());
-        pattern.expr(parsedCondition.getLeftField(), parsedCondition.getOperator(), parsedCondition.getRight());
+        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(), PROTOTYPE_NAME);
+        pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
         return pattern;
     }
 
-    public Prototype getPrototype(String name) {
+    public Prototype getPrototype() {
+        return getPrototype(PROTOTYPE_NAME);
+    }
+
+    private Prototype getPrototype(String name) {
         return prototypeFactory.getPrototype(name);
     }
 

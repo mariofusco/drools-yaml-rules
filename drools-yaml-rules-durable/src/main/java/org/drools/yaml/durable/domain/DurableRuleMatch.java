@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.drools.core.facttemplates.Fact;
-import org.drools.yaml.core.domain.RuleMatch;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.yaml.core.SessionGenerator.GLOBAL_MAP_FIELD;
+import static org.drools.yaml.core.domain.Binding.isGeneratedBinding;
+import static org.drools.yaml.core.domain.RuleMatch.toNestedMap;
 
 public class DurableRuleMatch {
 
@@ -17,10 +17,11 @@ public class DurableRuleMatch {
             Object value = match.getDeclarationValue(decl);
             if (value instanceof Fact) {
                 Fact fact = (Fact) value;
-                if (GLOBAL_MAP_FIELD.equals(decl)) {
-                    facts.putAll(fact.asMap());
+                Map<String, Object> map = toNestedMap( fact.asMap()) ;
+                if (isImplicitBinding(decl)) {
+                    facts.putAll(map);
                 } else {
-                    facts.put(decl, fact.asMap());
+                    facts.put(decl, map);
                 }
             } else {
                 facts.put(decl, value);
@@ -30,5 +31,9 @@ public class DurableRuleMatch {
         Map<String, Map> result = new HashMap<>();
         result.put(match.getRule().getName(), facts);
         return result;
+    }
+
+    private static boolean isImplicitBinding(String decl) {
+        return isGeneratedBinding(decl) || decl.equals("m") || decl.startsWith("m_");
     }
 }

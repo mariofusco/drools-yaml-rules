@@ -6,7 +6,7 @@ import java.util.Map;
 import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.yaml.core.SessionGenerator.GLOBAL_MAP_FIELD;
+import static org.drools.yaml.core.domain.Binding.isGeneratedBinding;
 
 public class RuleMatch {
 
@@ -25,10 +25,11 @@ public class RuleMatch {
             Object value = match.getDeclarationValue(decl);
             if (value instanceof Fact) {
                 Fact fact = (Fact) value;
-                if (GLOBAL_MAP_FIELD.equals(decl)) {
-                    facts.putAll(fact.asMap());
+                Map<String, Object> map = toNestedMap( fact.asMap()) ;
+                if (isGeneratedBinding(decl)) {
+                    facts.putAll(map);
                 } else {
-                    facts.put(decl, new MatchedFact(fact.getFactTemplate().getName(), fact.asMap()));
+                    facts.put(decl, map);
                 }
             } else {
                 facts.put(decl, value);
@@ -45,21 +46,18 @@ public class RuleMatch {
         return facts;
     }
 
-    public static class MatchedFact {
-        private final String type;
-        private final Map<String, Object> values;
+    public static Map<String, Object> toNestedMap(Map<String, Object> map) {
+        Map<String, Object> result = new HashMap<>();
+        map.entrySet().forEach(e -> addToNestedMap(result, e.getKey(), e.getValue()));
+        return result;
+    }
 
-        public MatchedFact(String type, Map<String, Object> values) {
-            this.type = type;
-            this.values = values;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public Map<String, Object> getValues() {
-            return values;
+    private static void addToNestedMap(Map<String, Object> result, String key, Object value) {
+        int dotPos = key.indexOf('.');
+        if (dotPos < 0) {
+            result.put(key, value);
+        } else {
+            addToNestedMap( (Map<String, Object>) result.computeIfAbsent(key.substring(0, dotPos), s -> new HashMap<>()), key.substring(dotPos+1), value);
         }
     }
 }

@@ -3,6 +3,8 @@ package org.drools.yaml.core.domain.conditions;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.drools.yaml.core.domain.Binding.generateBinding;
+
 public class Condition {
 
     public enum Type { ALL, ANY, SINGLE }
@@ -56,6 +58,9 @@ public class Condition {
     }
 
     public String getPatternBinding() {
+        if (patternBinding == null) {
+            patternBinding = generateBinding();
+        }
         return patternBinding;
     }
 

@@ -16,6 +16,6 @@ public class AssertFact extends FactAction {
     @Override
     public void execute(RulesExecutor rulesExecutor, Drools drools) {
         System.out.println("Asserting " + getFact());
-        rulesExecutor.processFacts(getFact());
+        rulesExecutor.processFact(getFact());
     }
 }
