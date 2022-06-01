@@ -117,7 +117,7 @@ public class DurableRestTest {
                         "R3.j", hasItem(3));
     }
 
-    private static final String DURABLE_RULES_JSON_2 =
+    private static final String JSON_WITH_NEQ_ON_MISSING_VALUE =
             "{\n" +
             "   \"myrules\":{\n" +
             "      \"R1\":{\n" +
@@ -149,7 +149,7 @@ public class DurableRestTest {
     public void testProcessWithMissingValue() {
         // return the id of the newly generated RulesExecutor
         long id = given()
-                .body(DURABLE_RULES_JSON_2)
+                .body(JSON_WITH_NEQ_ON_MISSING_VALUE)
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/create-durable-rules-executor").as(long.class);

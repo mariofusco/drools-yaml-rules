@@ -88,49 +88,59 @@ public class DurableRule {
         return toCondition(nestedConditionIsAny, (List<Map<String, ?>>) entry.getValue());
     }
 
-    private Condition mapEntryToCondition(Map.Entry<String, ?> entry) {
-        Map<String,?> value = (Map) entry.getValue();
+    private Condition mapEntryToCondition(Map.Entry<String, ?> conditionEntry) {
+        Map<String,?> value = (Map) conditionEntry.getValue();
+        if (value.size() != 1) {
+            throw new UnsupportedOperationException();
+        }
+
+        Map.Entry<String,?> entry = value.entrySet().iterator().next();
+        String binding = conditionEntry.getKey();
+        if (!(entry.getValue() instanceof Map)) {
+            String rightValue = entry.getValue() instanceof String ? "\"" + entry.getValue() + "\"" : "" + entry.getValue();
+            return new Condition(entry.getKey() + " == " + rightValue, binding);
+        }
+
+        value = (Map) entry.getValue();
         if (value.size() != 1) {
             throw new UnsupportedOperationException();
         }
 
         Map.Entry<String,?> e = value.entrySet().iterator().next();
-        String operator = "==";
-        if (e.getValue() instanceof Map) {
-            operator = decodeOperator(e.getKey());
-            value = (Map) e.getValue();
-            if (value.size() != 1) {
-                throw new UnsupportedOperationException();
-            }
-            e = value.entrySet().iterator().next();
-        }
-
         String rightValue = e.getValue() instanceof String ? "\"" + e.getValue() + "\"" : "" + e.getValue();
-
-        if (operator.equals("!=")) {
-            return new Condition(
-                    new Condition(e.getKey() + " != null"),
-                    new Condition(e.getKey() + " " + operator + " " + rightValue));
-        }
-
-        return new Condition(e.getKey() + " " + operator + " " + rightValue, entry.getKey());
+        return createCondition(binding, e.getKey(), entry.getKey(), rightValue);
     }
 
-    private String decodeOperator(String op) {
-        switch (op) {
-            case "$eq":
-                return "==";
-            case "$lt":
-                return "<";
-            case "$gt":
-                return ">";
-            case "$lte":
-                return "<=";
-            case "$gte":
-                return ">=";
+    private Condition createCondition(String binding, String leftValue, String operator, String rightValue) {
+        String decodedOp = null;
+        switch (operator) {
             case "$neq":
-                return "!=";
+                return new Condition(
+                        new Condition(leftValue + " != null"),
+                        new Condition(leftValue + " != " + rightValue));
+            case "$ex":
+                return new Condition(leftValue + " != null");
+            case "$nex":
+                return new Condition(leftValue + " == null");
+            case "$eq":
+                decodedOp = "==";
+                break;
+            case "$lt":
+                decodedOp = "<";
+                break;
+            case "$gt":
+                decodedOp = ">";
+                break;
+            case "$lte":
+                decodedOp = "<=";
+                break;
+            case "$gte":
+                decodedOp = ">=";
+                break;
+            default:
+                throw new UnsupportedOperationException("Unrecongnized operator " + operator);
         }
-        throw new UnsupportedOperationException("Unrecongnized operator " + op);
+
+        return new Condition(leftValue + " " + decodedOp + " " + rightValue, binding);
     }
 }

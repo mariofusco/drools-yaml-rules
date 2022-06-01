@@ -112,4 +112,17 @@ public class DurableRulesJsonTest {
         assertEquals( 1, matchedRules.size() );
     }
 
+    @Test
+    public void testProcessWithExists() {
+        String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$ex\": {\"subject.x\": 1}}}]}, \"r_1\": {\"all\": [{\"m\": {\"$nex\": {\"subject.x\": 1}}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        List<Match> matchedRules = rulesExecutor.process( "{ \"subject\": { \"y\": \"Succeeded\" } }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "r_1", matchedRules.get(0).getRule().getName() );
+
+        matchedRules = rulesExecutor.process( "{ \"subject\": { \"x\": \"Succeeded\" } }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
+    }
 }
