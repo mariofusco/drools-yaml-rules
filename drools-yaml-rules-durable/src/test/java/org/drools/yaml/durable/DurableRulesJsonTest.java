@@ -133,4 +133,13 @@ public class DurableRulesJsonTest {
         List<Match> matchedRules = rulesExecutor.process( "{ \"subject\": { \"x\": \"Kermit\" }, \"predicate\": \"eats\", \"object\": \"flies\" }" );
         assertEquals( 1, matchedRules.size() );
     }
+
+    @Test
+    public void testProcessWithAndConstraint() {
+        String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$and\": [{\"nested.i\" : 1}, {\"nested.j\" : 2}]}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1, \"j\": 2 } }" );
+        assertEquals( 1, matchedRules.size() );
+    }
 }

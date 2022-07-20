@@ -84,4 +84,20 @@ public class Condition {
         }
         return "Condition{'" + (patternBinding != null ? patternBinding + ": " : "") + single + "'}";
     }
+
+    public static Condition combineConditions(Type type, List<Condition> conditions) {
+        if (type == Type.SINGLE) {
+            if (conditions.size() == 1) {
+                return conditions.get(0);
+            }
+            throw new IllegalArgumentException();
+        }
+        Condition condition = new Condition();
+        if (type == Type.ALL) {
+            condition.setAll(conditions);
+        } else if (type == Type.ANY) {
+            condition.setAny(conditions);
+        }
+        return condition;
+    }
 }

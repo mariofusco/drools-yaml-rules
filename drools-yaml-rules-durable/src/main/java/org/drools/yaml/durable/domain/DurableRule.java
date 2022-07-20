@@ -96,21 +96,46 @@ public class DurableRule {
     }
 
     private Condition mapEntryToCondition(String binding, Map.Entry<String, ?> entry) {
-        if (!(entry.getValue() instanceof Map)) {
-            return new Condition(entry.getKey() + " == " + toRightValue(entry.getValue()), binding);
+        Object value = entry.getValue();
+
+        if (value instanceof Map) {
+            return mapValueToCondition(binding, entry.getKey(), (Map<String, ?>) value);
         }
 
-        Map<String, ?> value = (Map) entry.getValue();
+        if (value instanceof List) {
+            return Condition.combineConditions( decodeConditionType(entry.getKey()),
+                    ((List<?>) value).stream().map(Map.class::cast)
+                            .map( m -> mapValueToCondition(binding, m)).collect(Collectors.toList()) );
+        }
+
+        return new Condition(entry.getKey() + " == " + toRightValue(entry.getValue()), binding);
+    }
+
+    private Condition.Type decodeConditionType(String type) {
+        if (type.equals("$and")) {
+            return Condition.Type.ALL;
+        }
+        if (type.equals("$or")) {
+            return Condition.Type.ANY;
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    private Condition mapValueToCondition(String binding, Map<String, ?> value) {
+        return mapValueToCondition(binding, null, value);
+    }
+
+    private Condition mapValueToCondition(String binding, String key, Map<String, ?> value) {
         if (value.size() != 1) {
             throw new UnsupportedOperationException();
         }
         Map.Entry<String, ?> e = value.entrySet().iterator().next();
 
-        if ( isOperator(entry.getKey()) ) {
-            return createOperatorCondition(binding, e.getKey(), entry.getKey(), toRightValue(e.getValue()));
+        if ( key != null && isOperator(key) ) {
+            return createOperatorCondition(binding, e.getKey(), key, toRightValue(e.getValue()));
         }
 
-        String leftValue = entry.getKey() + "." + e.getKey();
+        String leftValue = key != null ? (key + "." + e.getKey()) : e.getKey();
         return new Condition(leftValue + " == " + toRightValue(e.getValue()), binding);
     }
 
