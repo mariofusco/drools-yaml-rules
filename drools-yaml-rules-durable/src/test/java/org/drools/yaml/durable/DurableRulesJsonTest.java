@@ -139,7 +139,21 @@ public class DurableRulesJsonTest {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$and\": [{\"nested.i\" : 1}, {\"nested.j\" : 2}]}}]}}}";
 
         RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
-        List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1, \"j\": 2 } }" );
+
+        List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1 } }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1, \"j\": 2 } }" );
+        assertEquals( 1, matchedRules.size() );
+    }
+
+    @Test
+    public void testProcessWithOrConstraint() {
+        String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$or\": [{\"nested.i\" : 1}, {\"nested.j\" : 2}]}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+
+        List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1 } }" );
         assertEquals( 1, matchedRules.size() );
     }
 }
