@@ -3,14 +3,17 @@ package org.drools.yaml.core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.drools.core.ObjectFilter;
 import org.drools.core.facttemplates.Fact;
 import org.drools.model.Prototype;
 import org.drools.yaml.core.domain.RulesSet;
 import org.json.JSONObject;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
+import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFact;
@@ -97,10 +100,28 @@ public class RulesExecutor {
     }
 
     public void processFact(Map<String, Object> factMap) {
-        Prototype prototype = sessionGenerator.getPrototype();
-        Fact fact = createMapBasedFact( prototype );
+        ksession.insert( mapToFact(factMap) );
+    }
+
+    public boolean retract(String json) {
+        return retractFact( new JSONObject(json).toMap() );
+    }
+
+    public boolean retractFact(Map<String, Object> factMap) {
+        Fact toBeRetracted = mapToFact(factMap);
+
+        return ksession.getFactHandles(o -> o instanceof Fact && Objects.equals(((Fact) o).asMap(), toBeRetracted.asMap()))
+                .stream().findFirst()
+                .map( fh -> {
+                    ksession.delete( fh );
+                    return true;
+                }).orElse(false);
+    }
+
+    private Fact mapToFact(Map<String, Object> factMap) {
+        Fact fact = createMapBasedFact( sessionGenerator.getPrototype() );
         populateFact(fact, factMap, "");
-        ksession.insert(fact);
+        return fact;
     }
 
     private void populateFact(Fact fact, Map<?, ?> value, String fieldName) {

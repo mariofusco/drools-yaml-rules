@@ -17,7 +17,7 @@ public class CreateRulesExecutorDurableEndpoint {
     @POST()
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public long executeQuery(DurableRules durableRules) {
+    public long createRuleBase(DurableRules durableRules) {
         return createRulesExecutor(durableRules.toRulesSet()).getId();
     }
 }

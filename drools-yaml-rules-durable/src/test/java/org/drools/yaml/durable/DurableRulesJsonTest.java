@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @QuarkusTest
 public class DurableRulesJsonTest {
@@ -155,5 +156,17 @@ public class DurableRulesJsonTest {
 
         List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1 } }" );
         assertEquals( 1, matchedRules.size() );
+    }
+
+    @Test
+    public void testRetract() {
+        String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"nested.i\" : 1}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+
+        List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1 } }" );
+        assertEquals( 1, matchedRules.size() );
+
+        assertTrue( rulesExecutor.retract( "{ \"nested\": { \"i\": 1 } }" ) );
     }
 }

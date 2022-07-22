@@ -20,7 +20,7 @@ public class ProcessFactsDurableEndpoint {
     @POST()
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Map<String, Map>> executeQuery(@PathParam("id") long id, Map<String, Object> factMap) {
+    public List<Map<String, Map>> process(@PathParam("id") long id, Map<String, Object> factMap) {
         return RulesExecutorContainer.INSTANCE.get(id).process(factMap).stream()
                 .map(DurableRuleMatch::from).collect(Collectors.toList());
     }
