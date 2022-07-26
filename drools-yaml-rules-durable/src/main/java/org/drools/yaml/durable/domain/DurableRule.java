@@ -5,8 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.drools.model.Index;
+import org.drools.model.PrototypeExpression;
 import org.drools.yaml.core.domain.Rule;
 import org.drools.yaml.core.domain.conditions.Condition;
+import org.drools.yaml.core.domain.conditions.ExpressionCondition;
+
+import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.PrototypeExpression.prototypeField;
 
 public class DurableRule {
     private List<Map<String,?>> all;
@@ -108,7 +114,7 @@ public class DurableRule {
                             .map( m -> mapValueToCondition(binding, m)).collect(Collectors.toList()) );
         }
 
-        return new Condition(entry.getKey() + " == " + toRightValue(entry.getValue()), binding);
+        return new Condition(entry.getKey() + " == " + toOperand(entry.getValue()), binding);
     }
 
     private Condition.Type decodeConditionType(String type) {
@@ -132,20 +138,20 @@ public class DurableRule {
         Map.Entry<String, ?> e = value.entrySet().iterator().next();
 
         if ( key != null && isOperator(key) ) {
-            return createOperatorCondition(binding, e.getKey(), key, toRightValue(e.getValue()));
+            return createOperatorCondition(binding, e.getKey(), key, e.getKey(), e.getValue());
         }
 
-        String leftValue = key != null ? (key + "." + e.getKey()) : e.getKey();
-        return new Condition(leftValue + " == " + toRightValue(e.getValue()), binding);
+        String leftValue = key != null ? (key + (isOperator(e.getKey()) ? "" : ("." + e.getKey()))) : e.getKey();
+        return createCondition(binding, leftValue, "==", e.getKey(), e.getValue());
     }
 
-    private Condition createOperatorCondition(String binding, String leftValue, String operator, String rightValue) {
+    private Condition createOperatorCondition(String binding, String leftValue, String operator, String rightKey, Object rightValue) {
         String decodedOp;
         switch (operator) {
             case "$neq":
                 return new Condition(
                         new Condition(leftValue + " != null", binding),
-                        new Condition(leftValue + " != " + rightValue, binding));
+                        new Condition(leftValue + " != " + toOperand(rightValue), binding));
             case "$ex":
                 return new Condition(leftValue + " != null", binding);
             case "$nex":
@@ -166,17 +172,74 @@ public class DurableRule {
                 decodedOp = ">=";
                 break;
             default:
-                throw new UnsupportedOperationException("Unrecongnized operator " + operator);
+                throw new UnsupportedOperationException("Unrecognized operator " + operator);
         }
 
-        return new Condition(leftValue + " " + decodedOp + " " + rightValue, binding);
+        return createCondition(binding, leftValue, decodedOp, rightKey, rightValue);
     }
 
-    private String toRightValue(Object value) {
+    private Condition createCondition(String binding, String leftValue, String decodedOp, String rightKey, Object rightValue) {
+        if (isOperator(rightKey)) {
+            Object l = ((Map) rightValue).get("$l");
+            Object r = ((Map) rightValue).get("$r");
+
+            PrototypeExpression rightExpression = toPrototypeExpression(l).composeWith(decodeBinaryOperator(rightKey), toPrototypeExpression(r));
+            return new ExpressionCondition(prototypeField(leftValue), decodeConstraintType(decodedOp), rightExpression, binding);
+        }
+
+        return new Condition(leftValue + " " + decodedOp + " " + toOperand(rightValue), binding);
+    }
+
+    private PrototypeExpression.ExpressionBuilder toPrototypeExpression(Object value) {
+        if (value instanceof Map) {
+            return prototypeField(((Map) value).get("$m").toString());
+        }
+        return fixedValue(value);
+    }
+
+    private String toOperand(Object value) {
+        if (value instanceof Map) {
+            if (((Map) value).size() != 1) {
+                throw new UnsupportedOperationException();
+            }
+            return "" + ((Map) value).values().iterator().next();
+        }
         return value instanceof String ? "\"" + value + "\"" : "" + value;
     }
 
+    private Index.ConstraintType decodeConstraintType(String operator) {
+        switch (operator) {
+            case "==":
+                return Index.ConstraintType.EQUAL;
+            case "!=":
+                return Index.ConstraintType.NOT_EQUAL;
+            case ">=":
+                return Index.ConstraintType.GREATER_OR_EQUAL;
+            case "<=":
+                return Index.ConstraintType.LESS_OR_EQUAL;
+            case ">":
+                return Index.ConstraintType.GREATER_THAN;
+            case "<":
+                return Index.ConstraintType.LESS_THAN;
+        }
+        throw new UnsupportedOperationException("Unrecognized constraint type " + operator);
+    }
+
+    private PrototypeExpression.BinaryOperation.Operator decodeBinaryOperator(String operator) {
+        switch (operator) {
+            case "$add":
+                return PrototypeExpression.BinaryOperation.Operator.ADD;
+            case "$sub":
+                return PrototypeExpression.BinaryOperation.Operator.SUB;
+            case "$mul":
+                return PrototypeExpression.BinaryOperation.Operator.MUL;
+            case "$div":
+                return PrototypeExpression.BinaryOperation.Operator.DIV;
+        }
+        throw new UnsupportedOperationException("Unrecognized binary operator " + operator);
+    }
+
     private boolean isOperator(String operator) {
-        return operator.startsWith("$");
+        return operator != null && operator.startsWith("$");
     }
 }

@@ -169,4 +169,26 @@ public class DurableRulesJsonTest {
 
         assertTrue( rulesExecutor.retract( "{ \"nested\": { \"i\": 1 } }" ) );
     }
+
+    @Test
+    public void testProcessWithAddConstraint() {
+        String jsonRule =
+                "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"nested.i\": {\"$add\": {\"$l\": {\"$m\": \"nested.j\"}, \"$r\": 1}}}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+
+        List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 2, \"j\":1 } }" );
+        assertEquals( 1, matchedRules.size() );
+    }
+
+    @Test
+    public void testProcessWithSubConstraint() {
+        String jsonRule =
+                "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"nested.i\": {\"$sub\": {\"$l\": {\"$m\": \"nested.j\"}, \"$r\": 1}}}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+
+        List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1, \"j\":2 } }" );
+        assertEquals( 1, matchedRules.size() );
+    }
 }

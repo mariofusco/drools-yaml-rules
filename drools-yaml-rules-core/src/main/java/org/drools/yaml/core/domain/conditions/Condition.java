@@ -3,6 +3,9 @@ package org.drools.yaml.core.domain.conditions;
 import java.util.Arrays;
 import java.util.List;
 
+import org.drools.model.Index;
+import org.drools.yaml.core.rulesmodel.ParsedCondition;
+
 import static org.drools.yaml.core.domain.Binding.generateBinding;
 
 public class Condition {
@@ -21,7 +24,7 @@ public class Condition {
     }
 
     public Condition(String single, String patternBinding) {
-        this.single = single;
+        this(single);
         this.patternBinding = patternBinding;
     }
 
@@ -64,6 +67,10 @@ public class Condition {
         return patternBinding;
     }
 
+    public void setPatternBinding(String patternBinding) {
+        this.patternBinding = patternBinding;
+    }
+
     public Type getType() {
         if (all != null) {
             return Type.ALL;
@@ -99,5 +106,59 @@ public class Condition {
             condition.setAny(conditions);
         }
         return condition;
+    }
+
+    public ParsedCondition parse() {
+        String condition = getSingle();
+
+        Index.ConstraintType operator;
+        int pos;
+        if (condition.indexOf("==") >= 0) {
+            pos = condition.indexOf("==");
+            operator = Index.ConstraintType.EQUAL;
+        } else if (condition.indexOf("!=") >= 0) {
+            pos = condition.indexOf("!=");
+            operator = Index.ConstraintType.NOT_EQUAL;
+        } else if (condition.indexOf(">=") >= 0) {
+            pos = condition.indexOf(">=");
+            operator = Index.ConstraintType.GREATER_OR_EQUAL;
+        } else if (condition.indexOf("<=") >= 0) {
+            pos = condition.indexOf("<=");
+            operator = Index.ConstraintType.LESS_OR_EQUAL;
+        } else if (condition.indexOf(">") >= 0) {
+            pos = condition.indexOf(">");
+            operator = Index.ConstraintType.GREATER_THAN;
+        } else if (condition.indexOf("<") >= 0) {
+            pos = condition.indexOf("<");
+            operator = Index.ConstraintType.LESS_THAN;
+        } else {
+            throw new UnsupportedOperationException("Unknown operator for condition: " + condition);
+        }
+
+        String left = condition.substring(0, pos).trim();
+        int rightStart = pos + (operator == Index.ConstraintType.GREATER_THAN || operator == Index.ConstraintType.LESS_THAN ? 1 : 2);
+        Object right = parseRightOperand( condition.substring(rightStart).trim() );
+
+        return new ParsedCondition(left, operator, right);
+    }
+
+    private Object parseRightOperand(String right) {
+        if (right.equals("null")) {
+            return null;
+        }
+        if (right.equals("true")) {
+            return true;
+        }
+        if (right.equals("false")) {
+            return false;
+        }
+        if (right.startsWith("\"")) {
+            return right.substring(1, right.length()-1);
+        }
+        try {
+            return Integer.parseInt(right);
+        } catch (NumberFormatException nfe) {
+            return Double.parseDouble(right);
+        }
     }
 }

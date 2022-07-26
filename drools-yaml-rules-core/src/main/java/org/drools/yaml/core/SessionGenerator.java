@@ -11,7 +11,7 @@ import org.drools.model.PrototypeDSL;
 import org.drools.model.impl.ModelImpl;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
-import org.drools.modelcompiler.builder.KieBaseBuilder;
+import org.drools.modelcompiler.KieBaseBuilder;
 import org.drools.yaml.core.domain.Rule;
 import org.drools.yaml.core.domain.RulesSet;
 import org.drools.yaml.core.domain.conditions.Condition;
@@ -24,7 +24,6 @@ import static org.drools.model.DSL.execute;
 import static org.drools.model.PatternDSL.rule;
 import static org.drools.model.PrototypeDSL.protoPattern;
 import static org.drools.model.PrototypeDSL.variable;
-import static org.drools.yaml.core.rulesmodel.ParsedCondition.parse;
 
 public class SessionGenerator {
 
@@ -80,7 +79,7 @@ public class SessionGenerator {
     }
 
     private ViewItem singleCondition2Pattern(RuleContext ruleContext, Condition condition) {
-        ParsedCondition parsedCondition = parse(condition.getSingle());
+        ParsedCondition parsedCondition = condition.parse();
         var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(), PROTOTYPE_NAME);
         pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
         return pattern;

@@ -18,7 +18,7 @@ public class DurableRuleMatch {
             if (value instanceof Fact) {
                 Fact fact = (Fact) value;
                 Map<String, Object> map = toNestedMap( fact.asMap()) ;
-                if (isImplicitBinding(decl)) {
+                if (isGeneratedBinding(decl)) {
                     facts.putAll(map);
                 } else {
                     facts.put(decl, map);
@@ -31,9 +31,5 @@ public class DurableRuleMatch {
         Map<String, Map> result = new HashMap<>();
         result.put(match.getRule().getName(), facts);
         return result;
-    }
-
-    private static boolean isImplicitBinding(String decl) {
-        return isGeneratedBinding(decl) || decl.equals("m") || decl.startsWith("m_");
     }
 }

@@ -171,7 +171,7 @@ public class DurableRestTest {
                 .then()
                 .statusCode(200)
                 .body("R1", notNullValue(),
-                        "R1.payload.text", hasItem("GET"));
+                        "R1.m.payload.text", hasItem("GET"));
 
         given()
                 .body( "{ \"payload\": { \"value\": \"GET\" } }" )
