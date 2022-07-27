@@ -81,6 +81,14 @@ public class Condition {
         return Type.SINGLE;
     }
 
+    public String otherBinding() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean beta() {
+        return false;
+    }
+
     @Override
     public String toString() {
         if (all != null) {

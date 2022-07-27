@@ -1,13 +1,16 @@
 package org.drools.yaml.durable.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.drools.model.Index;
 import org.drools.model.PrototypeExpression;
 import org.drools.yaml.core.domain.Rule;
+import org.drools.yaml.core.domain.conditions.BetaExpressionCondition;
 import org.drools.yaml.core.domain.conditions.Condition;
 import org.drools.yaml.core.domain.conditions.ExpressionCondition;
 
@@ -15,8 +18,11 @@ import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeField;
 
 public class DurableRule {
+    private Set<String> existingBindings = new HashSet<>();
+
     private List<Map<String,?>> all;
     private List<Map<String,?>> any;
+
     private String run;
 
     public List<Map<String,?>> getAll() {
@@ -98,7 +104,9 @@ public class DurableRule {
     private List<Condition> mapEntryToConditions(Map.Entry<String, ?> conditionEntry) {
         String binding = conditionEntry.getKey();
         Map<String,?> value = (Map) conditionEntry.getValue();
-        return value.entrySet().stream().map(e -> mapEntryToCondition(binding, e)).collect(Collectors.toList());
+        List<Condition> conditions = value.entrySet().stream().map(e -> mapEntryToCondition(binding, e)).collect(Collectors.toList());
+        existingBindings.add(binding);
+        return conditions;
     }
 
     private Condition mapEntryToCondition(String binding, Map.Entry<String, ?> entry) {
@@ -141,8 +149,17 @@ public class DurableRule {
             return createOperatorCondition(binding, e.getKey(), key, e.getKey(), e.getValue());
         }
 
-        String leftValue = key != null ? (key + (isOperator(e.getKey()) ? "" : ("." + e.getKey()))) : e.getKey();
-        return createCondition(binding, leftValue, "==", e.getKey(), e.getValue());
+        return createCondition(binding, toLeftValue(key, e.getKey()), "==", e.getKey(), e.getValue());
+    }
+
+    private String toLeftValue(String leftKey, String entryKey) {
+        if (leftKey == null) {
+            return entryKey;
+        }
+        if (isOperator(entryKey) || existingBindings.contains(entryKey)) {
+            return leftKey;
+        }
+        return leftKey + "." + entryKey;
     }
 
     private Condition createOperatorCondition(String binding, String leftValue, String operator, String rightKey, Object rightValue) {
@@ -183,8 +200,26 @@ public class DurableRule {
             Object l = ((Map) rightValue).get("$l");
             Object r = ((Map) rightValue).get("$r");
 
+            String leftBinding = getBindingFromMap(l);
+            if (leftBinding != null) {
+                PrototypeExpression rightExpression = prototypeField(((Map) l).get(leftBinding).toString()).composeWith(decodeBinaryOperator(rightKey), toPrototypeExpression(r));
+                return new BetaExpressionCondition(binding, prototypeField(leftValue), decodeConstraintType(decodedOp), leftBinding, rightExpression);
+            }
+            String rightBinding = getBindingFromMap(r);
+            if (rightBinding != null) {
+                PrototypeExpression rightExpression = toPrototypeExpression(l).composeWith(decodeBinaryOperator(rightKey), prototypeField(((Map) r).get(rightBinding).toString()));
+                return new BetaExpressionCondition(binding, prototypeField(leftValue), decodeConstraintType(decodedOp), rightBinding, rightExpression);
+            }
+
             PrototypeExpression rightExpression = toPrototypeExpression(l).composeWith(decodeBinaryOperator(rightKey), toPrototypeExpression(r));
-            return new ExpressionCondition(prototypeField(leftValue), decodeConstraintType(decodedOp), rightExpression, binding);
+            return new ExpressionCondition(binding, prototypeField(leftValue), decodeConstraintType(decodedOp), rightExpression);
+        }
+
+        if (existingBindings.contains(rightKey)) {
+            if (rightValue instanceof String) {
+                return new BetaExpressionCondition(binding, prototypeField(leftValue), decodeConstraintType(decodedOp), rightKey, prototypeField((String) rightValue));
+            }
+            throw new UnsupportedOperationException();
         }
 
         return new Condition(leftValue + " " + decodedOp + " " + toOperand(rightValue), binding);
@@ -192,9 +227,25 @@ public class DurableRule {
 
     private PrototypeExpression.ExpressionBuilder toPrototypeExpression(Object value) {
         if (value instanceof Map) {
-            return prototypeField(((Map) value).get("$m").toString());
+            Map map = (Map) value;
+            assert(map.size() == 1);
+            String fieldName = (String) map.get("$m");
+            assert(fieldName != null);
+            return prototypeField(fieldName);
         }
         return fixedValue(value);
+    }
+
+    private String getBindingFromMap(Object value) {
+        if (value instanceof Map) {
+            Map map = (Map) value;
+            assert(map.size() == 1);
+            String key = (String) map.keySet().iterator().next();
+            if (existingBindings.contains(key)) {
+                return key;
+            }
+        }
+        return null;
     }
 
     private String toOperand(Object value) {

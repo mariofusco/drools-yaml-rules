@@ -207,4 +207,38 @@ public class DurableRulesJsonTest {
 
         assertEquals( 2, rulesExecutor.getAllFactsAsMap().size() );
     }
+
+    @Test
+    public void testProcessWithBindingJoin() {
+        String jsonRule =
+                "{ \"rules\": {\"r_0\": {\"all\": [{\"first\": {\"i\": 0}}, {\"second\": {\"i\": {\"first\": \"j\"}}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+
+        List<Match> matchedRules = rulesExecutor.process( "{ \"i\": 0, \"j\": 3 }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.process( "{ \"i\": 3 }" );
+        assertEquals( 1, matchedRules.size() );
+    }
+
+    @Test
+    public void testProcessWithBindingJoinAddConstraint() {
+        String jsonRule =
+                "{ \"rules\": {\"r_0\": {\"all\": [" +
+                        "{\"first\": {\"i\": 0}}, " +
+                        "{\"second\": {\"i\": 1}}, " +
+                        "{\"third\": {\"i\": {\"$add\": {\"$l\": {\"first\": \"i\"}, \"$r\": 2}}}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+
+        List<Match> matchedRules = rulesExecutor.process( "{ \"i\": 0, \"j\": 3 }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.process( "{ \"i\": 1 }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.process( "{ \"i\": 2 }" );
+        assertEquals( 1, matchedRules.size() );
+    }
 }

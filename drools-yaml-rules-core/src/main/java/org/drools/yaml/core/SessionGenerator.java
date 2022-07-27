@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import org.drools.model.Prototype;
 import org.drools.model.PrototypeDSL;
+import org.drools.model.PrototypeVariable;
 import org.drools.model.impl.ModelImpl;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
@@ -81,7 +82,11 @@ public class SessionGenerator {
     private ViewItem singleCondition2Pattern(RuleContext ruleContext, Condition condition) {
         ParsedCondition parsedCondition = condition.parse();
         var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(), PROTOTYPE_NAME);
-        pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
+        if (condition.beta()) {
+            pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), ruleContext.getPatternVariable(condition.otherBinding()), parsedCondition.getRight());
+        } else {
+            pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
+        }
         return pattern;
     }
 
@@ -104,6 +109,10 @@ public class SessionGenerator {
 
         public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name) {
             return patterns.computeIfAbsent(binding, b -> protoPattern( variable(prototypeFactory.getPrototype(name), b)));
+        }
+
+        public PrototypeVariable getPatternVariable(String binding) {
+            return (PrototypeVariable) patterns.get(binding).getFirstVariable();
         }
 
         public void pushContext() {
