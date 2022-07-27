@@ -2,8 +2,10 @@ package org.drools.yaml.durable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.quarkus.test.junit.QuarkusTest;
+import org.drools.core.facttemplates.Fact;
 import org.drools.yaml.core.RulesExecutor;
 import org.drools.yaml.core.domain.RuleMatch;
 import org.junit.Assert;
@@ -190,5 +192,19 @@ public class DurableRulesJsonTest {
 
         List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1, \"j\":2 } }" );
         assertEquals( 1, matchedRules.size() );
+    }
+
+    @Test
+    public void testGetAllFacts() {
+        String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"nested.i\" : 1}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+
+        List<Match> matchedRules = rulesExecutor.process( "{ \"nested\": { \"i\": 1 } }" );
+        assertEquals( 1, matchedRules.size() );
+        matchedRules = rulesExecutor.process( "{ \"nested\": { \"j\": 1 } }" );
+        assertEquals( 0, matchedRules.size() );
+
+        assertEquals( 2, rulesExecutor.getAllFactsAsMap().size() );
     }
 }

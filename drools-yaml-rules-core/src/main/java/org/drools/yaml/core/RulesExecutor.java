@@ -1,19 +1,18 @@
 package org.drools.yaml.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
-import org.drools.core.ObjectFilter;
 import org.drools.core.facttemplates.Fact;
-import org.drools.model.Prototype;
 import org.drools.yaml.core.domain.RulesSet;
 import org.json.JSONObject;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
-import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFact;
@@ -68,7 +67,7 @@ public class RulesExecutor {
     }
 
     public long rulesCount() {
-        return ksession.getKieBase().getKiePackages().stream().flatMap(p -> p.getRules().stream()).count();
+        return ksession.getKieBase().getKiePackages().stream().mapToLong(p -> p.getRules().size()).sum();
     }
 
     public int execute(String json) {
@@ -133,6 +132,14 @@ public class RulesExecutor {
                 fact.set(key, entry.getValue());
             }
         }
+    }
+
+    public Collection<? extends Object> getAllFacts() {
+        return ksession.getObjects();
+    }
+
+    public List<Map<String, Object>> getAllFactsAsMap() {
+        return getAllFacts().stream().map(Fact.class::cast).map(Fact::asMap).collect(Collectors.toList());
     }
 
     private static class RegisterOnlyAgendaFilter implements AgendaFilter {
