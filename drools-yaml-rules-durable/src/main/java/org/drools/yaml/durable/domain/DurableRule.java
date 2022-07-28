@@ -170,9 +170,9 @@ public class DurableRule {
                         new Condition(leftValue + " != null", binding),
                         new Condition(leftValue + " != " + toOperand(rightValue), binding));
             case "$ex":
-                return new Condition(leftValue + " != null", binding);
+                return new ExpressionCondition(binding, prototypeField(leftValue), Index.ConstraintType.EXISTS_PROTOTYPE_FIELD, fixedValue(true));
             case "$nex":
-                return new Condition(leftValue + " == null", binding);
+                return new ExpressionCondition(binding, prototypeField(leftValue), Index.ConstraintType.EXISTS_PROTOTYPE_FIELD, fixedValue(false));
             case "$eq":
                 decodedOp = "==";
                 break;
@@ -225,7 +225,7 @@ public class DurableRule {
         return new Condition(leftValue + " " + decodedOp + " " + toOperand(rightValue), binding);
     }
 
-    private PrototypeExpression.ExpressionBuilder toPrototypeExpression(Object value) {
+    private PrototypeExpression toPrototypeExpression(Object value) {
         if (value instanceof Map) {
             Map map = (Map) value;
             assert(map.size() == 1);

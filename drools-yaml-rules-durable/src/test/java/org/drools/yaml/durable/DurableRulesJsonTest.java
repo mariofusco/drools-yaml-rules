@@ -123,7 +123,7 @@ public class DurableRulesJsonTest {
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_1", matchedRules.get(0).getRule().getName() );
 
-        matchedRules = rulesExecutor.process( "{ \"subject\": { \"x\": \"Succeeded\" } }" );
+        matchedRules = rulesExecutor.process( "{ \"subject\": { \"x\": null } }" );
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
     }
