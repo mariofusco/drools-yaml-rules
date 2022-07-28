@@ -2,9 +2,11 @@ package org.drools.yaml.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -144,7 +146,7 @@ public class RulesExecutor {
 
     private static class RegisterOnlyAgendaFilter implements AgendaFilter {
 
-        private final List<Match> matchedRules = new ArrayList<>();
+        private final Set<Match> matchedRules = new LinkedHashSet<>();
 
         @Override
         public boolean accept(Match match) {
@@ -153,7 +155,7 @@ public class RulesExecutor {
         }
 
         public List<Match> getMatchedRules() {
-            return matchedRules;
+            return new ArrayList<>( matchedRules );
         }
     }
 }
