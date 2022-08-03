@@ -10,8 +10,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>drools-yaml-rules-core</module>
-    <module>drools-yaml-rules-durable</module>
+    <module>drools-yaml-rules-efesto</module>
+    <module>drools-yaml-rules-endpoints</module>
   </modules>
   
   <name>Drools :: YAML Rules</name>
