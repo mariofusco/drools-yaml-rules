@@ -1,24 +1,42 @@
 package org.drools.yaml.compilation;
 
-import org.drools.yaml.api.context.HasRuleExecutor;
+import org.drools.yaml.api.context.HasRulesExecutorContainer;
 import org.drools.yaml.api.context.RulesExecutor;
+import org.drools.yaml.api.context.RulesExecutorContainer;
 import org.kie.efesto.compilationmanager.api.model.EfestoCompilationContextImpl;
 import org.kie.memorycompiler.KieMemoryCompiler;
 
-public class RulesCompilationContext extends EfestoCompilationContextImpl implements HasRuleExecutor {
-    private RulesExecutor rulesExecutor;
+public class RulesCompilationContext extends EfestoCompilationContextImpl implements HasRulesExecutorContainer {
+
+    private static final RulesExecutorContainer rulesExecutorContainer = RulesExecutorContainer.INSTANCE;
+
+    // TODO to refactor
+    private long lastCreatedId;
 
     public RulesCompilationContext(KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader) {
         super(memoryCompilerClassLoader);
     }
 
     @Override
-    public void setRulesExecutor(RulesExecutor ruleExecutor) {
-        this.rulesExecutor = ruleExecutor;
+    public void register(RulesExecutor rulesExecutor) {
+        rulesExecutorContainer.register(rulesExecutor);
+        lastCreatedId = rulesExecutor.getId();
     }
 
     @Override
-    public RulesExecutor getRulesExecutor() {
-        return rulesExecutor;
+    public boolean hasRulesExecutor(long id) {
+        return rulesExecutorContainer.get(id) != null;
     }
+
+    @Override
+    public RulesExecutor getRulesExecutor(long id) {
+        return rulesExecutorContainer.get(id);
+    }
+
+    // TODO to refactor
+    public long ruleExecutorId() {
+        return lastCreatedId;
+    }
+
+
 }

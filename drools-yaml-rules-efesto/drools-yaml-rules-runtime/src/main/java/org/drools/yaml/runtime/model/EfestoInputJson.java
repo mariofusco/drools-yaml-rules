@@ -18,10 +18,19 @@ package org.drools.yaml.runtime.model;
 import org.kie.efesto.common.api.model.FRI;
 import org.kie.efesto.runtimemanager.api.model.AbstractEfestoInput;
 
-public class EfestoInputJson extends AbstractEfestoInput<String> {
+public class EfestoInputJson extends AbstractEfestoInput<String> implements HasId {
 
-    protected EfestoInputJson(FRI fri, String inputData) {
+    private final long id;
+
+
+    protected EfestoInputJson(FRI fri, long id, String inputData) {
         super(fri, inputData);
+        this.id = id;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
 }

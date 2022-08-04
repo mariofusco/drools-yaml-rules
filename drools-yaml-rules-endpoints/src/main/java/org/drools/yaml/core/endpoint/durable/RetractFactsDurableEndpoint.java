@@ -9,6 +9,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.drools.yaml.runtime.utils.RuntimeUtils;
+
 @Path("/rules-durable-executors/{id}/retract-fact")
 public class RetractFactsDurableEndpoint {
 
@@ -16,7 +18,6 @@ public class RetractFactsDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public boolean retract(@PathParam("id") long id, Map<String, Object> factMap) {
-        return false;
-//        return RulesExecutorContainer.INSTANCE.get(id).retractFact(factMap);
+        return RuntimeUtils.retract(id, factMap);
     }
 }

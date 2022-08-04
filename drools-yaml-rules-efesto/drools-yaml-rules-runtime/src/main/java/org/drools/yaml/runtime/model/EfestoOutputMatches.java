@@ -15,29 +15,16 @@
  */
 package org.drools.yaml.runtime.model;
 
-import java.util.Map;
-
+import org.kie.api.runtime.rule.Match;
 import org.kie.efesto.common.api.model.FRI;
-import org.kie.efesto.runtimemanager.api.model.AbstractEfestoInput;
+import org.kie.efesto.runtimemanager.api.model.AbstractEfestoOutput;
 
-public class EfestoInputMap extends AbstractEfestoInput<Map<String, Object>> implements HasId {
+import java.util.List;
 
-    private final String operation;
-    private final long id;
+public class EfestoOutputMatches extends AbstractEfestoOutput<List<Match>> {
 
-    public EfestoInputMap(FRI fri, long id, Map<String, Object> inputData, String operation) {
+    public EfestoOutputMatches(FRI fri, List<Match> inputData) {
         super(fri, inputData);
-        this.operation = operation;
-        this.id = id;
-    }
-
-    public String getOperation() {
-        return operation;
-    }
-
-    @Override
-    public long getId() {
-        return id;
     }
 
 }

@@ -1,4 +1,4 @@
 org.drools.yaml.runtime.service.JsonRulesExecutor
-org.drools.yaml.runtime.service.FactMapRulesExecutor
+org.drools.yaml.runtime.service.FactMapExecutor
 org.drools.yaml.runtime.service.FactMapRulesProcessor
 

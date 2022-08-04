@@ -1,30 +1,33 @@
 package org.drools.yaml.runtime.service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.drools.yaml.api.context.HasRulesExecutorContainer;
-import org.drools.yaml.runtime.model.EfestoInputJson;
 import org.drools.yaml.runtime.model.EfestoInputMap;
 import org.drools.yaml.runtime.model.EfestoOutputInteger;
 import org.kie.efesto.runtimemanager.api.model.EfestoInput;
+import org.kie.efesto.runtimemanager.api.model.EfestoOutput;
 import org.kie.efesto.runtimemanager.api.model.EfestoRuntimeContext;
 import org.kie.efesto.runtimemanager.api.service.KieRuntimeService;
 
+import static org.drools.yaml.runtime.utils.DroolsYamlUtils.evaluate;
 import static org.drools.yaml.runtime.utils.DroolsYamlUtils.execute;
 
-public class JsonRulesExecutor implements KieRuntimeService<String, Integer, EfestoInputJson, EfestoOutputInteger> {
+public class FactMapExecutor<T> implements KieRuntimeService<Map<String, Object>, T, EfestoInputMap,
+        EfestoOutput<T>> {
 
     @Override
     public boolean canManageInput(EfestoInput toEvaluate, EfestoRuntimeContext context) {
-        return (toEvaluate instanceof EfestoInputJson) &&
+        return (toEvaluate instanceof EfestoInputMap) &&
                 (context instanceof HasRulesExecutorContainer) &&
-                ((HasRulesExecutorContainer) context).hasRulesExecutor(((EfestoInputJson) toEvaluate).getId());
-        // getGeneratedExecutableResource(toEvaluate.getFRI(), "drl").isPresent();
+                ((HasRulesExecutorContainer) context).hasRulesExecutor(((EfestoInputMap) toEvaluate).getId());
     }
 
     @Override
-    public Optional<EfestoOutputInteger> evaluateInput(EfestoInputJson toEvaluate, EfestoRuntimeContext context) {
+    public Optional<EfestoOutput<T>> evaluateInput(EfestoInputMap toEvaluate, EfestoRuntimeContext context) {
         HasRulesExecutorContainer hasRuleExecutor = (HasRulesExecutorContainer) context;
-        return Optional.ofNullable(execute(toEvaluate, hasRuleExecutor.getRulesExecutor((toEvaluate).getId())));
+        return Optional.ofNullable(evaluate(toEvaluate, hasRuleExecutor.getRulesExecutor((toEvaluate).getId())));
     }
+
 }

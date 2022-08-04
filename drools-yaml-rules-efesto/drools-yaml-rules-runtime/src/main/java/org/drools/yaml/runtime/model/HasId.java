@@ -15,16 +15,8 @@
  */
 package org.drools.yaml.runtime.model;
 
-import org.kie.api.runtime.rule.Match;
-import org.kie.efesto.common.api.model.FRI;
-import org.kie.efesto.runtimemanager.api.model.AbstractEfestoOutput;
+public interface HasId {
 
-import java.util.List;
-
-public class EfestoOutputRuleMatches extends AbstractEfestoOutput<List<Match>> {
-
-    public EfestoOutputRuleMatches(FRI fri, List<Match> inputData) {
-        super(fri, inputData);
-    }
+    long getId();
 
 }

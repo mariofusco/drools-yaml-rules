@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import io.quarkus.test.junit.QuarkusTest;
+import org.drools.yaml.api.context.RulesExecutor;
 import org.drools.yaml.api.domain.RuleMatch;
 import org.junit.Test;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
 
 import static org.junit.Assert.assertEquals;
@@ -55,17 +55,17 @@ public class LogicalOperatorsTest {
     @Test
     public void testProcessRules() {
 
-        KieSession kieSession = null; // TODO
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
 
-        List<Match> matchedRules = DroolsYamlUtils.process("{ \"sensu\": { \"data\": { \"i\":1 } } }", kieSession);
+        List<Match> matchedRules = rulesExecutor.process("{ \"sensu\": { \"data\": { \"i\":1 } } }");
         assertEquals(1, matchedRules.size());
         assertEquals("R1", matchedRules.get(0).getRule().getName());
 
-        matchedRules = DroolsYamlUtils.process("{ facts: [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }"
-                , kieSession);
+        matchedRules = rulesExecutor.process("{ facts: [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }"
+        );
         assertEquals(0, matchedRules.size());
 
-        matchedRules = DroolsYamlUtils.process("{ \"sensu\": { \"data\": { \"i\":4 } } }", kieSession);
+        matchedRules = rulesExecutor.process("{ \"sensu\": { \"data\": { \"i\":4 } } }");
         assertEquals(1, matchedRules.size());
 
         RuleMatch ruleMatch = RuleMatch.from(matchedRules.get(0));
@@ -74,6 +74,6 @@ public class LogicalOperatorsTest {
 
         assertEquals(4, ((Map) ((Map) ruleMatch.getFacts().get("sensu")).get("data")).get("i"));
 
-//        rulesExecutor.dispose();
+        rulesExecutor.dispose();
     }
 }

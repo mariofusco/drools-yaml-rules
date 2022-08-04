@@ -9,6 +9,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.drools.yaml.runtime.utils.RuntimeUtils;
+
 @Path("/rules-durable-executors/{id}/execute")
 public class ExecuteRulesDurableEndpoint {
 
@@ -16,7 +18,6 @@ public class ExecuteRulesDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public int execute(@PathParam("id") long id, Map<String, Object> factMap) {
-        return -1;
-//        return RulesExecutorContainer.INSTANCE.get(id).execute(factMap);
+        return RuntimeUtils.executeQuery(id, factMap);
     }
 }

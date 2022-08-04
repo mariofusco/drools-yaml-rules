@@ -1,7 +1,9 @@
 package org.drools.yaml.api.context;
 
 import org.drools.core.facttemplates.Fact;
+import org.drools.yaml.api.RuleFormat;
 import org.drools.yaml.api.domain.RulesSet;
+import org.drools.yaml.api.notations.RuleNotation;
 import org.drools.yaml.compilation.rulesmodel.PrototypeFactory;
 import org.json.JSONObject;
 import org.kie.api.runtime.KieSession;
@@ -36,28 +38,26 @@ public class RulesExecutor {
         this.id = id;
     }
 
+    public static RulesExecutor createFromYaml(String yaml) {
+        return createFromYaml(RuleNotation.CoreNotation.INSTANCE, yaml);
+    }
 
+    public static RulesExecutor createFromYaml(RuleNotation notation, String yaml) {
+        return create(RuleFormat.YAML, notation, yaml);
+    }
 
-//    public static RulesExecutor createFromYaml(String yaml) {
-//        return createFromYaml(RuleNotation.CoreNotation.INSTANCE, yaml);
-//    }
+    public static RulesExecutor createFromJson(String json) {
+        return createFromJson(RuleNotation.CoreNotation.INSTANCE, json);
+    }
 
-//    public static RulesExecutor createFromYaml(RuleNotation notation, String yaml) {
-//        return create(RuleFormat.YAML, notation, yaml);
-//    }
+    public static RulesExecutor createFromJson(RuleNotation notation, String json) {
+        return create(RuleFormat.JSON, notation, json);
+    }
 
-//    public static RulesExecutor createFromJson(String json) {
-//        return createFromJson(RuleNotation.CoreNotation.INSTANCE, json);
-//    }
-//
-//    public static RulesExecutor createFromJson(RuleNotation notation, String json) {
-//        return create(RuleFormat.JSON, notation, json);
-//    }
-//
-//    private static RulesExecutor create(RuleFormat format, RuleNotation notation, String text) {
-//        return createRulesExecutor( notation.toRulesSet( format, text ) );
-//    }
-//
+    private static RulesExecutor create(RuleFormat format, RuleNotation notation, String text) {
+        return createRulesExecutor( notation.toRulesSet( format, text ) );
+    }
+
     public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {
         RulesExecutor rulesExecutor = new RulesExecutor( rulesSet, ID_GENERATOR.getAndIncrement());
         RulesExecutorContainer.INSTANCE.register(rulesExecutor);

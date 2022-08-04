@@ -15,7 +15,10 @@
  */
 package org.drools.yaml.compilation.service;
 
-import org.drools.yaml.api.context.HasRuleExecutor;
+import java.util.Collections;
+import java.util.List;
+
+import org.drools.yaml.api.context.HasRulesExecutorContainer;
 import org.drools.yaml.api.context.RulesExecutor;
 import org.drools.yaml.api.domain.RulesSet;
 import org.drools.yaml.compilation.model.RuleSetResource;
@@ -24,9 +27,6 @@ import org.kie.efesto.compilationmanager.api.model.EfestoCompilationContext;
 import org.kie.efesto.compilationmanager.api.model.EfestoCompilationOutput;
 import org.kie.efesto.compilationmanager.api.model.EfestoResource;
 import org.kie.efesto.compilationmanager.api.service.KieCompilerService;
-
-import java.util.Collections;
-import java.util.List;
 
 
 public class KieCompilerServiceRuleSet implements KieCompilerService {
@@ -48,11 +48,7 @@ public class KieCompilerServiceRuleSet implements KieCompilerService {
         RulesSet rulesSet = ruleSetResource.getContent();
         RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesSet);
 
-        HasRuleExecutor hasRuleExecutor = (HasRuleExecutor) context;
-        hasRuleExecutor.setRulesExecutor(rulesExecutor);
-
+        ((HasRulesExecutorContainer) context).register(rulesExecutor);
         return Collections.emptyList();
-//        return Collections.singletonList(drlToPackageDescrs((DrlFileSetResource) toProcess,
-//                                                            (DrlCompilationContext) context));
     }
 }

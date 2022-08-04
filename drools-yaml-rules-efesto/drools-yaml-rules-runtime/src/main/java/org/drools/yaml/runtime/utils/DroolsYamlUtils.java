@@ -15,31 +15,21 @@
  */
 package org.drools.yaml.runtime.utils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.drools.core.facttemplates.Fact;
 import org.drools.yaml.api.context.RulesExecutor;
-import org.drools.yaml.api.domain.RuleMatch;
+import org.drools.yaml.runtime.model.EfestoInputId;
 import org.drools.yaml.runtime.model.EfestoInputJson;
 import org.drools.yaml.runtime.model.EfestoInputMap;
+import org.drools.yaml.runtime.model.EfestoOutputBoolean;
+import org.drools.yaml.runtime.model.EfestoOutputFactMaps;
 import org.drools.yaml.runtime.model.EfestoOutputInteger;
-import org.drools.yaml.runtime.model.EfestoOutputRuleMatches;
-import org.drools.yaml.runtime.rulesmodel.PrototypeFactory;
-import org.json.JSONObject;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.rule.AgendaFilter;
+import org.drools.yaml.runtime.model.EfestoOutputMatches;
 import org.kie.api.runtime.rule.Match;
+import org.kie.efesto.runtimemanager.api.model.EfestoOutput;
 
-import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFact;
 public class DroolsYamlUtils {
-
-    public static final String PROTOTYPE_NAME = "DROOLS_PROTOTYPE";
-    private final static PrototypeFactory prototypeFactory = new PrototypeFactory();
 
     private DroolsYamlUtils() {
     }
@@ -49,85 +39,41 @@ public class DroolsYamlUtils {
         return new EfestoOutputInteger(toEvaluate.getFRI(), retrieved);
     }
 
-    public static EfestoOutputInteger execute(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
+    public static EfestoOutputMatches process(EfestoInputJson toEvaluate, RulesExecutor rulesExecutor) {
+        List<Match> matches = rulesExecutor.process(toEvaluate.getInputData());
+        return new EfestoOutputMatches(toEvaluate.getFRI(), matches);
+    }
+
+    public static EfestoOutputFactMaps getAllFacts(EfestoInputId toEvaluate, RulesExecutor rulesExecutor) {
+        List<Map<String, Object>> allFacts = rulesExecutor.getAllFactsAsMap();
+        return new EfestoOutputFactMaps(toEvaluate.getFRI(), allFacts);
+    }
+
+    public static EfestoOutput evaluate(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
+        switch(toEvaluate.getOperation()) {
+            case "execute" :
+                return execute(toEvaluate, rulesExecutor);
+            case "process":
+                return process(toEvaluate, rulesExecutor);
+            case "retract":
+                return retract(toEvaluate, rulesExecutor);
+            default:
+                throw new RuntimeException("Failed to evaluate " + toEvaluate.getOperation());
+        }
+    }
+
+    private static EfestoOutputInteger execute(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
         int retrieved = rulesExecutor.execute(toEvaluate.getInputData());
         return new EfestoOutputInteger(toEvaluate.getFRI(), retrieved);
     }
 
-    public static EfestoOutputRuleMatches process(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
+    private static EfestoOutputMatches process(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
         List<Match> matches = rulesExecutor.process(toEvaluate.getInputData());
-//        List<RuleMatch> toReturn = matches.stream().map(RuleMatch::from).collect(Collectors.toList());
-        return new EfestoOutputRuleMatches(toEvaluate.getFRI(), matches);
+        return new EfestoOutputMatches(toEvaluate.getFRI(), matches);
     }
 
-    public static EfestoOutputRuleMatches process(EfestoInputJson toEvaluate) {
-        KieSession ksession = null; // TODO retrieve by fri
-        List<Match> matches = process(toEvaluate.getInputData(), ksession);
-//        List<RuleMatch> toReturn = matches.stream().map(RuleMatch::from).collect(Collectors.toList());
-        return new EfestoOutputRuleMatches(toEvaluate.getFRI(), matches);
-    }
-
-    static int execute(String json, KieSession ksession) {
-        return execute(new JSONObject(json).toMap(), ksession);
-    }
-
-    private static int execute(Map<String, Object> factMap, KieSession ksession) {
-        processFact(factMap, ksession);
-        return ksession.fireAllRules();
-    }
-
-    static List<Match> process(String json, KieSession ksession) {
-        return process( new JSONObject(json).toMap(), ksession );
-    }
-
-    static List<Match> process(Map<String, Object> factMap, KieSession ksession) {
-        processFacts( factMap, ksession );
-        RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter();
-        ksession.fireAllRules(filter);
-        return filter.getMatchedRules();
-    }
-
-    static void processFacts(Map<String, Object> factMap, KieSession ksession) {
-        if (factMap.size() == 1 && factMap.containsKey("facts")) {
-            ((List<Map<String, Object>>) factMap.get("facts")).forEach( fact ->  processFacts(fact, ksession));
-        } else {
-            processFact(factMap, ksession);
-        }
-    }
-
-    private static void processFact(Map<String, Object> factMap, KieSession ksession) {
-        ksession.insert(mapToFact(factMap));
-    }
-
-    public static Fact mapToFact(Map<String, Object> factMap) {
-        Fact fact = createMapBasedFact(prototypeFactory.getPrototype(PROTOTYPE_NAME));
-        populateFact(fact, factMap, "");
-        return fact;
-    }
-
-    private static void populateFact(Fact fact, Map<?, ?> value, String fieldName) {
-        for (Map.Entry entry : value.entrySet()) {
-            String key = fieldName + entry.getKey();
-            if (entry.getValue() instanceof Map) {
-                populateFact(fact, (Map) entry.getValue(), key + ".");
-            } else {
-                fact.set(key, entry.getValue());
-            }
-        }
-    }
-
-    private static class RegisterOnlyAgendaFilter implements AgendaFilter {
-
-        private final Set<Match> matchedRules = new LinkedHashSet<>();
-
-        @Override
-        public boolean accept(Match match) {
-            matchedRules.add(match);
-            return false;
-        }
-
-        public List<Match> getMatchedRules() {
-            return new ArrayList<>(matchedRules );
-        }
+    private static EfestoOutputBoolean retract(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
+        boolean retracted = rulesExecutor.retractFact(toEvaluate.getInputData());
+        return new EfestoOutputBoolean(toEvaluate.getFRI(), retracted);
     }
 }

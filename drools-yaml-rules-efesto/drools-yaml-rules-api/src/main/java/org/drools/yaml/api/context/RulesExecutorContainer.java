@@ -1,7 +1,5 @@
 package org.drools.yaml.api.context;
 
-import org.drools.yaml.api.context.RulesExecutor;
-
 import java.util.HashMap;
 import java.util.Map;
 

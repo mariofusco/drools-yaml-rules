@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.quarkus.test.junit.QuarkusTest;
+import org.drools.yaml.api.context.RulesExecutor;
 import org.drools.yaml.api.domain.RulesSet;
 import org.junit.Test;
-import org.kie.api.runtime.KieSession;
 
 import static org.junit.Assert.assertEquals;
 
@@ -52,10 +52,10 @@ public class YamlTest {
 
     @Test
     public void testExecuteRules() {
-//        RulesExecutor rulesExecutor = RulesExecutor.createFromYaml(YAML1);
+        RulesExecutor rulesExecutor = RulesExecutor.createFromYaml(YAML1);
 
-        KieSession kieSession = null; // TODO
-        int executedRules = DroolsYamlUtils.execute( "{ \"sensu\": { \"data\": { \"i\":1 } } }", kieSession);
+
+        int executedRules = rulesExecutor.execute( "{ \"sensu\": { \"data\": { \"i\":1 } } }");
         assertEquals( 2, executedRules );
     }
 }
