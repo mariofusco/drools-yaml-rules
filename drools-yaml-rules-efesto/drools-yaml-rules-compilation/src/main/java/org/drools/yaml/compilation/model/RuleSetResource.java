@@ -15,10 +15,6 @@
  */
 package org.drools.yaml.compilation.model;
 
-import java.io.File;
-import java.util.Set;
-
-import org.drools.io.FileSystemResource;
 import org.drools.yaml.api.domain.RulesSet;
 import org.kie.efesto.compilationmanager.api.model.EfestoResource;
 

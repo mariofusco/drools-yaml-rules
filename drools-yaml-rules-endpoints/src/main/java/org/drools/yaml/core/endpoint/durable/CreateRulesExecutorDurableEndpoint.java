@@ -6,7 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.drools.yaml.durable.domain.DurableRules;
+import org.drools.yaml.api.domain.durable.DurableRules;
 
 @Path("/create-durable-rules-executor")
 public class CreateRulesExecutorDurableEndpoint {

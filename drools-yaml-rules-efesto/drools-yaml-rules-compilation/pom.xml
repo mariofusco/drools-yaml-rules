@@ -9,9 +9,9 @@
     <version>1.0.0-SNAPSHOT</version>
   </parent>
   
-  <artifactId>drools-yaml-rules-core</artifactId>
+  <artifactId>drools-yaml-rules-compilation</artifactId>
 
-  <name>Drools :: YAML Rules :: Core</name>
+  <name>Drools :: YAML Rules :: Compilation</name>
 
   <dependencies>
     <dependency>

@@ -19,9 +19,27 @@
   </properties>
 
   <dependencies>
+    <!-- Efesto -->
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>efesto-compilation-manager-core</artifactId>
+      <version>${version.drools}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>efesto-runtime-manager-core</artifactId>
+      <version>${version.drools}</version>
+    </dependency>
+
+    <!-- Drools Yaml Rules -->
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-yaml-rules-durable</artifactId>
+      <artifactId>drools-yaml-rules-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-yaml-rules-compilation</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

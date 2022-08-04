@@ -1,4 +1,4 @@
-package org.drools.yaml.runtime.domain.actions;
+package org.drools.yaml.api.domain.actions;
 
 import org.drools.model.Drools;
 

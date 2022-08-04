@@ -1,12 +1,12 @@
-package org.drools.yaml.runtime.domain.actions;
+package org.drools.yaml.api.domain.actions;
 
 import org.drools.model.Drools;
 
-public class AssertFact extends FactAction {
+public class PostEvent extends FactAction {
 
     @Override
     public String toString() {
-        return "AssertFact{" +
+        return "PostEvent{" +
                 "ruleset='" + getRuleset() + '\'' +
                 ", fact=" + getFact() +
                 '}';
@@ -14,8 +14,6 @@ public class AssertFact extends FactAction {
 
     @Override
     public void execute(Drools drools) {
-        System.out.println("Asserting " + getFact());
-        // TODO
-//        rulesExecutor.processFact(getFact());
+        System.out.println("Post Event " + getFact());
     }
 }

@@ -88,10 +88,9 @@
   </dependencyManagement>
 
   <modules>
-    <module>drools-yaml-rules-durable</module>
+    <module>drools-yaml-rules-api</module>
     <module>drools-yaml-rules-compilation</module>
     <module>drools-yaml-rules-runtime</module>
-    <module>drools-yaml-rules-api</module>
   </modules>
 
 </project>
