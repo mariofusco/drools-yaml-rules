@@ -1,4 +1,4 @@
-package org.drools.yaml.runtime.utils;
+package org.drools.yaml.api.context;
 
 import java.util.List;
 import java.util.Map;
