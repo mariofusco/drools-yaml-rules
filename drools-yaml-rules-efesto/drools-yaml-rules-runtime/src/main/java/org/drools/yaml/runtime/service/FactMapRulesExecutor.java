@@ -13,8 +13,7 @@ import static org.drools.yaml.runtime.utils.DroolsYamlUtils.execute;
 import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getGeneratedExecutableResource;
 
 public class FactMapRulesExecutor implements KieRuntimeService<Map<String, Object>, Integer, EfestoInputMap,
-        EfestoOutputInteger,
-        EfestoRuntimeContext> {
+        EfestoOutputInteger> {
 
     @Override
     public boolean canManageInput(EfestoInput toEvaluate, EfestoRuntimeContext context) {

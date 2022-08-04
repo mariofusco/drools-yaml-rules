@@ -26,8 +26,7 @@ import org.kie.efesto.compilationmanager.api.model.EfestoResource;
 import org.kie.efesto.compilationmanager.api.service.KieCompilerService;
 
 
-public class KieCompilerServiceRuleSet implements KieCompilerService<EfestoCompilationOutput,
-        EfestoCompilationContext> {
+public class KieCompilerServiceRuleSet implements KieCompilerService {
 
     @Override
     public boolean canManageResource(EfestoResource toProcess) {

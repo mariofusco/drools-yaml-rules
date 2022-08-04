@@ -15,8 +15,7 @@ import static org.drools.yaml.runtime.utils.DroolsYamlUtils.process;
 import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getGeneratedExecutableResource;
 
 public class FactMapRulesProcessor implements KieRuntimeService<Map<String, Object>, List<RuleMatch>, EfestoInputMap,
-        EfestoOutputRuleMatches,
-        EfestoRuntimeContext> {
+        EfestoOutputRuleMatches> {
 
     @Override
     public boolean canManageInput(EfestoInput toEvaluate, EfestoRuntimeContext context) {
