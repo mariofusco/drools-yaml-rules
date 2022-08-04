@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.drools.yaml.api.context.HasRuleExecutor;
 import org.drools.yaml.api.domain.RuleMatch;
 import org.drools.yaml.runtime.model.EfestoInputMap;
 import org.drools.yaml.runtime.model.EfestoOutputRuleMatches;
@@ -19,7 +20,11 @@ public class FactMapRulesProcessor implements KieRuntimeService<Map<String, Obje
 
     @Override
     public boolean canManageInput(EfestoInput toEvaluate, EfestoRuntimeContext context) {
-        return (toEvaluate instanceof EfestoInputMap) && getGeneratedExecutableResource(toEvaluate.getFRI(), "drl").isPresent();
+        return false;
+//        return (toEvaluate instanceof EfestoInputMap) &&
+//                (context instanceof HasRuleExecutor) &&
+//                ((HasRuleExecutor)context).getRulesExecutor() != null;
+                // getGeneratedExecutableResource(toEvaluate.getFRI(), "drl").isPresent();
     }
 
     @Override

@@ -32,7 +32,7 @@ public class RulesExecutor {
 
     private RulesExecutor(RulesSet rulesSet, long id) {
         this.prototypeFactory = new PrototypeFactory();
-        this.ksession = SessionGenerator.INSTANCE.build(rulesSet, prototypeFactory);
+        this.ksession = SessionGenerator.INSTANCE.build(rulesSet, this);
         this.id = id;
     }
 
@@ -66,6 +66,10 @@ public class RulesExecutor {
 
     public long getId() {
         return id;
+    }
+
+    public PrototypeFactory getPrototypeFactory() {
+        return prototypeFactory;
     }
 
     public void dispose() {

@@ -18,7 +18,9 @@ public class FactMapRulesExecutor implements KieRuntimeService<Map<String, Objec
 
     @Override
     public boolean canManageInput(EfestoInput toEvaluate, EfestoRuntimeContext context) {
-        return (toEvaluate instanceof EfestoInputMap) && ((HasRuleExecutor)context).getRulesExecutor()!=null;
+        return (toEvaluate instanceof EfestoInputMap) &&
+                (context instanceof HasRuleExecutor) &&
+                ((HasRuleExecutor)context).getRulesExecutor()!=null;
     }
 
     @Override

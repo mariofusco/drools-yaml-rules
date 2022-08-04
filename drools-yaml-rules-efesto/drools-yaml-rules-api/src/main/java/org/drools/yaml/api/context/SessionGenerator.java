@@ -38,22 +38,22 @@ public enum SessionGenerator {
     SessionGenerator() {
     }
 
-    public KieSession build(RulesSet rulesSet, PrototypeFactory prototypeFactory) {
+    public KieSession build(RulesSet rulesSet, RulesExecutor rulesExecutor) {
         ModelImpl model = new ModelImpl();
-        rulesSet.getHost_rules().stream().map(rule -> toExecModelRule(rule, prototypeFactory)).forEach(model::addRule);
+        rulesSet.getHost_rules().stream().map(rule -> toExecModelRule(rule, rulesExecutor)).forEach(model::addRule);
         KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model );
         return kieBase.newKieSession();
     }
 
-    private org.drools.model.Rule toExecModelRule(Rule rule, PrototypeFactory prototypeFactory) {
+    private org.drools.model.Rule toExecModelRule(Rule rule, RulesExecutor rulesExecutor) {
         String ruleName = rule.getName();
         if (ruleName == null) {
             ruleName = "R" + counter++;
         }
 
-        RuleContext ruleContext = new RuleContext(prototypeFactory);
+        RuleContext ruleContext = new RuleContext(rulesExecutor.getPrototypeFactory());
         var pattern = condition2Pattern(ruleContext, rule.getCondition());
-        var consequence = execute(drools -> rule.getAction().execute(drools));
+        var consequence = execute(drools -> rule.getAction().execute(rulesExecutor, drools));
 
         return rule( ruleName ).build(pattern, consequence);
     }

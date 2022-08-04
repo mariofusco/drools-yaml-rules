@@ -3,6 +3,7 @@ package org.drools.yaml.api.domain.actions;
 import java.util.List;
 
 import org.drools.model.Drools;
+import org.drools.yaml.api.context.RulesExecutor;
 
 public class RuleAction implements Action {
 
@@ -54,18 +55,18 @@ public class RuleAction implements Action {
     }
 
     @Override
-    public void execute(Drools drools) {
+    public void execute(RulesExecutor rulesExecutor, Drools drools) {
         if (assert_fact != null) {
-            assert_fact.execute(drools);
+            assert_fact.execute(rulesExecutor, drools);
         }
         if (retract_fact != null) {
-            retract_fact.execute(drools);
+            retract_fact.execute(rulesExecutor, drools);
         }
         if (post_event != null) {
-            post_event.execute(drools);
+            post_event.execute(rulesExecutor, drools);
         }
         if (run_playbook != null) {
-            run_playbook.forEach(rp -> rp.execute(drools));
+            run_playbook.forEach(rp -> rp.execute(rulesExecutor, drools));
         }
     }
 }

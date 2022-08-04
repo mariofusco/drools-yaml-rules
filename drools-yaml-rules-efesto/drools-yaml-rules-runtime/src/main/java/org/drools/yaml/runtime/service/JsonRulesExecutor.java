@@ -10,13 +10,15 @@ import org.kie.efesto.runtimemanager.api.model.EfestoRuntimeContext;
 import org.kie.efesto.runtimemanager.api.service.KieRuntimeService;
 
 import static org.drools.yaml.runtime.utils.DroolsYamlUtils.execute;
-import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getGeneratedExecutableResource;
 
 public class JsonRulesExecutor implements KieRuntimeService<String, Integer, EfestoInputJson, EfestoOutputInteger> {
 
     @Override
     public boolean canManageInput(EfestoInput toEvaluate, EfestoRuntimeContext context) {
-        return (toEvaluate instanceof EfestoInputJson) && ((HasRuleExecutor)context).getRulesExecutor()!=null;// getGeneratedExecutableResource(toEvaluate.getFRI(), "drl").isPresent();
+        return (toEvaluate instanceof EfestoInputJson) &&
+                (context instanceof HasRuleExecutor) &&
+                ((HasRuleExecutor) context).getRulesExecutor() != null;
+        // getGeneratedExecutableResource(toEvaluate.getFRI(), "drl").isPresent();
     }
 
     @Override
