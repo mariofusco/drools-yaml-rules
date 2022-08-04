@@ -56,15 +56,15 @@ public class DroolsYamlUtils {
 
     public static EfestoOutputRuleMatches process(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
         List<Match> matches = rulesExecutor.process(toEvaluate.getInputData());
-        List<RuleMatch> toReturn = matches.stream().map(RuleMatch::from).collect(Collectors.toList());
-        return new EfestoOutputRuleMatches(toEvaluate.getFRI(), toReturn);
+//        List<RuleMatch> toReturn = matches.stream().map(RuleMatch::from).collect(Collectors.toList());
+        return new EfestoOutputRuleMatches(toEvaluate.getFRI(), matches);
     }
 
     public static EfestoOutputRuleMatches process(EfestoInputJson toEvaluate) {
         KieSession ksession = null; // TODO retrieve by fri
         List<Match> matches = process(toEvaluate.getInputData(), ksession);
-        List<RuleMatch> toReturn = matches.stream().map(RuleMatch::from).collect(Collectors.toList());
-        return new EfestoOutputRuleMatches(toEvaluate.getFRI(), toReturn);
+//        List<RuleMatch> toReturn = matches.stream().map(RuleMatch::from).collect(Collectors.toList());
+        return new EfestoOutputRuleMatches(toEvaluate.getFRI(), matches);
     }
 
     static int execute(String json, KieSession ksession) {

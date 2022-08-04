@@ -15,15 +15,15 @@
  */
 package org.drools.yaml.runtime.model;
 
-import java.util.List;
-
-import org.drools.yaml.api.domain.RuleMatch;
+import org.kie.api.runtime.rule.Match;
 import org.kie.efesto.common.api.model.FRI;
 import org.kie.efesto.runtimemanager.api.model.AbstractEfestoOutput;
 
-public class EfestoOutputRuleMatches extends AbstractEfestoOutput<List<RuleMatch>> {
+import java.util.List;
 
-    public EfestoOutputRuleMatches(FRI fri, List<RuleMatch> inputData) {
+public class EfestoOutputRuleMatches extends AbstractEfestoOutput<List<Match>> {
+
+    public EfestoOutputRuleMatches(FRI fri, List<Match> inputData) {
         super(fri, inputData);
     }
 

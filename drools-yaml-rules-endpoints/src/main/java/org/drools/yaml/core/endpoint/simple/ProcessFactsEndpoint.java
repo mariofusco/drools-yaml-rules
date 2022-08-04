@@ -3,6 +3,7 @@ package org.drools.yaml.core.endpoint.simple;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -46,6 +47,6 @@ public class ProcessFactsEndpoint {
 
         Collection<EfestoOutput> outputs = runtimeManager.evaluateInput(rulesRuntimeContext, efestoInputMap);
         EfestoOutputRuleMatches output = (EfestoOutputRuleMatches) outputs.iterator().next();
-        return output.getOutputData();
+        return output.getOutputData().stream().map(RuleMatch::from).collect(Collectors.toList());
     }
 }
