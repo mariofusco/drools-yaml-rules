@@ -31,7 +31,7 @@ public class ProcessFactsEndpoint {
     public List<RuleMatch> executeQuery(@PathParam("id") long id, Map<String, Object> factMap) {
         String basePath = "/drl/ruleset/" + id + "/process";
         FRI fri = new FRI(basePath, "drl");
-        EfestoInputMap efestoInputMap = new EfestoInputMap(fri, factMap);
+        EfestoInputMap efestoInputMap = new EfestoInputMap(fri, factMap, "process");
         EfestoRuntimeContext efestoRuntimeContext =
                 EfestoRuntimeContext.buildWithParentClassLoader(Thread.currentThread().getContextClassLoader());
         Collection<EfestoOutput> outputs = runtimeManager.evaluateInput(efestoRuntimeContext, efestoInputMap);

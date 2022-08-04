@@ -34,7 +34,7 @@ public class ExecuteRulesEndpoint {
     public int executeQuery(@PathParam("id") long id, Map<String, Object> factMap) {
         String basePath = "/drl/ruleset/" + id + "/execute";
         FRI fri = new FRI(basePath, "drl");
-        EfestoInputMap efestoInputMap = new EfestoInputMap(fri, factMap);
+        EfestoInputMap efestoInputMap = new EfestoInputMap(fri, factMap, "execute");
         RulesRuntimeContext rulesRuntimeContext =
                 new RulesRuntimeContext(
                         new KieMemoryCompiler.MemoryCompilerClassLoader(

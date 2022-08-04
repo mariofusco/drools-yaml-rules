@@ -22,8 +22,14 @@ import org.kie.efesto.runtimemanager.api.model.AbstractEfestoInput;
 
 public class EfestoInputMap extends AbstractEfestoInput<Map<String, Object>> {
 
-    public EfestoInputMap(FRI fri, Map<String, Object> inputData) {
+    private final String operation;
+
+    public EfestoInputMap(FRI fri, Map<String, Object> inputData, String operation) {
         super(fri, inputData);
+        this.operation = operation;
     }
 
+    public String getOperation() {
+        return operation;
+    }
 }
