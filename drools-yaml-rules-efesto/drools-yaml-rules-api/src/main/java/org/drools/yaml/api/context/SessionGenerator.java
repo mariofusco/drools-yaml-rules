@@ -1,4 +1,4 @@
-package org.drools.yaml.compilation;
+package org.drools.yaml.api.context;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -13,6 +13,7 @@ import org.drools.model.impl.ModelImpl;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 import org.drools.modelcompiler.KieBaseBuilder;
+import org.drools.yaml.api.context.RulesExecutor;
 import org.drools.yaml.api.domain.Rule;
 import org.drools.yaml.api.domain.RulesSet;
 import org.drools.yaml.api.domain.conditions.Condition;
@@ -26,28 +27,25 @@ import static org.drools.model.PatternDSL.rule;
 import static org.drools.model.PrototypeDSL.protoPattern;
 import static org.drools.model.PrototypeDSL.variable;
 
-public class SessionGenerator {
+public enum SessionGenerator {
+
+    INSTANCE;
 
     public static final String PROTOTYPE_NAME = "DROOLS_PROTOTYPE";
 
     private static int counter = 0;
 
-    private final PrototypeFactory prototypeFactory = new PrototypeFactory();
-
-    private final RulesSet rulesSet;
-
-    public SessionGenerator(RulesSet rulesSet) {
-        this.rulesSet = rulesSet;
+    SessionGenerator() {
     }
 
-    public KieSession build(RulesExecutor rulesExecutor) {
+    public KieSession build(RulesSet rulesSet, PrototypeFactory prototypeFactory) {
         ModelImpl model = new ModelImpl();
-        rulesSet.getHost_rules().stream().map(rule -> toExecModelRule(rule, rulesExecutor)).forEach(model::addRule);
+        rulesSet.getHost_rules().stream().map(rule -> toExecModelRule(rule, prototypeFactory)).forEach(model::addRule);
         KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model );
         return kieBase.newKieSession();
     }
 
-    private org.drools.model.Rule toExecModelRule(Rule rule, RulesExecutor rulesExecutor) {
+    private org.drools.model.Rule toExecModelRule(Rule rule, PrototypeFactory prototypeFactory) {
         String ruleName = rule.getName();
         if (ruleName == null) {
             ruleName = "R" + counter++;
@@ -90,13 +88,13 @@ public class SessionGenerator {
         return pattern;
     }
 
-    public Prototype getPrototype() {
-        return getPrototype(PROTOTYPE_NAME);
-    }
-
-    private Prototype getPrototype(String name) {
-        return prototypeFactory.getPrototype(name);
-    }
+//    public Prototype getPrototype() {
+//        return getPrototype(PROTOTYPE_NAME);
+//    }
+//
+//    private Prototype getPrototype(String name) {
+//        return prototypeFactory.getPrototype(name);
+//    }
 
     private static class RuleContext {
         private final PrototypeFactory prototypeFactory;

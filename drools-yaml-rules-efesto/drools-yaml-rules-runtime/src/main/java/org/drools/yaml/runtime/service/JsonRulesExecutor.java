@@ -2,6 +2,7 @@ package org.drools.yaml.runtime.service;
 
 import java.util.Optional;
 
+import org.drools.yaml.api.context.HasRuleExecutor;
 import org.drools.yaml.runtime.model.EfestoInputJson;
 import org.drools.yaml.runtime.model.EfestoOutputInteger;
 import org.kie.efesto.runtimemanager.api.model.EfestoInput;
@@ -15,11 +16,12 @@ public class JsonRulesExecutor implements KieRuntimeService<String, Integer, Efe
 
     @Override
     public boolean canManageInput(EfestoInput toEvaluate, EfestoRuntimeContext context) {
-        return (toEvaluate instanceof EfestoInputJson) && getGeneratedExecutableResource(toEvaluate.getFRI(), "drl").isPresent();
+        return (toEvaluate instanceof EfestoInputJson) && ((HasRuleExecutor)context).getRulesExecutor()!=null;// getGeneratedExecutableResource(toEvaluate.getFRI(), "drl").isPresent();
     }
 
     @Override
     public Optional<EfestoOutputInteger> evaluateInput(EfestoInputJson toEvaluate, EfestoRuntimeContext context) {
-        return Optional.ofNullable(execute(toEvaluate));
+        HasRuleExecutor hasRuleExecutor = (HasRuleExecutor) context;
+        return Optional.ofNullable(execute(toEvaluate, hasRuleExecutor.getRulesExecutor()));
     }
 }

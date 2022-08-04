@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.drools.core.facttemplates.Fact;
+import org.drools.yaml.api.context.RulesExecutor;
 import org.drools.yaml.api.domain.RuleMatch;
 import org.drools.yaml.runtime.model.EfestoInputJson;
 import org.drools.yaml.runtime.model.EfestoInputMap;
@@ -43,15 +44,13 @@ public class DroolsYamlUtils {
     private DroolsYamlUtils() {
     }
 
-    public static EfestoOutputInteger execute(EfestoInputJson toEvaluate) {
-        KieSession ksession = null; // TODO retrieve by fri
-        int retrieved = execute(toEvaluate.getInputData(), ksession);
+    public static EfestoOutputInteger execute(EfestoInputJson toEvaluate, RulesExecutor rulesExecutor) {
+        int retrieved = rulesExecutor.execute(toEvaluate.getInputData());
         return new EfestoOutputInteger(toEvaluate.getFRI(), retrieved);
     }
 
-    public static EfestoOutputInteger execute(EfestoInputMap toEvaluate) {
-        KieSession ksession = null; // TODO retrieve by fri
-        int retrieved = execute(toEvaluate.getInputData(), ksession);
+    public static EfestoOutputInteger execute(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
+        int retrieved = rulesExecutor.execute(toEvaluate.getInputData());
         return new EfestoOutputInteger(toEvaluate.getFRI(), retrieved);
     }
 
