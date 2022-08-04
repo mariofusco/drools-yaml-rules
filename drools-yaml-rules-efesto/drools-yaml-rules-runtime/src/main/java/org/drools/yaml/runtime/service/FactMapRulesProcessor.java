@@ -29,6 +29,7 @@ public class FactMapRulesProcessor implements KieRuntimeService<Map<String, Obje
 
     @Override
     public Optional<EfestoOutputRuleMatches> evaluateInput(EfestoInputMap toEvaluate, EfestoRuntimeContext context) {
-        return Optional.ofNullable(process(toEvaluate));
+        HasRuleExecutor hasRuleExecutor = (HasRuleExecutor) context;
+        return Optional.ofNullable(process(toEvaluate, hasRuleExecutor.getRulesExecutor()));
     }
 }

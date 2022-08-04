@@ -54,10 +54,8 @@ public class DroolsYamlUtils {
         return new EfestoOutputInteger(toEvaluate.getFRI(), retrieved);
     }
 
-    public static EfestoOutputRuleMatches process(EfestoInputMap toEvaluate) {
-        KieSession ksession = null; // TODO retrieve by fri
-        Map<String, Object> factMap = toEvaluate.getInputData();
-        List<Match> matches = process(factMap, ksession);
+    public static EfestoOutputRuleMatches process(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
+        List<Match> matches = rulesExecutor.process(toEvaluate.getInputData());
         List<RuleMatch> toReturn = matches.stream().map(RuleMatch::from).collect(Collectors.toList());
         return new EfestoOutputRuleMatches(toEvaluate.getFRI(), toReturn);
     }
