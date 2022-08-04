@@ -18,8 +18,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Path("/create-rules-executor")
 public class CreateRulesExecutorEndpoint {
 
-    private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
-
     private static final CompilationManager compilationManager =
             org.kie.efesto.compilationmanager.api.utils.SPIUtils.getCompilationManager(true).get();
 
@@ -28,9 +26,9 @@ public class CreateRulesExecutorEndpoint {
     @POST()
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public long executeQuery(RulesSet rulesSet) {
-        long toReturn = ID_GENERATOR.getAndAdd(1);
-        String basePath = "/drl/ruleset/" + toReturn;
+    public long createRulesExecutor(RulesSet rulesSet) {
+        String name = rulesSet.getName();
+        String basePath = "/drl/ruleset/" + name;
         RuleSetResource ruleSetResource = new RuleSetResource(rulesSet, basePath);
 
         RulesCompilationContext rulesCompilationContext =
@@ -42,6 +40,6 @@ public class CreateRulesExecutorEndpoint {
 
         RulesExecutor rulesExecutor = rulesCompilationContext.getRulesExecutor();
         executors.register(rulesExecutor);
-        return toReturn;
+        return rulesExecutor.getId();
     }
 }
