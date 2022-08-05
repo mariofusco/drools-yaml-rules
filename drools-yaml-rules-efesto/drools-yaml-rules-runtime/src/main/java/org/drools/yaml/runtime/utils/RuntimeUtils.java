@@ -15,6 +15,7 @@
  */
 package org.drools.yaml.runtime.utils;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +60,7 @@ public class RuntimeUtils {
     }
 
     public static List<Map<String, Object>> getAllFacts(long id) {
-        String basePath = "/drl/ruleset/" + id;
-        FRI fri = new FRI(basePath, "drl");
+        FRI fri = makeFRI(id);
         EfestoInputId efestoInputId = new EfestoInputId(fri, id);
         EfestoOutputFactMaps output = (EfestoOutputFactMaps) common(efestoInputId);
         return output.getOutputData();
@@ -73,8 +73,7 @@ public class RuntimeUtils {
     }
 
     private static EfestoOutput common(long id, Map<String, Object> factMap, String operation) {
-        String basePath = "/drl/ruleset/" + id + '/' + operation;
-        FRI fri = new FRI(basePath, "drl");
+        FRI fri = makeFRI(id, operation);
         EfestoInputMap efestoInputMap = new EfestoInputMap(fri, id, factMap, operation);
         return common(efestoInputMap);
     }
@@ -88,4 +87,11 @@ public class RuntimeUtils {
         Collection<EfestoOutput> outputs = runtimeManager.evaluateInput(rulesRuntimeContext, efestoInput);
         return outputs.iterator().next();
     }
+
+    private static FRI makeFRI(Object... suffix) {
+        String suffixString = Arrays.stream(suffix).map(Object::toString).collect(Collectors.joining("/"));
+        String basePath = "/drl/ruleset/" + suffixString;
+        return new FRI(basePath, "drl");
+    }
+
 }
