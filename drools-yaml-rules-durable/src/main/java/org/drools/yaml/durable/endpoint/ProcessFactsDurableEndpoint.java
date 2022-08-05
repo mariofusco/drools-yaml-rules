@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import org.drools.yaml.core.RulesExecutorContainer;
 import org.drools.yaml.durable.domain.DurableRuleMatch;
 
-@Path("/rules-durable-executors/{id}/process")
+@Path("/rules-durable-executors/{id}/process-facts")
 public class ProcessFactsDurableEndpoint {
 
     @POST()
