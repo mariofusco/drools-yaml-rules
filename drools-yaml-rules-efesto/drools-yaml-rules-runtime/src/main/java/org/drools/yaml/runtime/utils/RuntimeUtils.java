@@ -43,18 +43,18 @@ public class RuntimeUtils {
     private RuntimeUtils() {
     }
 
-    public static int executeQuery(long id, Map<String, Object> factMap) {
-        EfestoOutputInteger output = (EfestoOutputInteger) commonQuery(id, factMap, "execute");
+    public static int execute(long id, Map<String, Object> factMap) {
+        EfestoOutputInteger output = (EfestoOutputInteger) common(id, factMap, "execute");
         return output.getOutputData();
     }
 
-    public static List<RuleMatch> processQuery(long id, Map<String, Object> factMap) {
-        EfestoOutputMatches output = (EfestoOutputMatches) commonQuery(id, factMap, "process");
+    public static List<RuleMatch> process(long id, Map<String, Object> factMap) {
+        EfestoOutputMatches output = (EfestoOutputMatches) common(id, factMap, "process");
         return output.getOutputData().stream().map(RuleMatch::from).collect(Collectors.toList());
     }
 
     public static boolean retract(long id, Map<String, Object> factMap) {
-        EfestoOutputBoolean output = (EfestoOutputBoolean) commonQuery(id, factMap, "retract");
+        EfestoOutputBoolean output = (EfestoOutputBoolean) common(id, factMap, "retract");
         return output.getOutputData();
     }
 
@@ -62,24 +62,24 @@ public class RuntimeUtils {
         String basePath = "/drl/ruleset/" + id;
         FRI fri = new FRI(basePath, "drl");
         EfestoInputId efestoInputId = new EfestoInputId(fri, id);
-        EfestoOutputFactMaps output = (EfestoOutputFactMaps) commonQuery(efestoInputId);
+        EfestoOutputFactMaps output = (EfestoOutputFactMaps) common(efestoInputId);
         return output.getOutputData();
     }
 
     public static List<Map<String, Map>> processDurableRules(long id, Map<String, Object> factMap) {
-        EfestoOutputMatches output = (EfestoOutputMatches) commonQuery(id, factMap, "process");
+        EfestoOutputMatches output = (EfestoOutputMatches) common(id, factMap, "process");
         return output.getOutputData().stream()
                 .map(DurableRuleMatch::from).collect(Collectors.toList());
     }
 
-    private static EfestoOutput commonQuery(long id, Map<String, Object> factMap, String operation) {
-        String basePath = "/drl/ruleset/" + id + operation;
+    private static EfestoOutput common(long id, Map<String, Object> factMap, String operation) {
+        String basePath = "/drl/ruleset/" + id + '/' + operation;
         FRI fri = new FRI(basePath, "drl");
         EfestoInputMap efestoInputMap = new EfestoInputMap(fri, id, factMap, operation);
-        return commonQuery(efestoInputMap);
+        return common(efestoInputMap);
     }
 
-    private static EfestoOutput commonQuery(EfestoInput efestoInput) {
+    private static EfestoOutput common(EfestoInput efestoInput) {
         RulesRuntimeContext rulesRuntimeContext =
                 new RulesRuntimeContext(
                         new KieMemoryCompiler.MemoryCompilerClassLoader(

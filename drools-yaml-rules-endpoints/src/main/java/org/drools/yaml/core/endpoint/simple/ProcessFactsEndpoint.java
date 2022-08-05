@@ -19,7 +19,7 @@ public class ProcessFactsEndpoint {
     @POST()
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<RuleMatch> processQuery(@PathParam("id") long id, Map<String, Object> factMap) {
-        return RuntimeUtils.processQuery(id, factMap);
+    public List<RuleMatch> process(@PathParam("id") long id, Map<String, Object> factMap) {
+        return RuntimeUtils.process(id, factMap);
     }
 }

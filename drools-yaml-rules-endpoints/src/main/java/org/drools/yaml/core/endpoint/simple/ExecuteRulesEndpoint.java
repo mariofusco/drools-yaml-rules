@@ -17,7 +17,7 @@ public class ExecuteRulesEndpoint {
     @POST()
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public int executeQuery(@PathParam("id") long id, Map<String, Object> factMap) {
-        return RuntimeUtils.executeQuery(id, factMap);
+    public int execute(@PathParam("id") long id, Map<String, Object> factMap) {
+        return RuntimeUtils.execute(id, factMap);
     }
 }
