@@ -8,7 +8,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
-import org.drools.yaml.core.RulesExecutor;
 import org.drools.yaml.core.domain.Rule;
 import org.drools.yaml.core.domain.RuleMatch;
 import org.drools.yaml.core.domain.RulesSet;
@@ -90,14 +89,14 @@ public class LogicalOperatorsTest {
     public void testProcessRules() {
         RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.process( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );
 
-        matchedRules = rulesExecutor.process( "{ facts: [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }" );
+        matchedRules = rulesExecutor.processFacts( "{ facts: [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }" );
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.process( "{ \"sensu\": { \"data\": { \"i\":4 } } }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":4 } } }" );
         assertEquals( 1, matchedRules.size() );
 
         RuleMatch ruleMatch = RuleMatch.from( matchedRules.get(0) );

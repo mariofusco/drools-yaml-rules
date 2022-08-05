@@ -2,6 +2,7 @@ package org.drools.yaml.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.drools.yaml.core.domain.RulesSet;
 import org.json.JSONObject;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
+import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFact;
@@ -72,36 +74,53 @@ public class RulesExecutor {
         return ksession.getKieBase().getKiePackages().stream().mapToLong(p -> p.getRules().size()).sum();
     }
 
-    public int execute(String json) {
-        return execute( new JSONObject(json).toMap() );
+    public int executeFacts(String json) {
+        return executeFacts( new JSONObject(json).toMap() );
     }
 
-    public int execute(Map<String, Object> factMap) {
-        processFact( factMap );
+    public int executeFacts(Map<String, Object> factMap) {
+        insertFact( factMap );
         return ksession.fireAllRules();
     }
 
-    public List<Match> process(String json) {
-        return process( new JSONObject(json).toMap() );
+    public List<Match> processFacts(String json) {
+        return processFacts( new JSONObject(json).toMap() );
     }
 
-    public List<Match> process(Map<String, Object> factMap) {
-        processFacts( factMap );
+    public List<Match> processFacts(Map<String, Object> factMap) {
+        return process(factMap, false);
+    }
+
+    public List<Match> processEvents(String json) {
+        return processEvents( new JSONObject(json).toMap() );
+    }
+
+    public List<Match> processEvents(Map<String, Object> factMap) {
+        return process(factMap, true);
+    }
+
+    private List<Match> process(Map<String, Object> factMap, boolean ephemeral) {
+        Collection<FactHandle> fhs = insertFacts(factMap);
         RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter();
         ksession.fireAllRules(filter);
+        if (ephemeral) {
+            fhs.forEach(ksession::delete);
+        }
         return filter.getMatchedRules();
     }
 
-    private void processFacts(Map<String, Object> factMap) {
+    private Collection<FactHandle> insertFacts(Map<String, Object> factMap) {
         if (factMap.size() == 1 && factMap.containsKey("facts")) {
-            ((List<Map<String, Object>>)factMap.get("facts")).forEach(this::processFacts);
+            return ((List<Map<String, Object>>)factMap.get("facts")).stream()
+                    .flatMap(map -> this.insertFacts(map).stream())
+                    .collect(Collectors.toList());
         } else {
-            processFact(factMap);
+            return Collections.singletonList( insertFact(factMap) );
         }
     }
 
-    public void processFact(Map<String, Object> factMap) {
-        ksession.insert( mapToFact(factMap) );
+    public FactHandle insertFact(Map<String, Object> factMap) {
+        return ksession.insert( mapToFact(factMap) );
     }
 
     public boolean retract(String json) {

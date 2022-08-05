@@ -20,7 +20,7 @@ public class ProcessFactsEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<RuleMatch> executeQuery(@PathParam("id") long id, Map<String, Object> factMap) {
-        return RulesExecutorContainer.INSTANCE.get(id).process(factMap).stream()
+        return RulesExecutorContainer.INSTANCE.get(id).processFacts(factMap).stream()
                 .map(RuleMatch::from).collect(Collectors.toList());
     }
 }

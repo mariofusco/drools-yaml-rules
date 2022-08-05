@@ -110,7 +110,7 @@ public class DurableRestTest {
                 .body( "{ \"sensu\": { \"data\": { \"i\":4 } } }" )
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/rules-durable-executors/" + id + "/process")
+                .post("/rules-durable-executors/" + id + "/process-events")
                 .then()
                 .statusCode(200)
                 .body("R3", notNullValue(),
