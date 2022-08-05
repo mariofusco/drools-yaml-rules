@@ -5,14 +5,12 @@ import java.util.Optional;
 
 import org.drools.yaml.api.context.HasRulesExecutorContainer;
 import org.drools.yaml.runtime.model.EfestoInputMap;
-import org.drools.yaml.runtime.model.EfestoOutputInteger;
 import org.kie.efesto.runtimemanager.api.model.EfestoInput;
 import org.kie.efesto.runtimemanager.api.model.EfestoOutput;
 import org.kie.efesto.runtimemanager.api.model.EfestoRuntimeContext;
 import org.kie.efesto.runtimemanager.api.service.KieRuntimeService;
 
 import static org.drools.yaml.runtime.utils.DroolsYamlUtils.evaluate;
-import static org.drools.yaml.runtime.utils.DroolsYamlUtils.execute;
 
 public class FactMapExecutor<T> implements KieRuntimeService<Map<String, Object>, T, EfestoInputMap,
         EfestoOutput<T>> {

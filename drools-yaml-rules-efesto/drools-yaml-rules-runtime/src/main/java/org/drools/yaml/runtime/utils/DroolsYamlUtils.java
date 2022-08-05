@@ -34,13 +34,13 @@ public class DroolsYamlUtils {
     private DroolsYamlUtils() {
     }
 
-    public static EfestoOutputInteger execute(EfestoInputJson toEvaluate, RulesExecutor rulesExecutor) {
-        int retrieved = rulesExecutor.execute(toEvaluate.getInputData());
+    public static EfestoOutputInteger executeFacts(EfestoInputJson toEvaluate, RulesExecutor rulesExecutor) {
+        int retrieved = rulesExecutor.executeFacts(toEvaluate.getInputData());
         return new EfestoOutputInteger(toEvaluate.getFRI(), retrieved);
     }
 
-    public static EfestoOutputMatches process(EfestoInputJson toEvaluate, RulesExecutor rulesExecutor) {
-        List<Match> matches = rulesExecutor.process(toEvaluate.getInputData());
+    public static EfestoOutputMatches processFacts(EfestoInputJson toEvaluate, RulesExecutor rulesExecutor) {
+        List<Match> matches = rulesExecutor.processFacts(toEvaluate.getInputData());
         return new EfestoOutputMatches(toEvaluate.getFRI(), matches);
     }
 
@@ -51,10 +51,12 @@ public class DroolsYamlUtils {
 
     public static EfestoOutput evaluate(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
         switch(toEvaluate.getOperation()) {
-            case "execute" :
-                return execute(toEvaluate, rulesExecutor);
-            case "process":
-                return process(toEvaluate, rulesExecutor);
+            case "execute-facts" :
+                return executeFacts(toEvaluate, rulesExecutor);
+            case "process-facts":
+                return processFacts(toEvaluate, rulesExecutor);
+            case "process-events":
+                return processEvents(toEvaluate, rulesExecutor);
             case "retract":
                 return retract(toEvaluate, rulesExecutor);
             default:
@@ -62,13 +64,18 @@ public class DroolsYamlUtils {
         }
     }
 
-    private static EfestoOutputInteger execute(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
-        int retrieved = rulesExecutor.execute(toEvaluate.getInputData());
+    private static EfestoOutputInteger executeFacts(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
+        int retrieved = rulesExecutor.executeFacts(toEvaluate.getInputData());
         return new EfestoOutputInteger(toEvaluate.getFRI(), retrieved);
     }
 
-    private static EfestoOutputMatches process(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
-        List<Match> matches = rulesExecutor.process(toEvaluate.getInputData());
+    private static EfestoOutputMatches processFacts(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
+        List<Match> matches = rulesExecutor.processFacts(toEvaluate.getInputData());
+        return new EfestoOutputMatches(toEvaluate.getFRI(), matches);
+    }
+
+    private static EfestoOutputMatches processEvents(EfestoInputMap toEvaluate, RulesExecutor rulesExecutor) {
+        List<Match> matches = rulesExecutor.processEvents(toEvaluate.getInputData());
         return new EfestoOutputMatches(toEvaluate.getFRI(), matches);
     }
 

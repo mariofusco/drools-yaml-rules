@@ -44,13 +44,18 @@ public class RuntimeUtils {
     private RuntimeUtils() {
     }
 
-    public static int execute(long id, Map<String, Object> factMap) {
-        EfestoOutputInteger output = (EfestoOutputInteger) common(id, factMap, "execute");
+    public static int executeFacts(long id, Map<String, Object> factMap) {
+        EfestoOutputInteger output = (EfestoOutputInteger) common(id, factMap, "execute-facts");
         return output.getOutputData();
     }
 
-    public static List<RuleMatch> process(long id, Map<String, Object> factMap) {
-        EfestoOutputMatches output = (EfestoOutputMatches) common(id, factMap, "process");
+    public static List<RuleMatch> processFacts(long id, Map<String, Object> factMap) {
+        EfestoOutputMatches output = (EfestoOutputMatches) common(id, factMap, "process-facts");
+        return output.getOutputData().stream().map(RuleMatch::from).collect(Collectors.toList());
+    }
+
+    public static List<RuleMatch> processEvents(long id, Map<String, Object> factMap) {
+        EfestoOutputMatches output = (EfestoOutputMatches) common(id, factMap, "process-events");
         return output.getOutputData().stream().map(RuleMatch::from).collect(Collectors.toList());
     }
 
@@ -66,8 +71,14 @@ public class RuntimeUtils {
         return output.getOutputData();
     }
 
-    public static List<Map<String, Map>> processDurableRules(long id, Map<String, Object> factMap) {
-        EfestoOutputMatches output = (EfestoOutputMatches) common(id, factMap, "process");
+    public static List<Map<String, Map>> processFactsDurableRules(long id, Map<String, Object> factMap) {
+        EfestoOutputMatches output = (EfestoOutputMatches) common(id, factMap, "process-facts");
+        return output.getOutputData().stream()
+                .map(DurableRuleMatch::from).collect(Collectors.toList());
+    }
+
+    public static List<Map<String, Map>> processEventsDurableRules(long id, Map<String, Object> factMap) {
+        EfestoOutputMatches output = (EfestoOutputMatches) common(id, factMap, "process-events");
         return output.getOutputData().stream()
                 .map(DurableRuleMatch::from).collect(Collectors.toList());
     }

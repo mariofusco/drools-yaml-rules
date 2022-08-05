@@ -13,13 +13,13 @@ import javax.ws.rs.core.MediaType;
 import org.drools.yaml.api.domain.RuleMatch;
 import org.drools.yaml.runtime.utils.RuntimeUtils;
 
-@Path("/rules-executors/{id}/process")
+@Path("/rules-executors/{id}/process-facts")
 public class ProcessFactsEndpoint {
 
     @POST()
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<RuleMatch> process(@PathParam("id") long id, Map<String, Object> factMap) {
-        return RuntimeUtils.process(id, factMap);
+        return RuntimeUtils.processFacts(id, factMap);
     }
 }

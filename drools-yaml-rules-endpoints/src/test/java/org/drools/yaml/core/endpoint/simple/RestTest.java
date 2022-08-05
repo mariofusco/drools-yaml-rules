@@ -105,7 +105,7 @@ public class RestTest {
                 .body( "{ \"sensu\": { \"data\": { \"i\":1 } } }" )
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/rules-executors/" + id + "/process")
+                .post("/rules-executors/" + id + "/process-facts")
                 .then()
                 .statusCode(200)
                 .body("ruleName", hasItem("R1"),
@@ -124,7 +124,7 @@ public class RestTest {
                 .body( "{ \"j\":1 }" )
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/rules-executors/" + id + "/process")
+                .post("/rules-executors/" + id + "/process-facts")
                 .then()
                 .statusCode(200)
                 .body("ruleName", hasItem("R4"),
@@ -202,7 +202,7 @@ public class RestTest {
                 .body( "{ \"facts\": [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }" )
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/rules-executors/" + id + "/process")
+                .post("/rules-executors/" + id + "/process-facts")
                 .then()
                 .statusCode(200)
                 .body(is("[]"));
@@ -211,7 +211,7 @@ public class RestTest {
                 .body( "{ \"sensu\": { \"data\": { \"i\":4 } } }" )
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/rules-executors/" + id + "/process")
+                .post("/rules-executors/" + id + "/process-facts")
                 .then()
                 .statusCode(200)
                 .body("ruleName", hasItem("R3"),

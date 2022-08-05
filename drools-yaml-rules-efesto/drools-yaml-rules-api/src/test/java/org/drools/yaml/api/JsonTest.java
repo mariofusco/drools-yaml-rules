@@ -1,14 +1,15 @@
 package org.drools.yaml.api;
 
-import java.util.List;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
+import org.drools.yaml.api.context.RulesExecutor;
 import org.drools.yaml.api.domain.RulesSet;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -75,26 +76,26 @@ public class JsonTest {
         System.out.println(rulesSet);
     }
 
-//    @Test
-//    public void testExecuteRules() {
-//        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
-//        int executedRules = rulesExecutor.execute( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
-//        assertEquals( 2, executedRules );
-//        rulesExecutor.dispose();
-//    }
-//
-//    @Test
-//    public void testProcessRules() {
-//        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
-//
-//        List<Match> matchedRules = rulesExecutor.process( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
-//        assertEquals( 1, matchedRules.size() );
-//        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
-//
-//        matchedRules = rulesExecutor.process( "{ \"j\":1 }" );
-//        assertEquals( 1, matchedRules.size() );
-//        assertEquals( "R4", matchedRules.get(0).getRule().getName() );
-//
-//        rulesExecutor.dispose();
-//    }
+    @Test
+    public void testExecuteRules() {
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        assertEquals( 2, executedRules );
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testProcessRules() {
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"j\":1 }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R4", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
 }

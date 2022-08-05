@@ -101,7 +101,7 @@ public class DurableRestTest {
                 .body( "{ \"facts\": [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }" )
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/rules-durable-executors/" + id + "/process")
+                .post("/rules-durable-executors/" + id + "/process-facts")
                 .then()
                 .statusCode(200)
                 .body(is("[]"));
@@ -110,7 +110,7 @@ public class DurableRestTest {
                 .body( "{ \"sensu\": { \"data\": { \"i\":4 } } }" )
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/rules-durable-executors/" + id + "/process")
+                .post("/rules-durable-executors/" + id + "/process-events")
                 .then()
                 .statusCode(200)
                 .body("R3", notNullValue(),
@@ -167,7 +167,7 @@ public class DurableRestTest {
                 .body( "{ \"payload\": { \"text\": \"GET\" } }" )
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/rules-durable-executors/" + id + "/process")
+                .post("/rules-durable-executors/" + id + "/process-facts")
                 .then()
                 .statusCode(200)
                 .body("R1", notNullValue(),
@@ -177,7 +177,7 @@ public class DurableRestTest {
                 .body( "{ \"payload\": { \"value\": \"GET\" } }" )
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/rules-durable-executors/" + id + "/process")
+                .post("/rules-durable-executors/" + id + "/process-facts")
                 .then()
                 .statusCode(200)
                 .body(is("[]"));
