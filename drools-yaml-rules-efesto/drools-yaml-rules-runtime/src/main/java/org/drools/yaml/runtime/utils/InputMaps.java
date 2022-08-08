@@ -1,23 +1,38 @@
 package org.drools.yaml.runtime.utils;
 
+import org.drools.yaml.runtime.model.EfestoInputId;
 import org.drools.yaml.runtime.model.EfestoInputMap;
 import org.kie.efesto.common.api.model.FRI;
-import org.kie.efesto.runtimemanager.api.model.EfestoOutput;
+import org.kie.efesto.runtimemanager.api.model.EfestoInput;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class InputMaps {
+
+    public static EfestoInput<?> getAllFacts(long id) {
+        FRI fri = makeFRI(id);
+        return new EfestoInputId(fri, id);
+    }
+
     public static EfestoInputMap executeFacts(long id, Map<String, Object> factMap) {
-        return common(id, factMap, "execute-facts");
+        return commonInputMap(id, factMap, "execute-facts");
     }
 
     public static EfestoInputMap processFacts(long id, Map<String, Object> factMap) {
-        return common(id, factMap, "process-facts");
+        return commonInputMap(id, factMap, "process-facts");
     }
 
-    private static EfestoInputMap common(long id, Map<String, Object> factMap, String operation) {
+    public static EfestoInputMap processEvents(long id, Map<String, Object> factMap) {
+        return commonInputMap(id, factMap, "process-events");
+    }
+
+    public static EfestoInputMap retract(long id, Map<String, Object> factMap) {
+        return commonInputMap(id, factMap, "retract");
+    }
+
+    private static EfestoInputMap commonInputMap(long id, Map<String, Object> factMap, String operation) {
         FRI fri = makeFRI(id, operation);
         return new EfestoInputMap(fri, id, factMap, operation);
     }
