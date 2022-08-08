@@ -20,7 +20,6 @@ import org.drools.yaml.api.domain.durable.DurableRules;
 import org.drools.yaml.compilation.RulesCompilationContext;
 import org.drools.yaml.compilation.model.RuleSetResource;
 import org.kie.efesto.compilationmanager.api.service.CompilationManager;
-import org.kie.memorycompiler.KieMemoryCompiler;
 
 public class CompilationUtils {
 
@@ -36,18 +35,11 @@ public class CompilationUtils {
     }
 
     public static long compileRulesSet(RulesSet rulesSet) {
-        String name = rulesSet.getName();
-        String basePath = "/drl/ruleset/" + name;
-        RuleSetResource ruleSetResource = new RuleSetResource(rulesSet, basePath);
-
-        RulesCompilationContext rulesCompilationContext =
-                new RulesCompilationContext(
-                        new KieMemoryCompiler.MemoryCompilerClassLoader(
-                                Thread.currentThread().getContextClassLoader()));
-
-        compilationManager.processResource(rulesCompilationContext, ruleSetResource);
+        var resource = new RuleSetResource(rulesSet);
+        var ctx = RulesCompilationContext.create();
+        compilationManager.processResource(ctx, resource);
         // TODO to refactor
-        return rulesCompilationContext.ruleExecutorId();
+        return ctx.ruleExecutorId();
     }
 
 }

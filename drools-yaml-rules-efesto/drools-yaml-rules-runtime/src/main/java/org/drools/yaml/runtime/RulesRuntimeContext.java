@@ -15,6 +15,11 @@ public class RulesRuntimeContext implements EfestoRuntimeContext,
     private static final RulesExecutorContainer rulesExecutorContainer = RulesExecutorContainer.INSTANCE;
 
 
+    public static RulesRuntimeContext create() {
+        return new RulesRuntimeContext(new KieMemoryCompiler.MemoryCompilerClassLoader(
+                Thread.currentThread().getContextClassLoader()));
+    }
+
     public RulesRuntimeContext(KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader) {
         this.memoryCompilerClassLoader = memoryCompilerClassLoader;
 

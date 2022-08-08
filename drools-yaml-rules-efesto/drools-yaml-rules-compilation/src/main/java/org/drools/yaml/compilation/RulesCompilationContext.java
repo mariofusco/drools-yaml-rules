@@ -13,6 +13,12 @@ public class RulesCompilationContext extends EfestoCompilationContextImpl implem
     // TODO to refactor
     private long lastCreatedId;
 
+    public static RulesCompilationContext create() {
+        return new RulesCompilationContext(
+                new KieMemoryCompiler.MemoryCompilerClassLoader(
+                        Thread.currentThread().getContextClassLoader()));
+    }
+
     public RulesCompilationContext(KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader) {
         super(memoryCompilerClassLoader);
     }

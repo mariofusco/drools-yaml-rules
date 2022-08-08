@@ -27,9 +27,9 @@ public final class RuleSetResource implements EfestoResource<RulesSet> {
 
     private final String basePath;
 
-    public RuleSetResource(RulesSet ruleSet, String basePath) {
+    public RuleSetResource(RulesSet ruleSet) {
         this.ruleSet = ruleSet;
-        this.basePath = basePath;
+        this.basePath = "/drl/ruleset/" + ruleSet.getName();
     }
 
     @Override
