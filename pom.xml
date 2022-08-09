@@ -12,6 +12,7 @@
   <modules>
     <module>drools-yaml-rules-efesto</module>
     <module>drools-yaml-rules-endpoints</module>
+    <module>drools-yaml-rules-benchmark</module>
   </modules>
   
   <name>Drools :: YAML Rules</name>
@@ -22,11 +23,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <version.drools>8.26.0-SNAPSHOT</version.drools>
-    <version.quarkus>2.7.4.Final</version.quarkus>
+    <version.quarkus>2.11.2.Final</version.quarkus>
     <version.junit>4.13.2</version.junit>
     <version.jackson>2.13.1</version.jackson>
     <version.json>20211205</version.json>
     <version.surefire.plugin>3.0.0-M5</version.surefire.plugin>
+    <version.jmh>1.35</version.jmh>
   </properties>
 
   <dependencyManagement>
