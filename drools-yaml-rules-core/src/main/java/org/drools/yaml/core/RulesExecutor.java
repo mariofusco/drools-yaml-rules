@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.core.facttemplates.Fact;
 import org.drools.yaml.core.domain.RulesSet;
 import org.json.JSONObject;
@@ -162,6 +164,16 @@ public class RulesExecutor {
     public List<Map<String, Object>> getAllFactsAsMap() {
         return getAllFacts().stream().map(Fact.class::cast).map(Fact::asMap).collect(Collectors.toList());
     }
+
+    public String getAllFactsAsJson() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(getAllFactsAsMap());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private static class RegisterOnlyAgendaFilter implements AgendaFilter {
 
