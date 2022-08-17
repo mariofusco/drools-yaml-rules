@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.drools.core.common.InternalFactHandle;
 import org.drools.core.facttemplates.Fact;
 import org.drools.yaml.core.domain.RulesSet;
 import org.json.JSONObject;
@@ -25,11 +27,15 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFa
 
 public class RulesExecutor {
 
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
 
     private final SessionGenerator sessionGenerator;
     private final KieSession ksession;
     private final long id;
+
+    private final Set<Long> ephemeralFactHandleIds = ConcurrentHashMap.newKeySet();
 
     private RulesExecutor(SessionGenerator sessionGenerator, long id) {
         this.sessionGenerator = sessionGenerator;
@@ -103,11 +109,14 @@ public class RulesExecutor {
 
     private List<Match> process(Map<String, Object> factMap, boolean ephemeral) {
         Collection<FactHandle> fhs = insertFacts(factMap);
-        RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter();
-        ksession.fireAllRules(filter);
         if (ephemeral) {
-            fhs.forEach(ksession::delete);
+            fhs.stream()
+                    .map(InternalFactHandle.class::cast)
+                    .map(InternalFactHandle::getId)
+                    .forEach(ephemeralFactHandleIds::add);
         }
+        RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter(ksession, ephemeralFactHandleIds);
+        ksession.fireAllRules(filter);
         return filter.getMatchedRules();
     }
 
@@ -147,17 +156,17 @@ public class RulesExecutor {
     }
 
     private void populateFact(Fact fact, Map<?, ?> value, String fieldName) {
-        for (Map.Entry entry : value.entrySet()) {
+        for (Map.Entry<?, ?> entry : value.entrySet()) {
             String key = fieldName + entry.getKey();
             if (entry.getValue() instanceof Map) {
-                populateFact(fact, (Map) entry.getValue(), key + ".");
+                populateFact(fact, (Map<?, ?>) entry.getValue(), key + ".");
             } else {
                 fact.set(key, entry.getValue());
             }
         }
     }
 
-    public Collection<? extends Object> getAllFacts() {
+    public Collection<?> getAllFacts() {
         return ksession.getObjects();
     }
 
@@ -166,9 +175,8 @@ public class RulesExecutor {
     }
 
     public String getAllFactsAsJson() {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.writeValueAsString(getAllFactsAsMap());
+            return OBJECT_MAPPER.writeValueAsString(getAllFactsAsMap());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -177,11 +185,26 @@ public class RulesExecutor {
 
     private static class RegisterOnlyAgendaFilter implements AgendaFilter {
 
+        private final KieSession ksession;
+        private final Set<Long> ephemeralFactHandleIds;
+
         private final Set<Match> matchedRules = new LinkedHashSet<>();
+
+        private RegisterOnlyAgendaFilter(KieSession ksession, Set<Long> ephemeralFactHandleIds) {
+            this.ksession = ksession;
+            this.ephemeralFactHandleIds = ephemeralFactHandleIds;
+        }
 
         @Override
         public boolean accept(Match match) {
             matchedRules.add(match);
+            if (!ephemeralFactHandleIds.isEmpty()) {
+                for (FactHandle fh : match.getFactHandles()) {
+                    if (ephemeralFactHandleIds.remove(((InternalFactHandle) fh).getId())) {
+                        ksession.delete(fh);
+                    }
+                }
+            }
             return false;
         }
 
