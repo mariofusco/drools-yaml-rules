@@ -11,7 +11,7 @@ import org.kie.efesto.runtimemanager.api.service.KieRuntimeService;
 
 import static org.drools.yaml.runtime.utils.DroolsYamlUtils.executeFacts;
 
-public class JsonRulesExecutor implements KieRuntimeService<String, Integer, EfestoInputJson, EfestoOutputInteger> {
+public class JsonRulesExecutor implements KieRuntimeService<String, Integer, EfestoInputJson, EfestoOutputInteger, EfestoRuntimeContext> {
 
     @Override
     public boolean canManageInput(EfestoInput toEvaluate, EfestoRuntimeContext context) {

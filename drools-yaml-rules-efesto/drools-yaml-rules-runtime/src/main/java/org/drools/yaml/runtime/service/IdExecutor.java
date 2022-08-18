@@ -14,7 +14,7 @@ import org.kie.efesto.runtimemanager.api.service.KieRuntimeService;
 import static org.drools.yaml.runtime.utils.DroolsYamlUtils.getAllFacts;
 
 public class IdExecutor implements KieRuntimeService<Long, List<Map<String, Object>>, EfestoInputId,
-        EfestoOutputFactMaps> {
+        EfestoOutputFactMaps, EfestoRuntimeContext> {
 
     @Override
     public boolean canManageInput(EfestoInput toEvaluate, EfestoRuntimeContext context) {

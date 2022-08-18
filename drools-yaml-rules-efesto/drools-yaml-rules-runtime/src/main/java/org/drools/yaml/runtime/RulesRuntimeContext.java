@@ -1,17 +1,14 @@
 package org.drools.yaml.runtime;
 
-import java.util.Set;
-
 import org.drools.yaml.api.context.HasRulesExecutorContainer;
 import org.drools.yaml.api.context.RulesExecutor;
 import org.drools.yaml.api.context.RulesExecutorContainer;
-import org.kie.efesto.common.api.model.FRI;
 import org.kie.efesto.runtimemanager.api.model.EfestoRuntimeContext;
+import org.kie.efesto.runtimemanager.api.model.EfestoRuntimeContextImpl;
 import org.kie.memorycompiler.KieMemoryCompiler;
 
-public class RulesRuntimeContext implements EfestoRuntimeContext,
+public class RulesRuntimeContext extends EfestoRuntimeContextImpl implements EfestoRuntimeContext,
                                             HasRulesExecutorContainer {
-    private final KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader;
     private static final RulesExecutorContainer rulesExecutorContainer = RulesExecutorContainer.INSTANCE;
 
 
@@ -21,21 +18,7 @@ public class RulesRuntimeContext implements EfestoRuntimeContext,
     }
 
     public RulesRuntimeContext(KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader) {
-        this.memoryCompilerClassLoader = memoryCompilerClassLoader;
-
-        prepareClassLoader();
-    }
-
-    private void prepareClassLoader() {
-        Set<FRI> friKeySet = friKeySet();
-        friKeySet.stream()
-                .map(this::getGeneratedClasses)
-                .forEach(generatedClasses -> generatedClasses.forEach(memoryCompilerClassLoader::addCodeIfAbsent));
-    }
-
-    @Override
-    public Class<?> loadClass(String className) throws ClassNotFoundException {
-        return memoryCompilerClassLoader.loadClass(className);
+        super(memoryCompilerClassLoader);
     }
 
     @Override
