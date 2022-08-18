@@ -35,7 +35,7 @@ public class ProcessEventsDurableEndpoint {
                 .evaluateInput(rulesRuntimeContext, efestoInputMap)
                 .iterator().next();
 
-        return output.getOutputData().stream()
-                .map(DurableRuleMatch::from)
-                .collect(Collectors.toList());    }
+        return DurableRuleMatch.asList(output.getOutputData());
+    }
+
 }

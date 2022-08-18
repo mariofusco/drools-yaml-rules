@@ -219,6 +219,11 @@ public class DurableRulesJsonTest {
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\": 0, \"j\": 3 }" );
         assertEquals( 1, matchedRules.size() );
+
+        // facts stay in the working memory unless explicitly retracted
+        // so this new fact matches again with the first one
+        matchedRules = rulesExecutor.processFacts( "{ \"i\": 3 }" );
+        assertEquals( 1, matchedRules.size() );
     }
 
     @Test
@@ -228,17 +233,16 @@ public class DurableRulesJsonTest {
 
         RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
 
-        // an event is immediately retracted ...
-        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 0, \"j\": 3 }" );
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 3 }" );
         assertEquals( 0, matchedRules.size() );
 
-        // ... so it cannot join with a subsequently inserted fact
-        matchedRules = rulesExecutor.processFacts( "{ \"i\": 3 }" );
-        assertEquals( 0, matchedRules.size() );
-
-        // the new event joins with the existing fact
-        matchedRules = rulesExecutor.processFacts( "{ \"i\": 0, \"j\": 3 }" );
+        matchedRules = rulesExecutor.processEvents( "{ \"i\": 0, \"j\": 3 }" );
         assertEquals( 1, matchedRules.size() );
+
+        // events are automatically retracted when they match a rule
+        // so this new event can no longer match with the first one
+        matchedRules = rulesExecutor.processEvents( "{ \"i\": 3 }" );
+        assertEquals( 0, matchedRules.size() );
     }
 
     @Test

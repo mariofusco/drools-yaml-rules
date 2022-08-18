@@ -16,7 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Path("/rules-durable-executors/{id}/process-facts")
 public class ProcessFactsDurableEndpoint {
@@ -35,8 +34,6 @@ public class ProcessFactsDurableEndpoint {
                 .evaluateInput(rulesRuntimeContext, efestoInputMap)
                 .iterator().next();
 
-        return output.getOutputData().stream()
-                .map(DurableRuleMatch::from)
-                .collect(Collectors.toList());
+        return DurableRuleMatch.asList(output.getOutputData());
     }
 }
