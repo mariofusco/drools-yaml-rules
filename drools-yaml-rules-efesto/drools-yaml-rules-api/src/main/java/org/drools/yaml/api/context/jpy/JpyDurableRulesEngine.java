@@ -14,6 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * This is the library that is being used in Python layer.
+ * If this class gets renamed, moved to another package,
+ * or you add/remove/rename methods, make sure to align the changes
+ * on the Python end too.
+ */
 public class JpyDurableRulesEngine {
 
     private Iterator<Map<String, Map>> lastResponse = Collections.emptyIterator();
