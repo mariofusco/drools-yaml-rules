@@ -13,4 +13,11 @@
 
   <name>Drools :: YAML Rules :: Core</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-model-compiler</artifactId>
+      <version>${version.drools}</version>
+    </dependency>
+  </dependencies>
 </project>

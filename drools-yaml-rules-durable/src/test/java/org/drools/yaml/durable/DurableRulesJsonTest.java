@@ -3,7 +3,6 @@ package org.drools.yaml.durable;
 import java.util.List;
 import java.util.Map;
 
-import io.quarkus.test.junit.QuarkusTest;
 import org.drools.yaml.core.RulesExecutor;
 import org.drools.yaml.core.domain.RuleMatch;
 import org.junit.Assert;
@@ -13,7 +12,6 @@ import org.kie.api.runtime.rule.Match;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@QuarkusTest
 public class DurableRulesJsonTest {
 
     private static final String DURABLE_RULES_JSON =

@@ -11,6 +11,7 @@
 
   <modules>
     <module>drools-yaml-rules-core</module>
+    <module>drools-yaml-rules-core-rest</module>
     <module>drools-yaml-rules-durable</module>
     <module>drools-yaml-rules-durable-rest</module>
     <module>drools-yaml-rules-benchmark</module>
@@ -26,6 +27,7 @@
     <version.drools>8.26.0.Beta</version.drools>
     <version.quarkus>2.11.2.Final</version.quarkus>
     <version.junit>4.13.2</version.junit>
+    <version.assertj>3.20.2</version.assertj>
     <version.jackson>2.13.1</version.jackson>
     <version.json>20211205</version.json>
     <version.surefire.plugin>3.0.0-M5</version.surefire.plugin>
@@ -46,25 +48,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-model-compiler</artifactId>
-      <version>${version.drools}</version>
-    </dependency>
-
-    <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
       <version>${version.jackson}</version>
@@ -82,30 +65,16 @@
       <version>${version.junit}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>rest-assured</artifactId>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${version.assertj}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-<!--      <plugin>-->
-<!--        <artifactId>maven-surefire-plugin</artifactId>-->
-<!--        <version>${version.surefire.plugin}</version>-->
-<!--        <configuration>-->
-<!--          <systemPropertyVariables>-->
-<!--            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>-->
-<!--          </systemPropertyVariables>-->
-<!--        </configuration>-->
-<!--      </plugin>-->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>

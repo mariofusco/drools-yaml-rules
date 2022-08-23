@@ -3,13 +3,11 @@ package org.drools.yaml.core;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.quarkus.test.junit.QuarkusTest;
 import org.drools.yaml.core.domain.RulesSet;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@QuarkusTest
 public class YamlTest {
 
     private static final String YAML1 =

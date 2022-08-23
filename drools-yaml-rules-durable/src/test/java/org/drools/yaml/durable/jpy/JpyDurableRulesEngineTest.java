@@ -2,7 +2,8 @@ package org.drools.yaml.durable.jpy;
 
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertNotNull;
+
 
 public class JpyDurableRulesEngineTest {
     @Test
@@ -21,6 +22,5 @@ public class JpyDurableRulesEngineTest {
         String nextResult = engine.advanceState();
 
         assertNotNull(nextResult);
-
     }
 }
