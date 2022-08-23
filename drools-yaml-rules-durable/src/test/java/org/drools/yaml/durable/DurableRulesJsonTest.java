@@ -278,4 +278,21 @@ public class DurableRulesJsonTest {
         matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1, \"j\":2 } }" );
         assertEquals( 1, matchedRules.size() );
     }
+
+    @Test
+    public void testCoercion() {
+        String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"i\" : \"1\"}}]}}}";
+
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\": 1 }" );
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"i\": \"1\" }" );
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"i\": \"2\" }" );
+        assertEquals( 0, matchedRules.size() );
+    }
+
 }

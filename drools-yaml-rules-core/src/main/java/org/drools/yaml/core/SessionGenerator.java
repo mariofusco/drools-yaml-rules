@@ -6,8 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.drools.model.Index;
+import org.drools.model.PatternDSL;
 import org.drools.model.Prototype;
 import org.drools.model.PrototypeDSL;
+import org.drools.model.PrototypeExpression;
+import org.drools.model.PrototypeFact;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.impl.ModelImpl;
 import org.drools.model.view.CombinedExprViewItem;
@@ -85,9 +89,31 @@ public class SessionGenerator {
         if (condition.beta()) {
             pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), ruleContext.getPatternVariable(condition.otherBinding()), parsedCondition.getRight());
         } else {
-            pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
+            if (!coercedCondition(pattern, parsedCondition)) {
+                pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
+            }
         }
         return pattern;
+    }
+
+    private boolean coercedCondition(PrototypeDSL.PrototypePatternDef pattern, ParsedCondition parsedCondition) {
+        // if the condition right value is a string literal representing a number creates an OR condition matching both the string and the number
+        if (parsedCondition.getOperator() == Index.ConstraintType.EQUAL && parsedCondition.getRight() instanceof PrototypeExpression.FixedValue) {
+            Object rightValue = ((PrototypeExpression.FixedValue) parsedCondition.getRight()).getValue();
+            if (rightValue instanceof String) {
+                try {
+                    int intValue = Integer.parseInt(((String) rightValue));
+                    PrototypeDSL.PrototypePatternDefImpl orPattern = new PrototypeDSL.PrototypePatternDefImpl(((PrototypeVariable) pattern.getFirstVariable()));
+                    orPattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
+                    orPattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), PrototypeExpression.fixedValue(intValue));
+                    ((PrototypeDSL.PrototypePatternDefImpl) pattern).getItems().add( new PatternDSL.CombinedPatternExprItem<>( PatternDSL.LogicalCombiner.OR, orPattern.getItems() ) );
+                    return true;
+                } catch (NumberFormatException nfe) {
+                    // not a number, ignore
+                }
+            }
+        }
+        return false;
     }
 
     public Prototype getPrototype() {
