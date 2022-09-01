@@ -5,6 +5,8 @@ import org.drools.yaml.core.RulesExecutor;
 
 public class RetractFact extends FactAction {
 
+    static final String ACTION_NAME = "retract_fact";
+
     @Override
     public String toString() {
         return "RetractFact{" +

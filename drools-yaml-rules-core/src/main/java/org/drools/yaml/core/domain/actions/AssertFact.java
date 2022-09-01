@@ -5,6 +5,8 @@ import org.drools.yaml.core.RulesExecutor;
 
 public class AssertFact extends FactAction {
 
+    static final String ACTION_NAME = "assert_fact";
+
     @Override
     public String toString() {
         return "AssertFact{" +

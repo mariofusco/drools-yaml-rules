@@ -1,5 +1,6 @@
 package org.drools.yaml.core.domain;
 
+import org.drools.yaml.core.domain.actions.MapAction;
 import org.drools.yaml.core.domain.actions.RuleAction;
 import org.drools.yaml.core.domain.conditions.Condition;
 import org.drools.yaml.core.domain.actions.Action;
@@ -29,7 +30,7 @@ public class Rule {
         return action;
     }
 
-    public void setAction(RuleAction action) {
+    public void setAction(MapAction action) {
         this.action = action;
     }
 

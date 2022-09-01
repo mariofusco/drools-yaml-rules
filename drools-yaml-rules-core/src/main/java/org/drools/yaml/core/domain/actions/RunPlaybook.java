@@ -4,6 +4,9 @@ import org.drools.model.Drools;
 import org.drools.yaml.core.RulesExecutor;
 
 public class RunPlaybook implements Action {
+
+    static final String ACTION_NAME = "run_playbook";
+
     private String name;
 
     public String getName() {

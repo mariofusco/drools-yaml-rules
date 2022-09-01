@@ -5,6 +5,8 @@ import org.drools.yaml.core.RulesExecutor;
 
 public class PostEvent extends FactAction {
 
+    static final String ACTION_NAME = "post_event";
+
     @Override
     public String toString() {
         return "PostEvent{" +
