@@ -121,48 +121,48 @@ public class AstJsonTest {
         System.out.println(rulesSet);
     }
 
-//    @Test
-//    public void testExecuteRules() {
-//        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
-//        int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
-//        assertEquals( 2, executedRules );
-//        rulesExecutor.dispose();
-//    }
-//
-//    @Test
-//    public void testProcessRules() {
-//        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
-//
-//        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
-//        assertEquals( 1, matchedRules.size() );
-//        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
-//
-//        matchedRules = rulesExecutor.processFacts( "{ \"j\":1 }" );
-//        assertEquals( 1, matchedRules.size() );
-//        assertEquals( "R4", matchedRules.get(0).getRule().getName() );
-//
-//        rulesExecutor.dispose();
-//    }
-//
-//    @Test
-//    public void testProcessRuleWithoutAction() {
-//        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"host_rules\": [ { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\" } ] }");
-//
-//        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
-//        assertEquals( 1, matchedRules.size() );
-//        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
-//
-//        rulesExecutor.dispose();
-//    }
-//
-//    @Test
-//    public void testProcessRuleWithUnknownAction() {
-//        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"host_rules\": [ { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\", \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } } ] }\n");
-//
-//        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
-//        assertEquals( 1, matchedRules.size() );
-//        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
-//
-//        rulesExecutor.dispose();
-//    }
+    @Test
+    public void testExecuteRules() {
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        assertEquals( 2, executedRules );
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testProcessRules() {
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"j\":1 }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R4", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testProcessRuleWithoutAction() {
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"host_rules\": [ { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\" } ] }");
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testProcessRuleWithUnknownAction() {
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"host_rules\": [ { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\", \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } } ] }\n");
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
 }
