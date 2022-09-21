@@ -11,7 +11,7 @@ import org.drools.model.Index;
 import org.drools.model.PrototypeExpression;
 import org.drools.yaml.core.domain.Rule;
 import org.drools.yaml.core.domain.conditions.BetaExpressionCondition;
-import org.drools.yaml.core.domain.conditions.Condition;
+import org.drools.yaml.core.domain.conditions.SimpleCondition;
 import org.drools.yaml.core.domain.conditions.ExpressionCondition;
 
 import static org.drools.model.PrototypeExpression.fixedValue;
@@ -51,7 +51,7 @@ public class DurableRule {
 
     public Rule toRule() {
         boolean isAny = any != null;
-        Condition condition = toCondition(isAny, isAny ? any : all);
+        SimpleCondition condition = toCondition(isAny, isAny ? any : all);
 
         Rule rule = new Rule();
         rule.setCondition(condition);
@@ -61,8 +61,8 @@ public class DurableRule {
         return rule;
     }
 
-    private Condition toCondition(boolean isAny, List<Map<String, ?>> conditionMap) {
-        List<Condition> conditions = new ArrayList<>();
+    private SimpleCondition toCondition(boolean isAny, List<Map<String, ?>> conditionMap) {
+        List<SimpleCondition> conditions = new ArrayList<>();
 
         for (Map<String,?> map : conditionMap) {
             for (Map.Entry<String,?> entry : map.entrySet()) {
@@ -80,7 +80,7 @@ public class DurableRule {
             return conditions.get(0);
         }
 
-        Condition condition = new Condition();
+        SimpleCondition condition = new SimpleCondition();
         if (isAny) {
             condition.setAny(conditions);
         } else {
@@ -89,7 +89,7 @@ public class DurableRule {
         return condition;
     }
 
-    private Condition listEntryToCondition(Map.Entry<String, ?> entry) {
+    private SimpleCondition listEntryToCondition(Map.Entry<String, ?> entry) {
         boolean nestedConditionIsAny;
         if (entry.getKey().equals("all") || entry.getKey().endsWith("$all")) {
             nestedConditionIsAny = false;
@@ -101,15 +101,15 @@ public class DurableRule {
         return toCondition(nestedConditionIsAny, (List<Map<String, ?>>) entry.getValue());
     }
 
-    private List<Condition> mapEntryToConditions(Map.Entry<String, ?> conditionEntry) {
+    private List<SimpleCondition> mapEntryToConditions(Map.Entry<String, ?> conditionEntry) {
         String binding = conditionEntry.getKey();
         Map<String,?> value = (Map) conditionEntry.getValue();
-        List<Condition> conditions = value.entrySet().stream().map(e -> mapEntryToCondition(binding, e)).collect(Collectors.toList());
+        List<SimpleCondition> conditions = value.entrySet().stream().map(e -> mapEntryToCondition(binding, e)).collect(Collectors.toList());
         existingBindings.add(binding);
         return conditions;
     }
 
-    private Condition mapEntryToCondition(String binding, Map.Entry<String, ?> entry) {
+    private SimpleCondition mapEntryToCondition(String binding, Map.Entry<String, ?> entry) {
         Object value = entry.getValue();
 
         if (value instanceof Map) {
@@ -117,29 +117,29 @@ public class DurableRule {
         }
 
         if (value instanceof List) {
-            return Condition.combineConditions( decodeConditionType(entry.getKey()),
+            return SimpleCondition.combineConditions( decodeConditionType(entry.getKey()),
                     ((List<?>) value).stream().map(Map.class::cast)
                             .map( m -> mapValueToCondition(binding, m)).collect(Collectors.toList()) );
         }
 
-        return new Condition(entry.getKey() + " == " + toOperand(entry.getValue()), binding);
+        return new SimpleCondition(entry.getKey() + " == " + toOperand(entry.getValue()), binding);
     }
 
-    private Condition.Type decodeConditionType(String type) {
+    private SimpleCondition.Type decodeConditionType(String type) {
         if (type.equals("$and")) {
-            return Condition.Type.ALL;
+            return SimpleCondition.Type.ALL;
         }
         if (type.equals("$or")) {
-            return Condition.Type.ANY;
+            return SimpleCondition.Type.ANY;
         }
         throw new UnsupportedOperationException();
     }
 
-    private Condition mapValueToCondition(String binding, Map<String, ?> value) {
+    private SimpleCondition mapValueToCondition(String binding, Map<String, ?> value) {
         return mapValueToCondition(binding, null, value);
     }
 
-    private Condition mapValueToCondition(String binding, String key, Map<String, ?> value) {
+    private SimpleCondition mapValueToCondition(String binding, String key, Map<String, ?> value) {
         if (value.size() != 1) {
             throw new UnsupportedOperationException();
         }
@@ -162,13 +162,13 @@ public class DurableRule {
         return leftKey + "." + entryKey;
     }
 
-    private Condition createOperatorCondition(String binding, String leftValue, String operator, String rightKey, Object rightValue) {
+    private SimpleCondition createOperatorCondition(String binding, String leftValue, String operator, String rightKey, Object rightValue) {
         String decodedOp;
         switch (operator) {
             case "$neq":
-                return new Condition(
-                        new Condition(leftValue + " != null", binding),
-                        new Condition(leftValue + " != " + toOperand(rightValue), binding));
+                return new SimpleCondition(
+                        new SimpleCondition(leftValue + " != null", binding),
+                        new SimpleCondition(leftValue + " != " + toOperand(rightValue), binding));
             case "$ex":
                 return new ExpressionCondition(binding, prototypeField(leftValue), Index.ConstraintType.EXISTS_PROTOTYPE_FIELD, fixedValue(true));
             case "$nex":
@@ -195,7 +195,7 @@ public class DurableRule {
         return createCondition(binding, leftValue, decodedOp, rightKey, rightValue);
     }
 
-    private Condition createCondition(String binding, String leftValue, String decodedOp, String rightKey, Object rightValue) {
+    private SimpleCondition createCondition(String binding, String leftValue, String decodedOp, String rightKey, Object rightValue) {
         if (isOperator(rightKey)) {
             Object l = ((Map) rightValue).get("$l");
             Object r = ((Map) rightValue).get("$r");
@@ -222,7 +222,7 @@ public class DurableRule {
             throw new UnsupportedOperationException();
         }
 
-        return new Condition(leftValue + " " + decodedOp + " " + toOperand(rightValue), binding);
+        return new SimpleCondition(leftValue + " " + decodedOp + " " + toOperand(rightValue), binding);
     }
 
     private PrototypeExpression toPrototypeExpression(Object value) {

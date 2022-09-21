@@ -10,10 +10,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.yaml.core.domain.Rule;
 import org.drools.yaml.core.domain.RuleMatch;
 import org.drools.yaml.core.domain.RulesSet;
-import org.drools.yaml.core.domain.conditions.Condition;
+import org.drools.yaml.core.domain.conditions.SimpleCondition;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
+import static org.drools.yaml.core.ObjectMapperFactory.createMapper;
 import static org.junit.Assert.assertEquals;
 
 public class LogicalOperatorsTest {
@@ -60,15 +61,15 @@ public class LogicalOperatorsTest {
     @Test
     public void testWriteJson() throws JsonProcessingException {
         Rule rule = new Rule();
-        Condition c1 = new Condition();
-        c1.setAll(Arrays.asList(new Condition("sensu.data.i == 3"), new Condition("j == 2")));
-        Condition c2 = new Condition();
-        c2.setAll(Arrays.asList(new Condition("sensu.data.i == 4"), new Condition("j == 3")));
-        Condition c3 = new Condition();
+        SimpleCondition c1 = new SimpleCondition();
+        c1.setAll(Arrays.asList(new SimpleCondition("sensu.data.i == 3"), new SimpleCondition("j == 2")));
+        SimpleCondition c2 = new SimpleCondition();
+        c2.setAll(Arrays.asList(new SimpleCondition("sensu.data.i == 4"), new SimpleCondition("j == 3")));
+        SimpleCondition c3 = new SimpleCondition();
         c3.setAny(Arrays.asList(c1, c2));
         rule.setCondition(c3);
 
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+        ObjectMapper mapper = createMapper(new JsonFactory());
         String json = mapper.writerFor(Rule.class).writeValueAsString(rule);
         System.out.println(json);
     }
@@ -76,7 +77,7 @@ public class LogicalOperatorsTest {
     @Test
     public void testReadJson() throws JsonProcessingException {
         System.out.println(JSON1);
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+        ObjectMapper mapper = createMapper(new JsonFactory());
         RulesSet rulesSet = mapper.readValue(JSON1, RulesSet.class);
         System.out.println(rulesSet);
         String json = mapper.writerFor(RulesSet.class).writeValueAsString(rulesSet);

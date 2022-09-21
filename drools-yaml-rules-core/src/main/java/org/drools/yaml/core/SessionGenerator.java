@@ -6,21 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.drools.model.Index;
-import org.drools.model.PatternDSL;
 import org.drools.model.Prototype;
 import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeFact;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.impl.ModelImpl;
-import org.drools.model.view.CombinedExprViewItem;
-import org.drools.model.view.ViewItem;
 import org.drools.modelcompiler.KieBaseBuilder;
 import org.drools.yaml.core.domain.Rule;
 import org.drools.yaml.core.domain.RulesSet;
-import org.drools.yaml.core.domain.conditions.Condition;
-import org.drools.yaml.core.rulesmodel.ParsedCondition;
 import org.drools.yaml.core.rulesmodel.PrototypeFactory;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
@@ -58,62 +50,10 @@ public class SessionGenerator {
         }
 
         RuleContext ruleContext = new RuleContext(prototypeFactory);
-        var pattern = condition2Pattern(ruleContext, rule.getCondition());
+        var pattern = rule.getCondition().toPattern(ruleContext);
         var consequence = execute(drools -> rule.getAction().execute(rulesExecutor, drools));
 
         return rule( ruleName ).build(pattern, consequence);
-    }
-
-    private ViewItem condition2Pattern(RuleContext ruleContext, Condition condition) {
-        switch (condition.getType()) {
-            case ANY:
-                return new CombinedExprViewItem(org.drools.model.Condition.Type.OR, condition.getAny().stream().map(subC -> scopingCondition2Pattern(ruleContext, subC)).toArray(ViewItem[]::new));
-            case ALL:
-                return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, condition.getAll().stream().map(subC -> condition2Pattern(ruleContext, subC)).toArray(ViewItem[]::new));
-            case SINGLE:
-                return singleCondition2Pattern(ruleContext, condition);
-        }
-        throw new UnsupportedOperationException();
-    }
-
-    private ViewItem scopingCondition2Pattern(RuleContext ruleContext, Condition condition) {
-        ruleContext.pushContext();
-        ViewItem pattern = condition2Pattern(ruleContext, condition);
-        ruleContext.popContext();
-        return pattern;
-    }
-
-    private ViewItem singleCondition2Pattern(RuleContext ruleContext, Condition condition) {
-        ParsedCondition parsedCondition = condition.parse();
-        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(), PROTOTYPE_NAME);
-        if (condition.beta()) {
-            pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), ruleContext.getPatternVariable(condition.otherBinding()), parsedCondition.getRight());
-        } else {
-            if (!coercedCondition(pattern, parsedCondition)) {
-                pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
-            }
-        }
-        return pattern;
-    }
-
-    private boolean coercedCondition(PrototypeDSL.PrototypePatternDef pattern, ParsedCondition parsedCondition) {
-        // if the condition right value is a string literal representing a number creates an OR condition matching both the string and the number
-        if (parsedCondition.getOperator() == Index.ConstraintType.EQUAL && parsedCondition.getRight() instanceof PrototypeExpression.FixedValue) {
-            Object rightValue = ((PrototypeExpression.FixedValue) parsedCondition.getRight()).getValue();
-            if (rightValue instanceof String) {
-                try {
-                    int intValue = Integer.parseInt(((String) rightValue));
-                    PrototypeDSL.PrototypePatternDefImpl orPattern = new PrototypeDSL.PrototypePatternDefImpl(((PrototypeVariable) pattern.getFirstVariable()));
-                    orPattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
-                    orPattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), PrototypeExpression.fixedValue(intValue));
-                    ((PrototypeDSL.PrototypePatternDefImpl) pattern).getItems().add( new PatternDSL.CombinedPatternExprItem<>( PatternDSL.LogicalCombiner.OR, orPattern.getItems() ) );
-                    return true;
-                } catch (NumberFormatException nfe) {
-                    // not a number, ignore
-                }
-            }
-        }
-        return false;
     }
 
     public Prototype getPrototype() {
@@ -124,7 +64,7 @@ public class SessionGenerator {
         return prototypeFactory.getPrototype(name);
     }
 
-    private static class RuleContext {
+    public static class RuleContext {
         private final PrototypeFactory prototypeFactory;
 
         private final StackedContext<String, PrototypeDSL.PrototypePatternDef> patterns = new StackedContext<>();

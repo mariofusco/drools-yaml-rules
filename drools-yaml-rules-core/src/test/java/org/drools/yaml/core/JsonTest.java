@@ -9,6 +9,7 @@ import org.drools.yaml.core.domain.RulesSet;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
+import static org.drools.yaml.core.ObjectMapperFactory.createMapper;
 import static org.junit.Assert.assertEquals;
 
 public class JsonTest {
@@ -68,7 +69,7 @@ public class JsonTest {
 
     @Test
     public void testReadJson() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+        ObjectMapper mapper = createMapper(new JsonFactory());
         RulesSet rulesSet = mapper.readValue(JSON1, RulesSet.class);
         System.out.println(rulesSet);
     }

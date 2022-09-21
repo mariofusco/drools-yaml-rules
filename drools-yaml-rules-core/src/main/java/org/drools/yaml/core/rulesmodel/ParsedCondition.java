@@ -2,7 +2,6 @@ package org.drools.yaml.core.rulesmodel;
 
 import org.drools.model.Index.ConstraintType;
 import org.drools.model.PrototypeExpression;
-import org.drools.yaml.core.domain.conditions.Condition;
 
 import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeField;

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.drools.yaml.core.domain.RulesSet;
 import org.junit.Test;
 
+import static org.drools.yaml.core.ObjectMapperFactory.createMapper;
 import static org.junit.Assert.assertEquals;
 
 public class YamlTest {
@@ -42,7 +43,7 @@ public class YamlTest {
 
     @Test
     public void testReadYaml() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        ObjectMapper mapper = createMapper(new YAMLFactory());
         RulesSet rulesSet = mapper.readValue(YAML1, RulesSet.class);
         System.out.println(rulesSet);
     }

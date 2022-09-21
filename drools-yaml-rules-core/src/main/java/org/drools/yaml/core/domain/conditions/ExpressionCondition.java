@@ -4,7 +4,7 @@ import org.drools.model.Index;
 import org.drools.model.PrototypeExpression;
 import org.drools.yaml.core.rulesmodel.ParsedCondition;
 
-public class ExpressionCondition extends Condition {
+public class ExpressionCondition extends SimpleCondition {
     protected final PrototypeExpression left;
     protected final Index.ConstraintType operator;
     protected final PrototypeExpression right;
