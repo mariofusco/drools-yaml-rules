@@ -188,7 +188,7 @@ public class SimpleCondition implements Condition {
         return condition2Pattern(ruleContext, this);
     }
 
-    private ViewItem condition2Pattern(SessionGenerator.RuleContext ruleContext, SimpleCondition condition) {
+    private static ViewItem condition2Pattern(SessionGenerator.RuleContext ruleContext, SimpleCondition condition) {
         switch (condition.getType()) {
             case ANY:
                 return new CombinedExprViewItem(org.drools.model.Condition.Type.OR, condition.getAny().stream().map(subC -> scopingCondition2Pattern(ruleContext, subC)).toArray(ViewItem[]::new));
@@ -200,20 +200,20 @@ public class SimpleCondition implements Condition {
         throw new UnsupportedOperationException();
     }
 
-    private ViewItem scopingCondition2Pattern(SessionGenerator.RuleContext ruleContext, SimpleCondition condition) {
+    private static ViewItem scopingCondition2Pattern(SessionGenerator.RuleContext ruleContext, SimpleCondition condition) {
         ruleContext.pushContext();
         ViewItem pattern = condition2Pattern(ruleContext, condition);
         ruleContext.popContext();
         return pattern;
     }
 
-    private ViewItem singleCondition2Pattern(SessionGenerator.RuleContext ruleContext, SimpleCondition condition) {
+    private static ViewItem singleCondition2Pattern(SessionGenerator.RuleContext ruleContext, SimpleCondition condition) {
         ParsedCondition parsedCondition = condition.parse();
         var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(), PROTOTYPE_NAME);
         if (condition.beta()) {
             pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), ruleContext.getPatternVariable(condition.otherBinding()), parsedCondition.getRight());
         } else {
-            if (!coercedCondition(pattern, parsedCondition)) {
+            if (!condition.coercedCondition(pattern, parsedCondition)) {
                 pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
             }
         }
