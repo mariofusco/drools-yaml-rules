@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,14 +32,18 @@ public class ObjectMapperFactory {
         }
 
         @Override
-        public Condition deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public Condition deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             String node = jp.getCodec().readTree(jp).toString();
 
             if (node.contains("lhs")) {
                 return new MapCondition(mapper.readValue(node, Map.class));
             }
 
-            return mapper.readValue(node, SimpleCondition.class);
+            try {
+                return mapper.readValue(node, SimpleCondition.class);
+            } catch (Exception e) {
+                return new MapCondition(mapper.readValue(node, Map.class));
+            }
         }
     }
 }

@@ -84,15 +84,14 @@ public class MapCondition implements Condition {
 
     private static ParsedCondition parseSingle(Map.Entry entry) {
         String expressionName = (String) entry.getKey();
+        Map<?,?> expression = (Map<?,?>) entry.getValue();
         Index.ConstraintType operator = decodeOperation(expressionName);
 
-        Map<?,?> expression = (Map<?,?>) entry.getValue();
-        PrototypeExpression left = map2Expr(expression.get("lhs"));
-        PrototypeExpression right = operator == EXISTS_PROTOTYPE_FIELD ?
-                fixedValue(expressionName.equals("IsDefinedExpression")) :
-                map2Expr(expression.get("rhs"));
+        if (operator == EXISTS_PROTOTYPE_FIELD) {
+            return new ParsedCondition(map2Expr(expression), operator, fixedValue(expressionName.equals("IsDefinedExpression")));
+        }
 
-        return new ParsedCondition(left, operator, right);
+        return new ParsedCondition(map2Expr(expression.get("lhs")), operator, map2Expr(expression.get("rhs")));
     }
 
     private static PrototypeExpression map2Expr(Object expr) {
