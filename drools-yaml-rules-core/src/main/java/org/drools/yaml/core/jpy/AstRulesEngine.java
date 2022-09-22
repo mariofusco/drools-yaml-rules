@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 import static org.drools.yaml.core.RulesExecutor.OBJECT_MAPPER;
 
-public class JpyAstRulesEngine {
+public class AstRulesEngine {
 
     private Iterator<Map<String, Map>> lastResponse = Collections.emptyIterator();
 

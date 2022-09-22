@@ -7,13 +7,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
-public class JpyAstRulesEngineTest {
+public class AstRulesEngineTest {
     @Test
     public void testJpyApi() {
 
         String rules = JsonTest.JSON1;
 
-        JpyAstRulesEngine engine = new JpyAstRulesEngine();
+        AstRulesEngine engine = new AstRulesEngine();
         long id = engine.createRuleset(rules);
 
         int result = engine.assertFact(id, "{ \"sensu\": { \"data\": { \"i\":1 } } }");
