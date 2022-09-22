@@ -135,7 +135,7 @@ public class MapCondition implements Condition {
                 return fixedValue(value);
         }
 
-        return prototypeField(key + "." + value);
+        return prototypeField(key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("event") ? value.toString() : key + "." + value);
     }
 
     private static Index.ConstraintType decodeOperation(String expressionName) {

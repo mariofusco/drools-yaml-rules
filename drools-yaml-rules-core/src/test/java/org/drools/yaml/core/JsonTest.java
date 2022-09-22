@@ -26,7 +26,7 @@ public class JsonTest {
             "             \"rhs\": {\n" +
             "               \"EqualsExpression\":{\n" +
             "                 \"lhs\":{\n" +
-            "                    \"sensu\":\"data.i\"\n" +
+            "                    \"Event\":\"sensu.data.i\"\n" +
             "                 },\n" +
             "                 \"rhs\":{\n" +
             "                    \"Integer\":1\n" +
