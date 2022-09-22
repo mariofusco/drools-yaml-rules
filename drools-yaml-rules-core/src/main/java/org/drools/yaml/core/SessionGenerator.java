@@ -38,7 +38,7 @@ public class SessionGenerator {
 
     public KieSession build(RulesExecutor rulesExecutor) {
         ModelImpl model = new ModelImpl();
-        rulesSet.getHost_rules().stream().map(rule -> toExecModelRule(rule, rulesExecutor)).forEach(model::addRule);
+        rulesSet.getRules().stream().map(rule -> toExecModelRule(rule, rulesExecutor)).forEach(model::addRule);
         KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model );
         return kieBase.newKieSession();
     }

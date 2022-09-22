@@ -1,12 +1,13 @@
 package org.drools.yaml.core.domain;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RulesSet {
     private String name;
-    private String hosts;
+    private List<String> hosts;
     private List<Source> sources;
-    private List<Rule> host_rules;
+    private List<RuleContainer> rules;
 
     public String getName() {
         return name;
@@ -16,20 +17,20 @@ public class RulesSet {
         this.name = name;
     }
 
-    public String getHosts() {
+    public List<String> getHosts() {
         return hosts;
     }
 
-    public void setHosts(String hosts) {
+    public void setHosts(List<String> hosts) {
         this.hosts = hosts;
     }
 
-    public List<Rule> getHost_rules() {
-        return host_rules;
+    public List<Rule> getRules() {
+        return rules.stream().map(RuleContainer::getRule).collect(Collectors.toList());
     }
 
-    public void setHost_rules(List<Rule> host_rules) {
-        this.host_rules = host_rules;
+    public void setRules(List<RuleContainer> rules) {
+        this.rules = rules;
     }
 
     public List<Source> getSources() {
@@ -46,7 +47,7 @@ public class RulesSet {
                 "name='" + name + '\'' +
                 ", hosts='" + hosts + '\'' +
                 ", sources=" + sources +
-                ", host_rules=" + host_rules +
+                ", rules=" + rules +
                 '}';
     }
 }

@@ -16,8 +16,8 @@ public class SimpleJsonTest {
 
     private static final String JSON1 =
             "{\n" +
-            "  \"host_rules\": [\n" +
-            "    {\n" +
+            "  \"rules\": [\n" +
+            "    {\"Rule\": {\n" +
             "      \"name\": \"R1\",\n" +
             "      \"condition\": \"sensu.data.i == 1\",\n" +
             "      \"action\": {\n" +
@@ -28,8 +28,8 @@ public class SimpleJsonTest {
             "          }\n" +
             "        }\n" +
             "      }\n" +
-            "    },\n" +
-            "    {\n" +
+            "    }},\n" +
+            "    {\"Rule\": {\n" +
             "      \"name\": \"R2\",\n" +
             "      \"condition\": \"sensu.data.i == 2\",\n" +
             "      \"action\": {\n" +
@@ -39,8 +39,8 @@ public class SimpleJsonTest {
             "          }\n" +
             "        ]\n" +
             "      }\n" +
-            "    },\n" +
-            "    {\n" +
+            "    }},\n" +
+            "    {\"Rule\": {\n" +
             "      \"name\": \"R3\",\n" +
             "      \"condition\": \"sensu.data.i == 3\",\n" +
             "      \"action\": {\n" +
@@ -51,8 +51,8 @@ public class SimpleJsonTest {
             "          }\n" +
             "        }\n" +
             "      }\n" +
-            "    },\n" +
-            "    {\n" +
+            "    }},\n" +
+            "    {\"Rule\": {\n" +
             "      \"name\": \"R4\",\n" +
             "      \"condition\": \"j == 1\",\n" +
             "      \"action\": {\n" +
@@ -63,7 +63,7 @@ public class SimpleJsonTest {
             "          }\n" +
             "        }\n" +
             "      }\n" +
-            "    }\n" +
+            "    }}\n" +
             "  ]\n" +
             "}";
 
@@ -99,7 +99,7 @@ public class SimpleJsonTest {
 
     @Test
     public void testProcessRuleWithoutAction() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"host_rules\": [ { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\" } ] }");
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\" }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
@@ -110,7 +110,7 @@ public class SimpleJsonTest {
 
     @Test
     public void testProcessRuleWithUnknownAction() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"host_rules\": [ { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\", \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } } ] }\n");
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\", \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );

@@ -8,6 +8,7 @@ public class Rule {
     private String name;
     private Condition condition;
     private Action action;
+    private boolean enabled;
 
     public String getName() {
         return name;
@@ -35,6 +36,14 @@ public class Rule {
 
     public void setGenericAction(Action action) {
         this.action = action;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     @Override

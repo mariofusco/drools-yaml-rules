@@ -16,8 +16,8 @@ public class JsonTest {
 
     private static final String JSON1 =
             "{\n" +
-            "   \"host_rules\":[\n" +
-            "      {\n" +
+            "   \"rules\":[\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R1\",\n" +
             "         \"condition\":{\n" +
             "            \"EqualsExpression\":{\n" +
@@ -37,8 +37,8 @@ public class JsonTest {
             "               }\n" +
             "            }\n" +
             "         }\n" +
-            "      },\n" +
-            "      {\n" +
+            "      }},\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R2\",\n" +
             "         \"condition\":{\n" +
             "            \"EqualsExpression\":{\n" +
@@ -57,8 +57,8 @@ public class JsonTest {
             "               }\n" +
             "            ]\n" +
             "         }\n" +
-            "      },\n" +
-            "      {\n" +
+            "      }},\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R3\",\n" +
             "         \"condition\":{\n" +
             "            \"EqualsExpression\":{\n" +
@@ -78,8 +78,8 @@ public class JsonTest {
             "               }\n" +
             "            }\n" +
             "         }\n" +
-            "      },\n" +
-            "      {\n" +
+            "      }},\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R4\",\n" +
             "         \"condition\":{\n" +
             "            \"EqualsExpression\":{\n" +
@@ -97,7 +97,7 @@ public class JsonTest {
             "               }\n" +
             "            }\n" +
             "         }\n" +
-            "      }\n" +
+            "      }}\n" +
             "   ]\n" +
             "}";
 
@@ -135,7 +135,7 @@ public class JsonTest {
 
     @Test
     public void testProcessRuleWithoutAction() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"host_rules\": [ { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } } } ] }");
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } } }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
@@ -146,7 +146,7 @@ public class JsonTest {
 
     @Test
     public void testProcessRuleWithUnknownAction() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"host_rules\": [ { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } }, \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } } ] }\n");
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } }, \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
@@ -157,7 +157,7 @@ public class JsonTest {
 
     @Test
     public void testIsDefinedExpression() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"host_rules\": [ { \"name\": \"R1\", \"condition\":{ \"IsDefinedExpression\":{ \"sensu\":\"data.i\" } } } ] }");
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"IsDefinedExpression\":{ \"sensu\":\"data.i\" } } }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );

@@ -21,12 +21,12 @@ public class SimpleLogicalOperatorsTest {
 
     private static final String JSON1 =
             "{\n" +
-            "   \"host_rules\":[\n" +
-            "      {\n" +
+            "   \"rules\":[\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R1\",\n" +
             "         \"condition\":\"sensu.data.i == 1\"\n" +
-            "      },\n" +
-            "      {\n" +
+            "      }},\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R2\",\n" +
             "         \"condition\":{\n" +
             "            \"all\":[\n" +
@@ -34,8 +34,8 @@ public class SimpleLogicalOperatorsTest {
             "               \"j == 2\"\n" +
             "            ]\n" +
             "         }\n" +
-            "      },\n" +
-            "      {\n" +
+            "      }},\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R3\",\n" +
             "         \"condition\":{\n" +
             "            \"any\":[\n" +
@@ -53,7 +53,7 @@ public class SimpleLogicalOperatorsTest {
             "               }\n" +
             "            ]\n" +
             "         }\n" +
-            "      }\n" +
+            "      }}\n" +
             "   ]\n" +
             "}";
 

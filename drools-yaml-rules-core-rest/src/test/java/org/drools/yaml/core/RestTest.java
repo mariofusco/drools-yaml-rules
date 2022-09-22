@@ -28,8 +28,8 @@ public class RestTest {
 
     private static final String JSON_RULES_1 =
             "{\n" +
-            "  \"host_rules\": [\n" +
-            "    {\n" +
+            "  \"rules\": [\n" +
+            "    {\"Rule\": {\n" +
             "      \"name\": \"R1\",\n" +
             "      \"condition\": \"sensu.data.i == 1\",\n" +
             "      \"action\": {\n" +
@@ -40,8 +40,8 @@ public class RestTest {
             "          }\n" +
             "        }\n" +
             "      }\n" +
-            "    },\n" +
-            "    {\n" +
+            "    }},\n" +
+            "    {\"Rule\": {\n" +
             "      \"name\": \"R2\",\n" +
             "      \"condition\": \"sensu.data.i == 2\",\n" +
             "      \"action\": {\n" +
@@ -51,8 +51,8 @@ public class RestTest {
             "          }\n" +
             "        ]\n" +
             "      }\n" +
-            "    },\n" +
-            "    {\n" +
+            "    }},\n" +
+            "    {\"Rule\": {\n" +
             "      \"name\": \"R3\",\n" +
             "      \"condition\": \"sensu.data.i == 3\",\n" +
             "      \"action\": {\n" +
@@ -63,8 +63,8 @@ public class RestTest {
             "          }\n" +
             "        }\n" +
             "      }\n" +
-            "    },\n" +
-            "    {\n" +
+            "    }},\n" +
+            "    {\"Rule\": {\n" +
             "      \"name\": \"R4\",\n" +
             "      \"condition\": \"j == 1\",\n" +
             "      \"action\": {\n" +
@@ -75,7 +75,7 @@ public class RestTest {
             "          }\n" +
             "        }\n" +
             "      }\n" +
-            "    }\n" +
+            "    }}\n" +
             "  ]\n" +
             "}";
 
@@ -153,12 +153,12 @@ public class RestTest {
 
     private static final String JSON_RULES_2 =
             "{\n" +
-            "   \"host_rules\":[\n" +
-            "      {\n" +
+            "   \"rules\":[\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R1\",\n" +
             "         \"condition\":\"sensu.data.i == 1\"\n" +
-            "      },\n" +
-            "      {\n" +
+            "      }},\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R2\",\n" +
             "         \"condition\":{\n" +
             "            \"all\":[\n" +
@@ -166,8 +166,8 @@ public class RestTest {
             "               \"j == 2\"\n" +
             "            ]\n" +
             "         }\n" +
-            "      },\n" +
-            "      {\n" +
+            "      }},\n" +
+            "      {\"Rule\": {\n" +
             "         \"name\":\"R3\",\n" +
             "         \"condition\":{\n" +
             "            \"any\":[\n" +
@@ -185,7 +185,7 @@ public class RestTest {
             "               }\n" +
             "            ]\n" +
             "         }\n" +
-            "      }\n" +
+            "      }}\n" +
             "   ]\n" +
             "}";
 
