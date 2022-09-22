@@ -95,9 +95,20 @@ public class MapCondition implements Condition {
         return pattern;
     }
 
-    private static ParsedCondition parseSingle(Map.Entry entry) {
+    private ParsedCondition parseSingle(Map.Entry entry) {
         String expressionName = (String) entry.getKey();
         Map<?,?> expression = (Map<?,?>) entry.getValue();
+
+        if (expressionName.equals("AssignmentExpression")) {
+            Map<?,?> assignment = (Map<?,?>) expression.get("lhs");
+            assert(assignment.size() == 1);
+            this.patternBinding = (String) assignment.values().iterator().next();
+
+            Map<?,?> assigned = (Map<?,?>) expression.get("rhs");
+            assert(assigned.size() == 1);
+            return parseSingle(assigned.entrySet().iterator().next());
+        }
+
         Index.ConstraintType operator = decodeOperation(expressionName);
 
         if (operator == EXISTS_PROTOTYPE_FIELD) {

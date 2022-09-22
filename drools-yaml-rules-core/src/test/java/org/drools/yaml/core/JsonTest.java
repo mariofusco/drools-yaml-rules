@@ -20,14 +20,21 @@ public class JsonTest {
             "      {\"Rule\": {\n" +
             "         \"name\":\"R1\",\n" +
             "         \"condition\":{\n" +
-            "            \"EqualsExpression\":{\n" +
-            "               \"lhs\":{\n" +
-            "                  \"sensu\":\"data.i\"\n" +
-            "               },\n" +
-            "               \"rhs\":{\n" +
-            "                  \"Integer\":1\n" +
+            "           \"AssignmentExpression\": {\n" +
+            "             \"lhs\": {\n" +
+            "               \"Events\": \"first\"\n" +
+            "             },\n" +
+            "             \"rhs\": {\n" +
+            "               \"EqualsExpression\":{\n" +
+            "                 \"lhs\":{\n" +
+            "                    \"sensu\":\"data.i\"\n" +
+            "                 },\n" +
+            "                 \"rhs\":{\n" +
+            "                    \"Integer\":1\n" +
+            "                 }\n" +
             "               }\n" +
-            "            }\n" +
+            "             }\n" +
+            "           }\n" +
             "         },\n" +
             "         \"action\":{\n" +
             "            \"assert_fact\":{\n" +
