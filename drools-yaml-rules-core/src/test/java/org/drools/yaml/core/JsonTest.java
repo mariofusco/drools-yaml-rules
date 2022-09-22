@@ -18,7 +18,6 @@ public class JsonTest {
             "{\n" +
             "   \"rules\":[\n" +
             "      {\"Rule\": {\n" +
-            "         \"name\":\"R1\",\n" +
             "         \"condition\":{\n" +
             "           \"AssignmentExpression\": {\n" +
             "             \"lhs\": {\n" +
@@ -46,7 +45,6 @@ public class JsonTest {
             "         }\n" +
             "      }},\n" +
             "      {\"Rule\": {\n" +
-            "         \"name\":\"R2\",\n" +
             "         \"condition\":{\n" +
             "            \"EqualsExpression\":{\n" +
             "               \"lhs\":{\n" +
@@ -66,7 +64,6 @@ public class JsonTest {
             "         }\n" +
             "      }},\n" +
             "      {\"Rule\": {\n" +
-            "         \"name\":\"R3\",\n" +
             "         \"condition\":{\n" +
             "            \"EqualsExpression\":{\n" +
             "               \"lhs\":{\n" +
@@ -87,7 +84,6 @@ public class JsonTest {
             "         }\n" +
             "      }},\n" +
             "      {\"Rule\": {\n" +
-            "         \"name\":\"R4\",\n" +
             "         \"condition\":{\n" +
             "            \"AllCondition\":[{\n" +
             "              \"EqualsExpression\":{\n" +
@@ -133,11 +129,11 @@ public class JsonTest {
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
-        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+        assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
 
         matchedRules = rulesExecutor.processFacts( "{ \"j\":1 }" );
         assertEquals( 1, matchedRules.size() );
-        assertEquals( "R4", matchedRules.get(0).getRule().getName() );
+        assertEquals( "r_3", matchedRules.get(0).getRule().getName() );
 
         rulesExecutor.dispose();
     }

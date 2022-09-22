@@ -26,7 +26,7 @@ public class SessionGenerator {
 
     public static final String PROTOTYPE_NAME = "DROOLS_PROTOTYPE";
 
-    private static int counter = 0;
+    private int counter = 0;
 
     private final PrototypeFactory prototypeFactory = new PrototypeFactory();
 
@@ -46,7 +46,7 @@ public class SessionGenerator {
     private org.drools.model.Rule toExecModelRule(Rule rule, RulesExecutor rulesExecutor) {
         String ruleName = rule.getName();
         if (ruleName == null) {
-            ruleName = "R" + counter++;
+            ruleName = "r_" + counter++;
         }
 
         RuleContext ruleContext = new RuleContext(prototypeFactory);
