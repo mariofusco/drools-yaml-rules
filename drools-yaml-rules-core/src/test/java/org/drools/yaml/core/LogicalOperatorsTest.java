@@ -87,26 +87,22 @@ public class LogicalOperatorsTest {
             "                  }\n" +
             "               },\n" +
             "               \"rhs\":{\n" +
-            "                  \"AndExpression\":{\n" +
-            "                     \"lhs\":{\n" +
-            "                        \"EqualsExpression\":{\n" +
-            "                           \"lhs\":{\n" +
-            "                              \"sensu\":\"data.i\"\n" +
-            "                           },\n" +
-            "                           \"rhs\":{\n" +
-            "                              \"Integer\":4\n" +
-            "                           }\n" +
+            "                  \"AllCondition\":[\n" +
+            "                      {\"EqualsExpression\":{\n" +
+            "                         \"lhs\":{\n" +
+            "                            \"sensu\":\"data.i\"\n" +
+            "                         },\n" +
+            "                         \"rhs\":{\n" +
+            "                            \"Integer\":4\n" +
+            "                         }\n" +
+            "                     }},\n" +
+            "                     {\"EqualsExpression\":{\n" +
+            "                        \"lhs\":\"j\",\n" +
+            "                        \"rhs\":{\n" +
+            "                           \"Integer\":3\n" +
             "                        }\n" +
-            "                     },\n" +
-            "                     \"rhs\":{\n" +
-            "                        \"EqualsExpression\":{\n" +
-            "                           \"lhs\":\"j\",\n" +
-            "                           \"rhs\":{\n" +
-            "                              \"Integer\":3\n" +
-            "                           }\n" +
-            "                        }\n" +
-            "                     }\n" +
-            "                  }\n" +
+            "                     }}\n" +
+            "                  ]\n" +
             "               }\n" +
             "            }\n" +
             "         }\n" +

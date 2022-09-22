@@ -1,5 +1,6 @@
 package org.drools.yaml.core.domain.conditions;
 
+import java.util.List;
 import java.util.Map;
 
 import org.drools.model.Index;
@@ -64,6 +65,18 @@ public class MapCondition implements Condition {
                         condition2Pattern(ruleContext, new MapCondition((Map)((Map) entry.getValue()).get("rhs")))
 
                 });
+            case "AnyCondition":
+                List<Map> conditions = (List<Map>)entry.getValue();
+                if (conditions.size() == 1) {
+                    condition2Pattern(ruleContext, new MapCondition(conditions.get(0)));
+                }
+                return new CombinedExprViewItem(org.drools.model.Condition.Type.OR, conditions.stream().map(subC -> scopingCondition2Pattern(ruleContext, new MapCondition(subC))).toArray(ViewItem[]::new));
+            case "AllCondition":
+                conditions = (List<Map>)entry.getValue();
+                if (conditions.size() == 1) {
+                    condition2Pattern(ruleContext, new MapCondition(conditions.get(0)));
+                }
+                return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, conditions.stream().map(subC -> condition2Pattern(ruleContext, new MapCondition(subC))).toArray(ViewItem[]::new));
         }
         return singleCondition2Pattern(ruleContext, condition, entry);
     }
@@ -118,6 +131,8 @@ public class MapCondition implements Condition {
         switch (expressionName) {
             case "EqualsExpression":
                 return Index.ConstraintType.EQUAL;
+            case "NotEqualsExpression":
+                return Index.ConstraintType.NOT_EQUAL;
             case "GreaterThanExpression":
                 return Index.ConstraintType.GREATER_THAN;
             case "GreaterThanOrEqualToExpression":
@@ -130,7 +145,7 @@ public class MapCondition implements Condition {
             case "IsNotDefinedExpression":
                 return EXISTS_PROTOTYPE_FIELD;
         }
-        return null;
+        throw new UnsupportedOperationException("Unrecognized operation type: " + expressionName);
     }
 
     @Override

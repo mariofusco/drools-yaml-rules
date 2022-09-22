@@ -82,13 +82,15 @@ public class JsonTest {
             "      {\"Rule\": {\n" +
             "         \"name\":\"R4\",\n" +
             "         \"condition\":{\n" +
-            "            \"EqualsExpression\":{\n" +
-            "               \"lhs\":\"j\",\n" +
-            "               \"rhs\":{\n" +
-            "                  \"Integer\":1\n" +
-            "               }\n" +
-            "            }\n" +
-            "         },\n" +
+            "            \"AllCondition\":[{\n" +
+            "              \"EqualsExpression\":{\n" +
+            "                 \"lhs\":\"j\",\n" +
+            "                 \"rhs\":{\n" +
+            "                    \"Integer\":1\n" +
+            "                 }\n" +
+            "              }\n" +
+            "            }]" +
+            "          },\n" +
             "         \"action\":{\n" +
             "            \"post_event\":{\n" +
             "               \"ruleset\":\"Test rules4\",\n" +
