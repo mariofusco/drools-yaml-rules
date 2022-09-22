@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 public class JsonTest {
 
-    private static final String JSON1 =
+    public static final String JSON1 =
             "{\n" +
             "   \"rules\":[\n" +
             "      {\"Rule\": {\n" +
