@@ -16,6 +16,7 @@ public class JsonTest {
 
     public static final String JSON1 =
             "{\n" +
+            "   \"sources\":{\"EventSource\":\"test\"},\n" +
             "   \"rules\":[\n" +
             "      {\"Rule\": {\n" +
             "         \"condition\":{\n" +

@@ -3,10 +3,12 @@ package org.drools.yaml.core.domain;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RulesSet {
     private String name;
     private List<String> hosts;
-    private List<Source> sources;
     private List<RuleContainer> rules;
 
     public String getName() {
@@ -33,20 +35,11 @@ public class RulesSet {
         this.rules = rules;
     }
 
-    public List<Source> getSources() {
-        return sources;
-    }
-
-    public void setSources(List<Source> sources) {
-        this.sources = sources;
-    }
-
     @Override
     public String toString() {
         return "RulesSet{" +
                 "name='" + name + '\'' +
                 ", hosts='" + hosts + '\'' +
-                ", sources=" + sources +
                 ", rules=" + rules +
                 '}';
     }
