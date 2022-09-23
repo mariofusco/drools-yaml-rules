@@ -10,11 +10,14 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>drools-yaml-rules-core</module>
+    <module>drools-yaml-rules-api</module>
+    <module>drools-yaml-rules-compilation</module>
+    <module>drools-yaml-rules-runtime</module>
     <module>drools-yaml-rules-core-rest</module>
     <module>drools-yaml-rules-durable</module>
     <module>drools-yaml-rules-durable-rest</module>
     <module>drools-yaml-rules-benchmark</module>
+    <module>drools-yaml-rules-tests</module>
   </modules>
   
   <name>Drools :: YAML Rules</name>
@@ -24,7 +27,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.drools>8.26.0.Beta</version.drools>
+    <version.drools>8.29.0-SNAPSHOT</version.drools>
     <version.quarkus>2.11.2.Final</version.quarkus>
     <version.junit>4.13.2</version.junit>
     <version.assertj>3.20.2</version.assertj>

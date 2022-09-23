@@ -1,6 +1,6 @@
 package org.drools.yaml.benchmark;
 
-import org.drools.yaml.core.RulesExecutor;
+import org.drools.yaml.api.RulesExecutor;
 import org.drools.yaml.durable.DurableNotation;
 
 public class DroolsDurableBenchmarkMain {

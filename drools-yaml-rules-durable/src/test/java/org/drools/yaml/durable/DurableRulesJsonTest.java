@@ -3,8 +3,8 @@ package org.drools.yaml.durable;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.yaml.core.RulesExecutor;
-import org.drools.yaml.core.domain.RuleMatch;
+import org.drools.yaml.api.RulesExecutor;
+import org.drools.yaml.api.domain.RuleMatch;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;

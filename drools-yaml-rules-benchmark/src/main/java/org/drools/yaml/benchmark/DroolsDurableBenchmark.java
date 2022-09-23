@@ -2,7 +2,7 @@ package org.drools.yaml.benchmark;
 
 import java.util.concurrent.TimeUnit;
 
-import org.drools.yaml.core.RulesExecutor;
+import org.drools.yaml.api.RulesExecutor;
 import org.drools.yaml.durable.DurableNotation;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
