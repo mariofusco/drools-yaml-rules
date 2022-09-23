@@ -1,4 +1,4 @@
-package org.drools.yaml.runtime.jpy;
+package org.drools.yaml.core.jpy;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.core.facttemplates.Fact;
