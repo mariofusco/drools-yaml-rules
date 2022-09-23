@@ -16,6 +16,16 @@ public class AstRulesEngine {
 
     private Iterator<Map<String, Map>> lastResponse = Collections.emptyIterator();
 
+    @Deprecated(forRemoval = true)
+    /**
+     * This method is part of the compilation phase and should be avoided in favour of
+     * AstRulesCompilation.createRuleset
+     */
+    public long createRuleset(String rulesetString) {
+        RulesExecutor executor = RulesExecutor.createFromJson(rulesetString);
+        return executor.getId();
+    }
+
     /**
      * @return error code (currently always 0)
      */
