@@ -6,7 +6,7 @@ import java.util.Map;
 import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.yaml.core.domain.Binding.isGeneratedBinding;
+import static org.drools.yaml.core.RuleGenerationContext.isGeneratedBinding;
 
 public class RuleMatch {
 

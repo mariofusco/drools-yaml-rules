@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.drools.yaml.core.domain.Binding.isGeneratedBinding;
 import static org.drools.yaml.core.domain.RuleMatch.toNestedMap;
 
 public class AstRuleMatch {
@@ -37,11 +36,7 @@ public class AstRuleMatch {
             if (value instanceof Fact) {
                 Fact fact = (Fact) value;
                 Map<String, Object> map = toNestedMap(fact.asMap());
-                if (isGeneratedBinding(decl)) {
-                    facts.putAll(map);
-                } else {
-                    facts.put(decl, map);
-                }
+                facts.put(decl, map);
             } else {
                 facts.put(decl, value);
             }

@@ -1,8 +1,8 @@
 package org.drools.yaml.core.domain.conditions;
 
 import org.drools.model.view.ViewItem;
-import org.drools.yaml.core.SessionGenerator;
+import org.drools.yaml.core.RuleGenerationContext;
 
 public interface Condition {
-    ViewItem toPattern(SessionGenerator.RuleContext ruleContext);
+    ViewItem toPattern(RuleGenerationContext ruleContext);
 }

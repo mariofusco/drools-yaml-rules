@@ -2,7 +2,6 @@ package org.drools.yaml.core.domain.conditions;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.drools.model.Index;
 import org.drools.model.PatternDSL;
@@ -11,11 +10,10 @@ import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
-import org.drools.yaml.core.SessionGenerator;
+import org.drools.yaml.core.RuleGenerationContext;
 import org.drools.yaml.core.rulesmodel.ParsedCondition;
 
 import static org.drools.yaml.core.SessionGenerator.PROTOTYPE_NAME;
-import static org.drools.yaml.core.domain.Binding.generateBinding;
 
 public class SimpleCondition implements Condition {
 
@@ -69,9 +67,9 @@ public class SimpleCondition implements Condition {
         this.single = single;
     }
 
-    public String getPatternBinding() {
+    private String getPatternBinding(RuleGenerationContext ruleContext) {
         if (patternBinding == null) {
-            patternBinding = generateBinding();
+            patternBinding = ruleContext.generateBinding();
         }
         return patternBinding;
     }
@@ -184,11 +182,11 @@ public class SimpleCondition implements Condition {
     }
 
     @Override
-    public ViewItem toPattern(SessionGenerator.RuleContext ruleContext) {
+    public ViewItem toPattern(RuleGenerationContext ruleContext) {
         return condition2Pattern(ruleContext, this);
     }
 
-    private static ViewItem condition2Pattern(SessionGenerator.RuleContext ruleContext, SimpleCondition condition) {
+    private static ViewItem condition2Pattern(RuleGenerationContext ruleContext, SimpleCondition condition) {
         switch (condition.getType()) {
             case ANY:
                 return new CombinedExprViewItem(org.drools.model.Condition.Type.OR, condition.getAny().stream().map(subC -> scopingCondition2Pattern(ruleContext, subC)).toArray(ViewItem[]::new));
@@ -200,16 +198,16 @@ public class SimpleCondition implements Condition {
         throw new UnsupportedOperationException();
     }
 
-    private static ViewItem scopingCondition2Pattern(SessionGenerator.RuleContext ruleContext, SimpleCondition condition) {
+    private static ViewItem scopingCondition2Pattern(RuleGenerationContext ruleContext, SimpleCondition condition) {
         ruleContext.pushContext();
         ViewItem pattern = condition2Pattern(ruleContext, condition);
         ruleContext.popContext();
         return pattern;
     }
 
-    private static ViewItem singleCondition2Pattern(SessionGenerator.RuleContext ruleContext, SimpleCondition condition) {
+    private static ViewItem singleCondition2Pattern(RuleGenerationContext ruleContext, SimpleCondition condition) {
         ParsedCondition parsedCondition = condition.parse();
-        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(), PROTOTYPE_NAME);
+        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
         if (condition.beta()) {
             pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), ruleContext.getPatternVariable(condition.otherBinding()), parsedCondition.getRight());
         } else {

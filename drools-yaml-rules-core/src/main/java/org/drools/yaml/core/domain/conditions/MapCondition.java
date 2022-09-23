@@ -7,14 +7,13 @@ import org.drools.model.Index;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
-import org.drools.yaml.core.SessionGenerator;
+import org.drools.yaml.core.RuleGenerationContext;
 import org.drools.yaml.core.rulesmodel.ParsedCondition;
 
 import static org.drools.model.Index.ConstraintType.EXISTS_PROTOTYPE_FIELD;
 import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeField;
 import static org.drools.yaml.core.SessionGenerator.PROTOTYPE_NAME;
-import static org.drools.yaml.core.domain.Binding.generateBinding;
 
 public class MapCondition implements Condition {
 
@@ -36,19 +35,19 @@ public class MapCondition implements Condition {
         this.map = map;
     }
 
-    public String getPatternBinding() {
+    private String getPatternBinding(RuleGenerationContext ruleContext) {
         if (patternBinding == null) {
-            patternBinding = generateBinding();
+            patternBinding = ruleContext.generateBinding();
         }
         return patternBinding;
     }
 
     @Override
-    public ViewItem toPattern(SessionGenerator.RuleContext ruleContext) {
+    public ViewItem toPattern(RuleGenerationContext ruleContext) {
         return condition2Pattern(ruleContext, this);
     }
 
-    private static ViewItem condition2Pattern(SessionGenerator.RuleContext ruleContext, MapCondition condition) {
+    private static ViewItem condition2Pattern(RuleGenerationContext ruleContext, MapCondition condition) {
         assert(condition.getMap().size() == 1);
         Map.Entry entry = condition.getMap().entrySet().iterator().next();
         String expressionName = (String) entry.getKey();
@@ -68,29 +67,29 @@ public class MapCondition implements Condition {
             case "AnyCondition":
                 List<Map> conditions = (List<Map>)entry.getValue();
                 if (conditions.size() == 1) {
-                    condition2Pattern(ruleContext, new MapCondition(conditions.get(0)));
+                    return condition2Pattern(ruleContext, new MapCondition(conditions.get(0)));
                 }
                 return new CombinedExprViewItem(org.drools.model.Condition.Type.OR, conditions.stream().map(subC -> scopingCondition2Pattern(ruleContext, new MapCondition(subC))).toArray(ViewItem[]::new));
             case "AllCondition":
                 conditions = (List<Map>)entry.getValue();
                 if (conditions.size() == 1) {
-                    condition2Pattern(ruleContext, new MapCondition(conditions.get(0)));
+                    return condition2Pattern(ruleContext, new MapCondition(conditions.get(0)));
                 }
                 return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, conditions.stream().map(subC -> condition2Pattern(ruleContext, new MapCondition(subC))).toArray(ViewItem[]::new));
         }
         return singleCondition2Pattern(ruleContext, condition, entry);
     }
 
-    private static ViewItem scopingCondition2Pattern(SessionGenerator.RuleContext ruleContext, MapCondition condition) {
+    private static ViewItem scopingCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition) {
         ruleContext.pushContext();
         ViewItem pattern = condition2Pattern(ruleContext, condition);
         ruleContext.popContext();
         return pattern;
     }
 
-    private static ViewItem singleCondition2Pattern(SessionGenerator.RuleContext ruleContext, MapCondition condition, Map.Entry entry) {
+    private static ViewItem singleCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, Map.Entry entry) {
         ParsedCondition parsedCondition = condition.parseSingle(entry);
-        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(), PROTOTYPE_NAME);
+        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
         pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
         return pattern;
     }

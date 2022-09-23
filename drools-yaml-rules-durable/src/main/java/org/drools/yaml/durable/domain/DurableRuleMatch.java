@@ -7,12 +7,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.core.facttemplates.Fact;
 import org.drools.yaml.core.RulesExecutor;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.yaml.core.domain.Binding.isGeneratedBinding;
 import static org.drools.yaml.core.domain.RuleMatch.toNestedMap;
 
 public class DurableRuleMatch {
@@ -38,11 +36,7 @@ public class DurableRuleMatch {
             if (value instanceof Fact) {
                 Fact fact = (Fact) value;
                 Map<String, Object> map = toNestedMap(fact.asMap());
-                if (isGeneratedBinding(decl)) {
-                    facts.putAll(map);
-                } else {
-                    facts.put(decl, map);
-                }
+                facts.put(decl, map);
             } else {
                 facts.put(decl, value);
             }

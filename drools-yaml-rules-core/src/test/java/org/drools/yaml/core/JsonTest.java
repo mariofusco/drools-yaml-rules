@@ -131,10 +131,14 @@ public class JsonTest {
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
+        assertEquals( 1, matchedRules.get(0).getDeclarationIds().size() );
+        assertEquals( "first", matchedRules.get(0).getDeclarationIds().get(0) );
 
         matchedRules = rulesExecutor.processFacts( "{ \"j\":1 }" );
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_3", matchedRules.get(0).getRule().getName() );
+        assertEquals( 1, matchedRules.get(0).getDeclarationIds().size() );
+        assertEquals( "m", matchedRules.get(0).getDeclarationIds().get(0) );
 
         rulesExecutor.dispose();
     }
