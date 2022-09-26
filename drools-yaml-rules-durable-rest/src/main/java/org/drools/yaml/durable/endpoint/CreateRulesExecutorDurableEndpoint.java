@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.drools.yaml.durable.domain.DurableRules;
 
-import static org.drools.yaml.api.RulesExecutor.createRulesExecutor;
+import static org.drools.yaml.compilation.RulesCompiler.createRulesCompiler;
 
 @Path("/create-durable-rules-executor")
 public class CreateRulesExecutorDurableEndpoint {
@@ -17,6 +17,6 @@ public class CreateRulesExecutorDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public long createRuleBase(DurableRules durableRules) {
-        return createRulesExecutor(durableRules.toRulesSet()).getId();
+        return createRulesCompiler(durableRules.toRulesSet()).getId();
     }
 }

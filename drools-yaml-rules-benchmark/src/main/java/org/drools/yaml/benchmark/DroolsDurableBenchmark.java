@@ -2,8 +2,8 @@ package org.drools.yaml.benchmark;
 
 import java.util.concurrent.TimeUnit;
 
-import org.drools.yaml.api.RulesExecutor;
-import org.drools.yaml.durable.DurableNotation;
+import org.drools.yaml.api.KieSessionHolder;
+import org.drools.yaml.compilation.RulesCompiler;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -16,6 +16,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import static org.drools.yaml.runtime.KieSessionHolderUtils.kieSessionHolder;
+
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Measurement(iterations = 10)
@@ -26,12 +28,13 @@ public class DroolsDurableBenchmark {
     @Param({"1000", "10000", "100000"})
     private int eventsNr;
 
-    private RulesExecutor rulesExecutor;
+    private KieSessionHolder rulesExecutor;
 
     @Setup
     public void setup() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$ex\": {\"event.i\": 1}}}]}}}";
-        rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        RulesCompiler rulesCompiler = RulesCompiler.createFromJson(jsonRule);
+        rulesExecutor = kieSessionHolder(rulesCompiler.getId());
     }
 
     @Benchmark

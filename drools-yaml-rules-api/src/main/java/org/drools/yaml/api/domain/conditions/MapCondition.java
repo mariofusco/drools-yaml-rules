@@ -13,7 +13,7 @@ import org.drools.yaml.api.rulesmodel.ParsedCondition;
 import static org.drools.model.Index.ConstraintType.EXISTS_PROTOTYPE_FIELD;
 import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeField;
-import static org.drools.yaml.api.SessionGenerator.PROTOTYPE_NAME;
+import static org.drools.yaml.api.Constants.PROTOTYPE_NAME;
 
 public class MapCondition implements Condition {
 

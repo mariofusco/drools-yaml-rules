@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.model.Drools;
-import org.drools.yaml.api.RulesExecutor;
 
 public class MapAction extends HashMap implements Action {
 
@@ -50,7 +49,7 @@ public class MapAction extends HashMap implements Action {
     }
 
     @Override
-    public void execute(RulesExecutor rulesExecutor, Drools drools) {
-        knownActions.forEach( a -> a.execute(rulesExecutor, drools));
+    public void execute(long kieBaseHolderId, Drools drools) {
+        knownActions.forEach(a -> a.execute(kieBaseHolderId, drools));
     }
 }

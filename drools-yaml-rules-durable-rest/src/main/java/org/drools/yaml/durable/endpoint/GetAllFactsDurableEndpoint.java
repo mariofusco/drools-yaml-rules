@@ -10,7 +10,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.drools.yaml.api.RulesExecutorContainer;
+import static org.drools.yaml.runtime.KieSessionHolderUtils.kieSessionHolder;
 
 @Path("/rules-durable-executors/{id}/get-all-facts")
 public class GetAllFactsDurableEndpoint {
@@ -19,6 +19,6 @@ public class GetAllFactsDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Map<String, Object>> getAllFacts(@PathParam("id") long id) {
-        return RulesExecutorContainer.INSTANCE.get(id).getAllFactsAsMap();
+        return kieSessionHolder(id).getAllFactsAsMap();
     }
 }

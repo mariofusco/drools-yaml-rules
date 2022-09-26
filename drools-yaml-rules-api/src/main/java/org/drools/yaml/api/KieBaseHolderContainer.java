@@ -15,18 +15,27 @@
  */
 package org.drools.yaml.api;
 
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeVariable;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface RuleGenerationContext {
+public enum KieBaseHolderContainer {
 
-    PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name);
 
-    PrototypeVariable getPatternVariable(String binding);
+    INSTANCE;
 
-    void pushContext();
+    private Map<Long, KieBaseHolder> rulesCompiles = new HashMap<>();
 
-    void popContext();
+    public void register(KieBaseHolder rulesExecutor) {
+        rulesCompiles.put(rulesExecutor.getId(), rulesExecutor);
+    }
 
-    String generateBinding();
+    public void dispose(KieBaseHolder rulesExecutor) {
+        rulesCompiles.remove(rulesExecutor.getId());
+    }
+
+    public KieBaseHolder get(Long id) {
+        return rulesCompiles.get(id);
+    }
+
+
 }

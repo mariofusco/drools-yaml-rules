@@ -15,18 +15,15 @@
  */
 package org.drools.yaml.api;
 
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeVariable;
+import org.kie.api.KieBase;
 
-public interface RuleGenerationContext {
+public interface KieBaseHolder {
 
-    PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name);
+    long getId();
 
-    PrototypeVariable getPatternVariable(String binding);
+    void dispose();
 
-    void pushContext();
+    long rulesCount();
 
-    void popContext();
-
-    String generateBinding();
+    KieBase getKieBase();
 }

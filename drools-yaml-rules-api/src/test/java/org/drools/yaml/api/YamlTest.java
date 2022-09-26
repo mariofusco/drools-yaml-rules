@@ -3,26 +3,24 @@ package org.drools.yaml.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.drools.yaml.api.RulesExecutor;
 import org.drools.yaml.api.domain.RulesSet;
 import org.junit.Test;
 
 import static org.drools.yaml.api.ObjectMapperFactory.createMapper;
-import static org.junit.Assert.assertEquals;
 
 public class YamlTest {
 
-    private static final String YAML1 =
+    public static final String YAML1 =
             "  rules:\n" +
-            "  - Rule:\n" +
-            "      condition: sensu.data.i == 1\n" +
-            "      action:\n" +
-            "        assert_fact:\n" +
-            "          ruleset: Test rules4\n" +
-            "          fact:\n" +
-            "            j: 1\n" +
-            "  - Rule:\n" +
-            "      condition: sensu.data.i == 2\n" +
+                    "  - Rule:\n" +
+                    "      condition: sensu.data.i == 1\n" +
+                    "      action:\n" +
+                    "        assert_fact:\n" +
+                    "          ruleset: Test rules4\n" +
+                    "          fact:\n" +
+                    "            j: 1\n" +
+                    "  - Rule:\n" +
+                    "      condition: sensu.data.i == 2\n" +
             "      action:\n" +
             "        run_playbook:\n" +
             "          - name: hello_playbook.yml\n" +
@@ -38,9 +36,8 @@ public class YamlTest {
             "      action:\n" +
             "        post_event:\n" +
             "          ruleset: Test rules4\n" +
-            "          fact:\n" +
-            "            j: 4\n\n";
-
+                    "          fact:\n" +
+                    "            j: 4\n\n";
 
     @Test
     public void testReadSimpleYaml() throws JsonProcessingException {
@@ -49,24 +46,17 @@ public class YamlTest {
         System.out.println(rulesSet);
     }
 
-    @Test
-    public void testExecuteRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromYaml(YAML1);
-        int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
-        assertEquals( 2, executedRules );
-    }
-
-    private static final String YAML2 =
+    public static final String YAML2 =
             "    hosts:\n" +
-            "    - localhost\n" +
-            "    name: Demo rules\n" +
-            "    rules:\n" +
-            "    - Rule:\n" +
-            "        condition:\n" +
-            "          AllCondition:\n" +
-            "          - EqualsExpression:\n" +
-            "              lhs:\n" +
-            "                Event: payload.provisioningState\n" +
+                    "    - localhost\n" +
+                    "    name: Demo rules\n" +
+                    "    rules:\n" +
+                    "    - Rule:\n" +
+                    "        condition:\n" +
+                    "          AllCondition:\n" +
+                    "          - EqualsExpression:\n" +
+                    "              lhs:\n" +
+                    "                Event: payload.provisioningState\n" +
             "              rhs:\n" +
             "                String: Succeeded\n" +
             "        enabled: true\n" +

@@ -15,18 +15,24 @@
  */
 package org.drools.yaml.api;
 
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeVariable;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface RuleGenerationContext {
+public enum KieSessionHolderContainer {
 
-    PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name);
+    INSTANCE;
 
-    PrototypeVariable getPatternVariable(String binding);
+    private Map<Long, KieSessionHolder> rulesExecutors = new HashMap<>();
 
-    void pushContext();
+    public void register(KieSessionHolder rulesExecutor) {
+        rulesExecutors.put(rulesExecutor.getId(), rulesExecutor);
+    }
 
-    void popContext();
+    public void dispose(KieSessionHolder rulesExecutor) {
+        rulesExecutors.remove(rulesExecutor.getId());
+    }
 
-    String generateBinding();
+    public KieSessionHolder get(Long id) {
+        return rulesExecutors.get(id);
+    }
 }

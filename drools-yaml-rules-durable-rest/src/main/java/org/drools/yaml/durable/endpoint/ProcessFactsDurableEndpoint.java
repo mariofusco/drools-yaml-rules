@@ -10,9 +10,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.drools.yaml.api.RulesExecutorContainer;
 import org.drools.yaml.durable.domain.DurableRuleMatch;
 import org.kie.api.runtime.rule.Match;
+
+import static org.drools.yaml.runtime.KieSessionHolderUtils.kieSessionHolder;
 
 @Path("/rules-durable-executors/{id}/process-facts")
 public class ProcessFactsDurableEndpoint {
@@ -21,7 +22,7 @@ public class ProcessFactsDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Map<String, Map>> process(@PathParam("id") long id, Map<String, Object> factMap) {
-        List<Match> result = RulesExecutorContainer.INSTANCE.get(id).processFacts(factMap);
+        List<Match> result = kieSessionHolder(id).processFacts(factMap);
         return DurableRuleMatch.asList(result);
     }
 }

@@ -13,7 +13,7 @@ import org.drools.model.view.ViewItem;
 import org.drools.yaml.api.RuleGenerationContext;
 import org.drools.yaml.api.rulesmodel.ParsedCondition;
 
-import static org.drools.yaml.api.SessionGenerator.PROTOTYPE_NAME;
+import static org.drools.yaml.api.Constants.PROTOTYPE_NAME;
 
 public class SimpleCondition implements Condition {
 

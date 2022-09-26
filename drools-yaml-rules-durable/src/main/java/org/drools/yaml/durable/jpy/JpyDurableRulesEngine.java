@@ -8,20 +8,22 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.drools.yaml.api.RulesExecutor;
-import org.drools.yaml.api.RulesExecutorContainer;
+import org.drools.yaml.api.KieSessionHolder;
+import org.drools.yaml.api.KieSessionHolderContainer;
+import org.drools.yaml.compilation.RulesCompiler;
 import org.drools.yaml.durable.DurableNotation;
 import org.drools.yaml.durable.domain.DurableRuleMatch;
+import org.drools.yaml.runtime.RulesExecutor;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.yaml.api.RulesExecutor.OBJECT_MAPPER;
+import static org.drools.yaml.runtime.RulesExecutor.OBJECT_MAPPER;
 
 public class JpyDurableRulesEngine {
 
     private Iterator<Map<String, Map>> lastResponse = Collections.emptyIterator();
 
     public long createRuleset(String ruleSetName, String rulesetString) {
-        RulesExecutor executor = RulesExecutor.createFromJson(
+        RulesCompiler executor = RulesCompiler.createFromJson(
                 DurableNotation.INSTANCE,
                 String.format("{\"%s\":%s}", ruleSetName, rulesetString));
         return executor.getId();
@@ -31,7 +33,7 @@ public class JpyDurableRulesEngine {
      * @return error code (currently always 0)
      */
     public int retractFact(long sessionId, String serializedFact) {
-        RulesExecutorContainer.INSTANCE.get(sessionId).retract(serializedFact);
+        getKieSessionHolder(sessionId).retract(serializedFact);
         return 0;
     }
 
@@ -51,22 +53,30 @@ public class JpyDurableRulesEngine {
     public int assertFact(long sessionId, String serializedFact) {
         return processMessage(
                 serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processFacts);
+                getKieSessionHolder(sessionId)::processFacts);
     }
 
     public int assertEvent(long sessionId, String serializedFact) {
         return processMessage(
                 serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processEvents);
+                getKieSessionHolder(sessionId)::processEvents);
     }
 
     public String getFacts(long session_id) {
-        return RulesExecutorContainer.INSTANCE.get(session_id).getAllFactsAsJson();
+        return getKieSessionHolder(session_id).getAllFactsAsJson();
     }
 
     private int processMessage(String serializedFact, Function<String, Collection<Match>> command) {
         List<Map<String, Map>> lastResponse = DurableRuleMatch.asList(command.apply(serializedFact));
         this.lastResponse = lastResponse.iterator();
         return 0;
+    }
+
+    private KieSessionHolder getKieSessionHolder(long session_id) {
+        KieSessionHolder kieSessionHolder = KieSessionHolderContainer.INSTANCE.get(session_id);
+        if (kieSessionHolder == null) {
+            kieSessionHolder = RulesExecutor.createRulesExecutor(session_id);
+        }
+        return kieSessionHolder;
     }
 }

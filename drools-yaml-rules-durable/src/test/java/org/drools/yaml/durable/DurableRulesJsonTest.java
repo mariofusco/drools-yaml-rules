@@ -3,12 +3,14 @@ package org.drools.yaml.durable;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.yaml.api.RulesExecutor;
 import org.drools.yaml.api.domain.RuleMatch;
+import org.drools.yaml.compilation.RulesCompiler;
+import org.drools.yaml.runtime.RulesExecutor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -76,7 +78,8 @@ public class DurableRulesJsonTest {
 
     @Test
     public void testExecuteRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, DURABLE_RULES_JSON);
+        long rulesId = compileRules(DurableNotation.INSTANCE, DURABLE_RULES_JSON);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
@@ -101,7 +104,8 @@ public class DurableRulesJsonTest {
     public void testProcessWithAnd() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m_0\": {\"payload.provisioningState\": \"Succeeded\"}}, {\"m_1\": {\"payload.provisioningState\": \"Deleted\"}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"payload\": { \"provisioningState\": \"Succeeded\" } }" );
         assertEquals( 0, matchedRules.size() );
@@ -114,7 +118,9 @@ public class DurableRulesJsonTest {
     public void testProcessWithExists() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$ex\": {\"subject.x\": 1}}}]}, \"r_1\": {\"all\": [{\"m\": {\"$nex\": {\"subject.x\": 1}}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
+        
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"subject\": { \"y\": \"Succeeded\" } }" );
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_1", matchedRules.get(0).getRule().getName() );
@@ -127,8 +133,10 @@ public class DurableRulesJsonTest {
     @Test
     public void testProcessWithNestedValues() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"subject\": {\"x\": \"Kermit\"}, \"predicate\": \"eats\", \"object\": \"flies\"}}]}}}";
-
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
+        
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"subject\": { \"x\": \"Kermit\" }, \"predicate\": \"eats\", \"object\": \"flies\" }" );
         assertEquals( 1, matchedRules.size() );
     }
@@ -136,8 +144,9 @@ public class DurableRulesJsonTest {
     @Test
     public void testProcessWithAndConstraint() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$and\": [{\"nested.i\" : 1}, {\"nested.j\" : 2}]}}]}}}";
-
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1 } }" );
         assertEquals( 0, matchedRules.size() );
@@ -150,7 +159,8 @@ public class DurableRulesJsonTest {
     public void testProcessWithOrConstraint() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$or\": [{\"nested.i\" : 1}, {\"nested.j\" : 2}]}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1 } }" );
         assertEquals( 1, matchedRules.size() );
@@ -160,7 +170,8 @@ public class DurableRulesJsonTest {
     public void testRetract() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"nested.i\" : 1}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1 } }" );
         assertEquals( 1, matchedRules.size() );
@@ -173,7 +184,8 @@ public class DurableRulesJsonTest {
         String jsonRule =
                 "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"nested.i\": {\"$add\": {\"$l\": {\"$m\": \"nested.j\"}, \"$r\": 1}}}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 2, \"j\":1 } }" );
         assertEquals( 1, matchedRules.size() );
@@ -184,7 +196,8 @@ public class DurableRulesJsonTest {
         String jsonRule =
                 "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"nested.i\": {\"$sub\": {\"$l\": {\"$m\": \"nested.j\"}, \"$r\": 1}}}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1, \"j\":2 } }" );
         assertEquals( 1, matchedRules.size() );
@@ -194,7 +207,8 @@ public class DurableRulesJsonTest {
     public void testGetAllFacts() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"nested.i\" : 1}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1 } }" );
         assertEquals( 1, matchedRules.size() );
@@ -209,7 +223,8 @@ public class DurableRulesJsonTest {
         String jsonRule =
                 "{ \"rules\": {\"r_0\": {\"all\": [{\"first\": {\"i\": 0}}, {\"second\": {\"i\": {\"first\": \"j\"}}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\": 3 }" );
         assertEquals( 0, matchedRules.size() );
@@ -228,7 +243,8 @@ public class DurableRulesJsonTest {
         String jsonRule =
                 "{ \"rules\": {\"r_0\": {\"all\": [{\"first\": {\"i\": 0}}, {\"second\": {\"i\": {\"first\": \"j\"}}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 3 }" );
         assertEquals( 0, matchedRules.size() );
@@ -250,7 +266,8 @@ public class DurableRulesJsonTest {
                         "{\"second\": {\"i\": 1}}, " +
                         "{\"third\": {\"i\": {\"$add\": {\"$l\": {\"first\": \"i\"}, \"$r\": 2}}}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\": 0, \"j\": 3 }" );
         assertEquals( 0, matchedRules.size() );
@@ -267,7 +284,8 @@ public class DurableRulesJsonTest {
         String jsonRule =
                 "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$or\": [{\"nested.i\": 1}, {\"nested.j\": 2}]}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 2, \"j\":1 } }" );
         assertEquals( 0, matchedRules.size() );
@@ -283,7 +301,8 @@ public class DurableRulesJsonTest {
     public void testCoercion() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"i\" : \"1\"}}]}}}";
 
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        long rulesId = compileRules(DurableNotation.INSTANCE, jsonRule);
+        RulesExecutor rulesExecutor = RulesExecutor.createRulesExecutor(rulesId);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\": 1 }" );
         assertEquals( 1, matchedRules.size() );
@@ -293,6 +312,12 @@ public class DurableRulesJsonTest {
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\": \"2\" }" );
         assertEquals( 0, matchedRules.size() );
+    }
+
+    private static long compileRules(DurableNotation durableNotation, String json) {
+        RulesCompiler rulesCompiler = RulesCompiler.createFromJson(durableNotation, json);
+        assertThat(rulesCompiler.getKieBase()).isNotNull();
+        return rulesCompiler.getId();
     }
 
 }

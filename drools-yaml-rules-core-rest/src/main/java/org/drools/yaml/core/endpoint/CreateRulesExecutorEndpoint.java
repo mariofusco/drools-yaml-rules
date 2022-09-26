@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.yaml.api.domain.RulesSet;
 
 import static org.drools.yaml.api.ObjectMapperFactory.createMapper;
-import static org.drools.yaml.api.RulesExecutor.createRulesExecutor;
+import static org.drools.yaml.compilation.RulesCompiler.createRulesCompiler;
 
 @Path("/create-rules-executor")
 public class CreateRulesExecutorEndpoint {
@@ -21,6 +21,6 @@ public class CreateRulesExecutorEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     public long executeQuery(String s) throws JsonProcessingException {
         RulesSet rulesSet = createMapper(new JsonFactory()).readValue(s, RulesSet.class);
-        return createRulesExecutor(rulesSet).getId();
+        return createRulesCompiler(rulesSet).getId();
     }
 }

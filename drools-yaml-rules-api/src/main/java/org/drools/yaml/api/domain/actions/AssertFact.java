@@ -1,7 +1,6 @@
 package org.drools.yaml.api.domain.actions;
 
 import org.drools.model.Drools;
-import org.drools.yaml.api.RulesExecutor;
 
 public class AssertFact extends FactAction {
 
@@ -16,8 +15,8 @@ public class AssertFact extends FactAction {
     }
 
     @Override
-    public void execute(RulesExecutor rulesExecutor, Drools drools) {
+    public void execute(long kieBaseHolderId, Drools drools) {
         System.out.println("Asserting " + getFact());
-        rulesExecutor.insertFact(getFact());
+        kieSessionHolder(kieBaseHolderId).insertFact(getFact());
     }
 }

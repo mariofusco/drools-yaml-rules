@@ -1,4 +1,4 @@
-package org.drools.yaml.api;
+package org.drools.yaml.runtime;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,14 +9,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.facttemplates.Fact;
-import org.drools.yaml.api.domain.RulesSet;
+import org.drools.yaml.api.KieSessionHolder;
+import org.drools.yaml.api.KieSessionHolderContainer;
 import org.json.JSONObject;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
@@ -25,11 +25,9 @@ import org.kie.api.runtime.rule.Match;
 
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFact;
 
-public class RulesExecutor {
+public class RulesExecutor implements KieSessionHolder {
 
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
 
     private final SessionGenerator sessionGenerator;
     private final KieSession ksession;
@@ -43,77 +41,68 @@ public class RulesExecutor {
     // it is hold inside the RulesExecutorContainer just to provide anm (indirect) mapping between generated kiesession and evaluation requests
     // it is also responsible for rule execution
 
-    // All the code contained inside SessionGenerator, written that way, would have to be copied over and over, if not already a copy,
+    // All the code contained inside SessionGenerator, written that way, would have to be copied over and over, if
+    // not already a copy,
     // because it fullfill the basic behavior "return a kiebase containing an executable model  out of a set of rules"
-    // it mixes/bind the two phases, i.e. the creation of an executable model (that is a sort-of "compilation") and the execution of it (that is the runtime)
+    // it mixes/bind the two phases, i.e. the creation of an executable model (that is a sort-of "compilation") and
+    // the execution of it (that is the runtime)
     // invoking a method of a parameter, passing itself as parameter, smells a lot of anti-pattern
     // sessionGenerator.build(this);
     private RulesExecutor(SessionGenerator sessionGenerator, long id) {
         this.sessionGenerator = sessionGenerator;
-        this.ksession = sessionGenerator.build(this);
+        this.ksession = sessionGenerator.build(id);
         this.id = id;
     }
 
-    public static RulesExecutor createFromYaml(String yaml) {
-        return createFromYaml(RuleNotation.CoreNotation.INSTANCE, yaml);
-    }
-
-    public static RulesExecutor createFromYaml(RuleNotation notation, String yaml) {
-        return create(RuleFormat.YAML, notation, yaml);
-    }
-
-    public static RulesExecutor createFromJson(String json) {
-        return createFromJson(RuleNotation.CoreNotation.INSTANCE, json);
-    }
-
-    public static RulesExecutor createFromJson(RuleNotation notation, String json) {
-        return create(RuleFormat.JSON, notation, json);
-    }
-
-    private static RulesExecutor create(RuleFormat format, RuleNotation notation, String text) {
-        return createRulesExecutor( notation.toRulesSet( format, text ) );
-    }
-
-    public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {
-        RulesExecutor rulesExecutor = new RulesExecutor( new SessionGenerator(rulesSet), ID_GENERATOR.getAndIncrement());
-        RulesExecutorContainer.INSTANCE.register(rulesExecutor);
+    public static RulesExecutor createRulesExecutor(long id) {
+        RulesExecutor rulesExecutor = new RulesExecutor(new SessionGenerator(), id);
+        KieSessionHolderContainer.INSTANCE.register(rulesExecutor);
         return rulesExecutor;
     }
 
+    @Override
     public long getId() {
         return id;
     }
 
+    @Override
     public void dispose() {
-        RulesExecutorContainer.INSTANCE.dispose(this);
+        KieSessionHolderContainer.INSTANCE.dispose(this);
         ksession.dispose();
     }
 
+    @Override
     public long rulesCount() {
         return ksession.getKieBase().getKiePackages().stream().mapToLong(p -> p.getRules().size()).sum();
     }
 
+    @Override
     public int executeFacts(String json) {
         return executeFacts( new JSONObject(json).toMap() );
     }
 
+    @Override
     public int executeFacts(Map<String, Object> factMap) {
         insertFact( factMap );
         return ksession.fireAllRules();
     }
 
+    @Override
     public List<Match> processFacts(String json) {
         return processFacts( new JSONObject(json).toMap() );
     }
 
+    @Override
     public List<Match> processFacts(Map<String, Object> factMap) {
         return process(factMap, false);
     }
 
+    @Override
     public List<Match> processEvents(String json) {
         return processEvents( new JSONObject(json).toMap() );
     }
 
+    @Override
     public List<Match> processEvents(Map<String, Object> factMap) {
         return process(factMap, true);
     }
@@ -141,21 +130,25 @@ public class RulesExecutor {
         }
     }
 
+    @Override
     public FactHandle insertFact(Map<String, Object> factMap) {
         return ksession.insert( mapToFact(factMap) );
     }
 
+    @Override
     public boolean retract(String json) {
         return retractFact( new JSONObject(json).toMap() );
     }
 
+    @Override
     public boolean retractFact(Map<String, Object> factMap) {
         Fact toBeRetracted = mapToFact(factMap);
 
-        return ksession.getFactHandles(o -> o instanceof Fact && Objects.equals(((Fact) o).asMap(), toBeRetracted.asMap()))
+        return ksession.getFactHandles(o -> o instanceof Fact && Objects.equals(((Fact) o).asMap(),
+                                                                                toBeRetracted.asMap()))
                 .stream().findFirst()
-                .map( fh -> {
-                    ksession.delete( fh );
+                .map(fh -> {
+                    ksession.delete(fh);
                     return true;
                 }).orElse(false);
     }
@@ -177,14 +170,17 @@ public class RulesExecutor {
         }
     }
 
+    @Override
     public Collection<?> getAllFacts() {
         return ksession.getObjects();
     }
 
+    @Override
     public List<Map<String, Object>> getAllFactsAsMap() {
         return getAllFacts().stream().map(Fact.class::cast).map(Fact::asMap).collect(Collectors.toList());
     }
 
+    @Override
     public String getAllFactsAsJson() {
         try {
             return OBJECT_MAPPER.writeValueAsString(getAllFactsAsMap());

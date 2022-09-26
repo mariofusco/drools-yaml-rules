@@ -1,15 +1,13 @@
 package org.drools.yaml.compilation.jpy;
 
-
-import org.drools.yaml.api.RulesExecutor;
-
+import org.drools.yaml.compilation.RulesCompiler;
 
 public class AstRulesCompilation {
 
 
     public long createRuleset(String rulesetString) {
-        RulesExecutor executor = RulesExecutor.createFromJson(rulesetString);
-        return executor.getId();
+        RulesCompiler compiler = RulesCompiler.createFromJson(rulesetString);
+        return compiler.getId();
     }
 
 }

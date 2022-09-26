@@ -8,9 +8,11 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.drools.yaml.api.RulesExecutor;
-import org.drools.yaml.api.RulesExecutorContainer;
+import org.drools.yaml.compilation.RulesCompiler;
+import org.drools.yaml.runtime.RulesExecutor;
 import org.kie.api.runtime.rule.Match;
+
+import static org.drools.yaml.runtime.KieSessionHolderUtils.kieSessionHolder;
 
 public class AstRulesEngine {
 
@@ -22,15 +24,16 @@ public class AstRulesEngine {
      * AstRulesCompilation.createRuleset
      */
     public long createRuleset(String rulesetString) {
-        RulesExecutor executor = RulesExecutor.createFromJson(rulesetString);
-        return executor.getId();
+        // This creates a direct dependency between runtime and compile module that should be removed
+        RulesCompiler rulesCompiler = RulesCompiler.createFromJson(rulesetString);
+        return rulesCompiler.getId();
     }
 
     /**
      * @return error code (currently always 0)
      */
     public int retractFact(long sessionId, String serializedFact) {
-        RulesExecutorContainer.INSTANCE.get(sessionId).retract(serializedFact);
+        kieSessionHolder(sessionId).retract(serializedFact);
         return 0;
     }
 
@@ -50,17 +53,17 @@ public class AstRulesEngine {
     public int assertFact(long sessionId, String serializedFact) {
         return processMessage(
                 serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processFacts);
+                kieSessionHolder(sessionId)::processFacts);
     }
 
     public int assertEvent(long sessionId, String serializedFact) {
         return processMessage(
                 serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processEvents);
+                kieSessionHolder(sessionId)::processEvents);
     }
 
     public String getFacts(long session_id) {
-        return RulesExecutorContainer.INSTANCE.get(session_id).getAllFactsAsJson();
+        return kieSessionHolder(session_id).getAllFactsAsJson();
     }
 
     private int processMessage(String serializedFact, Function<String, Collection<Match>> command) {

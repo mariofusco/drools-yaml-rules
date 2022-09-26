@@ -1,7 +1,6 @@
 package org.drools.yaml.api.domain.actions;
 
 import org.drools.model.Drools;
-import org.drools.yaml.api.RulesExecutor;
 
 public class RetractFact extends FactAction {
 
@@ -16,7 +15,7 @@ public class RetractFact extends FactAction {
     }
 
     @Override
-    public void execute(RulesExecutor rulesExecutor, Drools drools) {
+    public void execute(long kieBaseHolderId, Drools drools) {
         System.out.println("Retracting " + getFact());
     }
 }

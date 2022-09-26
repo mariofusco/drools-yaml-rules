@@ -15,18 +15,14 @@
  */
 package org.drools.yaml.api;
 
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeVariable;
+public class Constants {
 
-public interface RuleGenerationContext {
+    public static final String PROTOTYPE_NAME = "DROOLS_PROTOTYPE";
 
-    PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name);
+    public static boolean isGeneratedBinding(String binding) {
+        return binding.equals("m") || binding.startsWith("m_");
+    }
 
-    PrototypeVariable getPatternVariable(String binding);
-
-    void pushContext();
-
-    void popContext();
-
-    String generateBinding();
+    private Constants() {
+    }
 }

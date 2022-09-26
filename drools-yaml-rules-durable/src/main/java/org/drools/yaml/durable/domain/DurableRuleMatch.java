@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.core.facttemplates.Fact;
-import org.drools.yaml.api.RulesExecutor;
+import org.drools.yaml.runtime.RulesExecutor;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.yaml.api.domain.RuleMatch.toNestedMap;

@@ -1,20 +1,17 @@
-package org.drools.yaml.api;
+package org.drools.yaml.compilation;
 
 import org.drools.model.Prototype;
 import org.drools.model.impl.ModelImpl;
 import org.drools.modelcompiler.KieBaseBuilder;
-import org.drools.yaml.api.RuleGenerationContext;
 import org.drools.yaml.api.domain.Rule;
 import org.drools.yaml.api.domain.RulesSet;
 import org.drools.yaml.api.rulesmodel.PrototypeFactory;
 import org.kie.api.KieBase;
-import org.kie.api.runtime.KieSession;
 
 import static org.drools.model.DSL.execute;
 import static org.drools.model.PatternDSL.rule;
-import static org.drools.model.PrototypeDSL.variable;
 
-public class SessionGenerator {
+public class KieBaseGenerator {
 
     public static final String PROTOTYPE_NAME = "DROOLS_PROTOTYPE";
 
@@ -24,28 +21,27 @@ public class SessionGenerator {
 
     private final RulesSet rulesSet;
 
-    public SessionGenerator(RulesSet rulesSet) {
+    public KieBaseGenerator(RulesSet rulesSet) {
         this.rulesSet = rulesSet;
     }
 
-    public KieSession build(RulesExecutor rulesExecutor) {
+    public KieBase build(long kieBaseHolderId) {
         ModelImpl model = new ModelImpl();
-        rulesSet.getRules().stream().map(rule -> toExecModelRule(rule, rulesExecutor)).forEach(model::addRule);
-        KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model );
-        return kieBase.newKieSession();
+        rulesSet.getRules().stream().map(rule -> toExecModelRule(rule, kieBaseHolderId)).forEach(model::addRule);
+        return KieBaseBuilder.createKieBaseFromModel(model);
     }
 
-    private org.drools.model.Rule toExecModelRule(Rule rule, RulesExecutor rulesExecutor) {
+    private org.drools.model.Rule toExecModelRule(Rule rule, long kieBaseHolderId) {
         String ruleName = rule.getName();
         if (ruleName == null) {
             ruleName = "r_" + counter++;
         }
 
-        RuleGenerationContext ruleContext = new RuleGenerationContext(prototypeFactory);
+        RuleGenerationContextImpl ruleContext = new RuleGenerationContextImpl(prototypeFactory);
         var pattern = rule.getCondition().toPattern(ruleContext);
-        var consequence = execute(drools -> rule.getAction().execute(rulesExecutor, drools));
+        var consequence = execute(drools -> rule.getAction().execute(kieBaseHolderId, drools));
 
-        return rule( ruleName ).build(pattern, consequence);
+        return rule(ruleName).build(pattern, consequence);
     }
 
     public Prototype getPrototype() {
