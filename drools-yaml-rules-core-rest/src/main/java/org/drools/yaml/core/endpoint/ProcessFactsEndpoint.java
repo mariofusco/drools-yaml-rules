@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.drools.yaml.api.domain.RuleMatch;
 
-import static org.drools.yaml.runtime.KieSessionHolderUtils.kieSessionHolder;
+import static org.drools.yaml.core.KieSessionHolderUtils.kieSessionHolder;
 
 @Path("/rules-executors/{id}/process")
 public class ProcessFactsEndpoint {

@@ -13,10 +13,10 @@ import org.drools.yaml.api.KieSessionHolderContainer;
 import org.drools.yaml.compilation.RulesCompiler;
 import org.drools.yaml.durable.DurableNotation;
 import org.drools.yaml.durable.domain.DurableRuleMatch;
-import org.drools.yaml.runtime.RulesExecutor;
+import org.drools.yaml.core.RulesExecutor;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.yaml.runtime.RulesExecutor.OBJECT_MAPPER;
+import static org.drools.yaml.core.RulesExecutor.OBJECT_MAPPER;
 
 public class JpyDurableRulesEngine {
 

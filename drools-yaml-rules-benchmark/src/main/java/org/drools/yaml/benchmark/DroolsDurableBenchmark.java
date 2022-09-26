@@ -16,7 +16,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import static org.drools.yaml.runtime.KieSessionHolderUtils.kieSessionHolder;
+import static org.drools.yaml.core.KieSessionHolderUtils.kieSessionHolder;
 
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)

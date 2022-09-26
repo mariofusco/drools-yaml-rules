@@ -2,6 +2,7 @@ package org.drools.yaml.runtime;
 
 import java.util.List;
 
+import org.drools.yaml.core.RulesExecutor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;

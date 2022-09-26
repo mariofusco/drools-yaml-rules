@@ -10,7 +10,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import static org.drools.yaml.runtime.KieSessionHolderUtils.kieSessionHolder;
+import static org.drools.yaml.core.KieSessionHolderUtils.kieSessionHolder;
 
 @Path("/rules-durable-executors/{id}/get-all-facts")
 public class GetAllFactsDurableEndpoint {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.drools.yaml.runtime;
+package org.drools.yaml.core;
 
 import org.drools.yaml.api.KieSessionHolder;
 import org.drools.yaml.api.KieSessionHolderContainer;

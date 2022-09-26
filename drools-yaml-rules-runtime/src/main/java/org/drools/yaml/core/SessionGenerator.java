@@ -1,4 +1,4 @@
-package org.drools.yaml.runtime;
+package org.drools.yaml.core;
 
 import org.drools.model.Prototype;
 import org.drools.yaml.api.KieBaseHolderContainer;

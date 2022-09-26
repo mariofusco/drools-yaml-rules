@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import org.drools.yaml.durable.domain.DurableRuleMatch;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.yaml.runtime.KieSessionHolderUtils.kieSessionHolder;
+import static org.drools.yaml.core.KieSessionHolderUtils.kieSessionHolder;
 
 @Path("/rules-durable-executors/{id}/process-events")
 public class ProcessEventsDurableEndpoint {

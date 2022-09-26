@@ -1,4 +1,4 @@
-package org.drools.yaml.runtime.jpy;
+package org.drools.yaml.core.jpy;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.core.facttemplates.Fact;
 import org.drools.yaml.api.domain.RuleMatch;
-import org.drools.yaml.runtime.RulesExecutor;
+import org.drools.yaml.core.RulesExecutor;
 import org.kie.api.runtime.rule.Match;
 
 public class AstRuleMatch {

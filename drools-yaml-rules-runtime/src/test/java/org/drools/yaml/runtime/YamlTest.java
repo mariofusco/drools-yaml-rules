@@ -1,5 +1,6 @@
 package org.drools.yaml.runtime;
 
+import org.drools.yaml.core.RulesExecutor;
 import org.junit.Test;
 
 import static org.drools.yaml.api.YamlTest.YAML1;

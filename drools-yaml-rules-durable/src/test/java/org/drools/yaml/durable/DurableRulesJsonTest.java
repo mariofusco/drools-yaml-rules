@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.drools.yaml.api.domain.RuleMatch;
 import org.drools.yaml.compilation.RulesCompiler;
-import org.drools.yaml.runtime.RulesExecutor;
+import org.drools.yaml.core.RulesExecutor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;

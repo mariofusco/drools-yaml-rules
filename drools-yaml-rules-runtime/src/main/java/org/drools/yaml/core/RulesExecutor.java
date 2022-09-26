@@ -1,4 +1,4 @@
-package org.drools.yaml.runtime;
+package org.drools.yaml.core;
 
 import java.util.ArrayList;
 import java.util.Collection;

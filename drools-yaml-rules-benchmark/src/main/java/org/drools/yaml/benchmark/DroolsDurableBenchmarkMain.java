@@ -4,7 +4,7 @@ import org.drools.yaml.api.KieSessionHolder;
 import org.drools.yaml.compilation.RulesCompiler;
 import org.drools.yaml.durable.DurableNotation;
 
-import static org.drools.yaml.runtime.KieSessionHolderUtils.kieSessionHolder;
+import static org.drools.yaml.core.KieSessionHolderUtils.kieSessionHolder;
 
 public class DroolsDurableBenchmarkMain {
     public static void main(String[] args) {
