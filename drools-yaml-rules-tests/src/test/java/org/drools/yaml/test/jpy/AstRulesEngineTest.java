@@ -1,6 +1,7 @@
-package org.drools.yaml.core.jpy;
+package org.drools.yaml.test.jpy;
 
 import org.drools.yaml.api.JsonTest;
+import org.drools.yaml.core.jpy.AstRulesEngine;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
