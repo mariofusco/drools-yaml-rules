@@ -10,11 +10,14 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>drools-yaml-rules-core</module>
+    <module>drools-yaml-rules-api</module>
+    <module>drools-yaml-rules-compilation</module>
+    <module>drools-yaml-rules-runtime</module>
     <module>drools-yaml-rules-core-rest</module>
     <module>drools-yaml-rules-durable</module>
     <module>drools-yaml-rules-durable-rest</module>
     <module>drools-yaml-rules-benchmark</module>
+    <module>drools-yaml-rules-tests</module>
   </modules>
   
   <name>Drools :: YAML Rules</name>

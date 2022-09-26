@@ -8,10 +8,10 @@ import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.drools.yaml.core.domain.RulesSet;
+import org.drools.yaml.api.domain.RulesSet;
 
-import static org.drools.yaml.core.ObjectMapperFactory.createMapper;
-import static org.drools.yaml.core.RulesExecutor.createRulesExecutor;
+import static org.drools.yaml.api.ObjectMapperFactory.createMapper;
+import static org.drools.yaml.api.RulesExecutor.createRulesExecutor;
 
 @Path("/create-rules-executor")
 public class CreateRulesExecutorEndpoint {

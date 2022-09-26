@@ -1,8 +1,8 @@
 package org.drools.yaml.durable.domain;
 
 import org.drools.model.Drools;
-import org.drools.yaml.core.RulesExecutor;
-import org.drools.yaml.core.domain.actions.Action;
+import org.drools.yaml.api.RulesExecutor;
+import org.drools.yaml.api.domain.actions.Action;
 
 public class RunAction implements Action {
     private final String name;

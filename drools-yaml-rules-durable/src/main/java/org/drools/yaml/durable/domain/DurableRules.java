@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.yaml.core.domain.Rule;
-import org.drools.yaml.core.domain.RuleContainer;
-import org.drools.yaml.core.domain.RulesSet;
+import org.drools.yaml.api.domain.Rule;
+import org.drools.yaml.api.domain.RuleContainer;
+import org.drools.yaml.api.domain.RulesSet;
 
 public class DurableRules extends HashMap<String, Map<String, DurableRule>> {
 

@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 import org.drools.model.Index;
 import org.drools.model.PrototypeExpression;
-import org.drools.yaml.core.domain.Rule;
-import org.drools.yaml.core.domain.conditions.BetaExpressionCondition;
-import org.drools.yaml.core.domain.conditions.SimpleCondition;
-import org.drools.yaml.core.domain.conditions.ExpressionCondition;
+import org.drools.yaml.api.domain.Rule;
+import org.drools.yaml.api.domain.conditions.BetaExpressionCondition;
+import org.drools.yaml.api.domain.conditions.SimpleCondition;
+import org.drools.yaml.api.domain.conditions.ExpressionCondition;
 
 import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeField;

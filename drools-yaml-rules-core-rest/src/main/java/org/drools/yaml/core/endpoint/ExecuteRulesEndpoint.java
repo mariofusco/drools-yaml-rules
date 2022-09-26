@@ -8,7 +8,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.drools.yaml.core.RulesExecutorContainer;
+import org.drools.yaml.api.RulesExecutorContainer;
 
 @Path("/rules-executors/{id}/execute")
 public class ExecuteRulesEndpoint {

@@ -1,12 +1,5 @@
 package org.drools.yaml.durable.jpy;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.drools.yaml.core.RulesExecutor;
-import org.drools.yaml.core.RulesExecutorContainer;
-import org.drools.yaml.durable.DurableNotation;
-import org.drools.yaml.durable.domain.DurableRuleMatch;
-import org.kie.api.runtime.rule.Match;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -14,7 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.drools.yaml.core.RulesExecutor.OBJECT_MAPPER;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.drools.yaml.api.RulesExecutor;
+import org.drools.yaml.api.RulesExecutorContainer;
+import org.drools.yaml.durable.DurableNotation;
+import org.drools.yaml.durable.domain.DurableRuleMatch;
+import org.kie.api.runtime.rule.Match;
+
+import static org.drools.yaml.api.RulesExecutor.OBJECT_MAPPER;
 
 public class JpyDurableRulesEngine {
 
