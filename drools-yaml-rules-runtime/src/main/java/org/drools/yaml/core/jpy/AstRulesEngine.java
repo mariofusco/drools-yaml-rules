@@ -22,6 +22,10 @@ public class AstRulesEngine {
         return executor.getId();
     }
 
+    public void dispose(long sessionId) {
+        RulesExecutorContainer.INSTANCE.get(sessionId).dispose();
+    }
+
     /**
      * @return error code (currently always 0)
      */
