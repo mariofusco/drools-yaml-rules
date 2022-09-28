@@ -19,6 +19,11 @@
       <artifactId>drools-yaml-rules-durable</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-yaml-rules-runtime</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>io.quarkus</groupId>
