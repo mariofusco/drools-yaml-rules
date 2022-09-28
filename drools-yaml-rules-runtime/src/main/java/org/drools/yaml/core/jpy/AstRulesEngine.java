@@ -30,8 +30,9 @@ public class AstRulesEngine {
      * @return error code (currently always 0)
      */
     public String retractFact(long sessionId, String serializedFact) {
-        return toJson(
-                RulesExecutorContainer.INSTANCE.get(sessionId).processRetract(serializedFact));
+        return toJson(processMessage(
+                serializedFact,
+                RulesExecutorContainer.INSTANCE.get(sessionId)::processRetract));
     }
 
     public String assertFact(long sessionId, String serializedFact) {
