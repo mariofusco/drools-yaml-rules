@@ -53,9 +53,9 @@ public class AstRulesEngineTest {
             String retractedFact = "{\"i\": 67}";
             String r = engine.retractFact(id, retractedFact);
 
-            List<Map> v = RulesExecutor.OBJECT_MAPPER.readValue(r, new TypeReference<>(){});
+            List<Map<String, Map>> v = RulesExecutor.OBJECT_MAPPER.readValue(r, new TypeReference<>(){});
 
-            assertEquals(v.get(0).get("r_0"), new JSONObject(retractedFact).toMap());
+            assertEquals(v.get(0).get("r_0").get("m"), new JSONObject(retractedFact).toMap());
         }
     }
 
