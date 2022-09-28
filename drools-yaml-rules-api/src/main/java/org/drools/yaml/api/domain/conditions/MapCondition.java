@@ -134,7 +134,16 @@ public class MapCondition implements Condition {
                 return fixedValue(value);
         }
 
-        return prototypeField(key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("event") ? value.toString() : key + "." + value);
+        if (value instanceof String) {
+            return prototypeField(key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("event") ? (String) value : key + "." + value);
+        }
+
+        if (value instanceof Map) {
+            Map<?,?> expression = (Map<?,?>) value;
+            return map2Expr(expression.get("lhs")).composeWith( decodeBinaryOperator(key), map2Expr(expression.get("rhs")));
+        }
+
+        throw new UnsupportedOperationException("Invalid expression: " + expr);
     }
 
     private static Index.ConstraintType decodeOperation(String expressionName) {
@@ -156,6 +165,20 @@ public class MapCondition implements Condition {
                 return EXISTS_PROTOTYPE_FIELD;
         }
         throw new UnsupportedOperationException("Unrecognized operation type: " + expressionName);
+    }
+
+    private static PrototypeExpression.BinaryOperation.Operator decodeBinaryOperator(String operator) {
+        switch (operator) {
+            case "AdditionExpression":
+                return PrototypeExpression.BinaryOperation.Operator.ADD;
+            case "SubtractionExpression":
+                return PrototypeExpression.BinaryOperation.Operator.SUB;
+            case "MultiplicationExpression":
+                return PrototypeExpression.BinaryOperation.Operator.MUL;
+            case "DivisionExpression":
+                return PrototypeExpression.BinaryOperation.Operator.DIV;
+        }
+        throw new UnsupportedOperationException("Unrecognized binary operator " + operator);
     }
 
     @Override
