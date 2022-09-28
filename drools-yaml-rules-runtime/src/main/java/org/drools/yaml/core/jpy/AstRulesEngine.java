@@ -3,11 +3,14 @@ package org.drools.yaml.core.jpy;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.yaml.api.RulesExecutor;
 import org.drools.yaml.api.RulesExecutorContainer;
+import org.json.JSONObject;
 import org.kie.api.runtime.rule.Match;
 
 public class AstRulesEngine {
@@ -30,9 +33,14 @@ public class AstRulesEngine {
      * @return error code (currently always 0)
      */
     public String retractFact(long sessionId, String serializedFact) {
-        return toJson(processMessage(
+        Map<String, Object> fact = new JSONObject(serializedFact).toMap();
+        List<Map<String, Map>> objs = processMessage(
                 serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processRetract));
+                RulesExecutorContainer.INSTANCE.get(sessionId)::processRetract);
+        List<Map<String, ?>> results = objs.stream()
+                .map(m -> m.entrySet().stream().findFirst().map(e -> Map.of(e.getKey(), fact)).get())
+                .collect(Collectors.toList());
+        return toJson(results);
     }
 
     public String assertFact(long sessionId, String serializedFact) {

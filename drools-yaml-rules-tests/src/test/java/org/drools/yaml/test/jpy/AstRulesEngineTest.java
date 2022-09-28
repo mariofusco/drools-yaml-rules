@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.drools.yaml.api.JsonTest;
 import org.drools.yaml.api.RulesExecutor;
 import org.drools.yaml.core.jpy.AstRulesEngine;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
@@ -48,11 +50,12 @@ public class AstRulesEngineTest {
             long id = engine.createRuleset(rules);
             engine.assertFact(id, "{\"j\": 42}");
             engine.assertFact(id, "{\"i\": 67}");
-            String r = engine.retractFact(id, "{\"i\": 67}");
+            String retractedFact = "{\"i\": 67}";
+            String r = engine.retractFact(id, retractedFact);
 
             List<Map> v = RulesExecutor.OBJECT_MAPPER.readValue(r, new TypeReference<>(){});
 
-            assertNotNull(v.get(0).get("r_0"));
+            assertEquals(v.get(0).get("r_0"), new JSONObject(retractedFact).toMap());
         }
     }
 
