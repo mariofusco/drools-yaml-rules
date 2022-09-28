@@ -34,11 +34,13 @@ public class AstRulesEngine {
      */
     public String retractFact(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
+        Map<String, Object> boundFact = Map.of("m", fact);
         List<Map<String, Map>> objs = processMessage(
                 serializedFact,
                 RulesExecutorContainer.INSTANCE.get(sessionId)::processRetract);
         List<Map<String, ?>> results = objs.stream()
-                .map(m -> m.entrySet().stream().findFirst().map(e -> Map.of(e.getKey(), fact)).get())
+                .map(m -> m.entrySet().stream().findFirst()
+                        .map(e -> Map.of(e.getKey(), boundFact)).get())
                 .collect(Collectors.toList());
         return toJson(results);
     }
