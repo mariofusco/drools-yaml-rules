@@ -1,0 +1,54 @@
+{
+        "hosts": [
+            "all"
+        ],
+        "name": "14 Subtract",
+        "rules": [
+            {
+                "Rule": {
+                    "action": {
+                        "Action": {
+                            "action": "debug",
+                            "action_args": {}
+                        }
+                    },
+                    "condition": {
+                        "AllCondition": [
+                            {
+                                "EqualsExpression": {
+                                    "lhs": {
+                                        "Event": "nested.i"
+                                    },
+                                    "rhs": {
+                                        "BROKEN_EXPRESSION": {
+                                            "lhs": {
+                                                "Event": "nested.j"
+                                            },
+                                            "rhs": {
+                                                "Integer": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "enabled": true,
+                    "name": null
+                }
+            }
+        ],
+        "sources": [
+            {
+                "EventSource": {
+                    "name": "nested",
+                    "source_args": {
+                        "i_limit": 5,
+                        "j_limit": 5
+                    },
+                    "source_filters": [],
+                    "source_name": "nested"
+                }
+            }
+        ]
+}
