@@ -31,7 +31,7 @@ public class JpyDurableRulesEngine {
      * @return error code (currently always 0)
      */
     public int retractFact(long sessionId, String serializedFact) {
-        RulesExecutorContainer.INSTANCE.get(sessionId).retract(serializedFact);
+        RulesExecutorContainer.INSTANCE.get(sessionId).processRetract(serializedFact);
         return 0;
     }
 

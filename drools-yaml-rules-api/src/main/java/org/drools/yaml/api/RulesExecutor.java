@@ -126,6 +126,10 @@ public class RulesExecutor {
                     .map(InternalFactHandle::getId)
                     .forEach(ephemeralFactHandleIds::add);
         }
+        return findMatchedRules();
+    }
+
+    private List<Match> findMatchedRules() {
         RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter(ksession, ephemeralFactHandleIds);
         ksession.fireAllRules(filter);
         return filter.getMatchedRules();
@@ -145,8 +149,12 @@ public class RulesExecutor {
         return ksession.insert( mapToFact(factMap) );
     }
 
-    public boolean retract(String json) {
-        return retractFact( new JSONObject(json).toMap() );
+    public int executeRetract(String json) {
+        return retractFact( new JSONObject(json).toMap() ) ? ksession.fireAllRules() : 0;
+    }
+
+    public List<Match> processRetract(String json) {
+        return retractFact( new JSONObject(json).toMap() ) ? findMatchedRules() : Collections.emptyList();
     }
 
     public boolean retractFact(Map<String, Object> factMap) {

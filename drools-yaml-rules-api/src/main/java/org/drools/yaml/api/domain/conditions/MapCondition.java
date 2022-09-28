@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.model.Index;
+import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
@@ -89,9 +90,8 @@ public class MapCondition implements Condition {
 
     private static ViewItem singleCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, Map.Entry entry) {
         ParsedCondition parsedCondition = condition.parseSingle(entry);
-        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
-        pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), parsedCondition.getRight());
-        return pattern;
+        PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
+        return parsedCondition.patternToViewItem(pattern);
     }
 
     private ParsedCondition parseSingle(Map.Entry entry) {
@@ -111,7 +111,7 @@ public class MapCondition implements Condition {
         Index.ConstraintType operator = decodeOperation(expressionName);
 
         if (operator == EXISTS_PROTOTYPE_FIELD) {
-            return new ParsedCondition(map2Expr(expression), operator, fixedValue(expressionName.equals("IsDefinedExpression")));
+            return new ParsedCondition(map2Expr(expression), operator, fixedValue(true)).withNotPattern(expressionName.equals("IsNotDefinedExpression"));
         }
 
         return new ParsedCondition(map2Expr(expression.get("lhs")), operator, map2Expr(expression.get("rhs")));

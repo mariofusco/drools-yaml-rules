@@ -165,7 +165,8 @@ public class DurableRulesJsonTest {
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1 } }" );
         assertEquals( 1, matchedRules.size() );
 
-        assertTrue( rulesExecutor.retract( "{ \"nested\": { \"i\": 1 } }" ) );
+        matchedRules = rulesExecutor.processRetract( "{ \"nested\": { \"i\": 1 } }" );
+        assertEquals( 0, matchedRules.size() );
     }
 
     @Test
