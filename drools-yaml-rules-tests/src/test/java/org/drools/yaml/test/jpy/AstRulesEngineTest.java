@@ -4,7 +4,11 @@ import org.drools.yaml.api.JsonTest;
 import org.drools.yaml.core.jpy.AstRulesEngine;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 
 public class AstRulesEngineTest {
@@ -20,4 +24,15 @@ public class AstRulesEngineTest {
 
         assertNotNull(result);
     }
+
+    @Test
+    public void testBrokenApi() throws IOException {
+        try (InputStream s = getClass().getClassLoader().getResourceAsStream("broken.json")) {
+            String rules = new String(s.readAllBytes());
+
+            AstRulesEngine engine = new AstRulesEngine();
+            assertThrows(UnsupportedOperationException.class, () -> engine.createRuleset(rules));
+        }
+    }
+
 }
