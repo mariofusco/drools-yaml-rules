@@ -1,0 +1,96 @@
+{
+        "hosts": [
+            "all"
+        ],
+        "name": "20 is not defined",
+        "rules": [
+            {
+                "Rule": {
+                    "action": {
+                        "Action": {
+                            "action": "assert_fact",
+                            "action_args": {
+                                "fact": {
+                                    "msg": "hello"
+                                }
+                            }
+                        }
+                    },
+                    "condition": {
+                        "AllCondition": [
+                            {
+                                "EqualsExpression": {
+                                    "lhs": {
+                                        "Event": "i"
+                                    },
+                                    "rhs": {
+                                        "Integer": 1
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "enabled": true,
+                    "name": null
+                }
+            },
+            {
+                "Rule": {
+                    "action": {
+                        "Action": {
+                            "action": "retract_fact",
+                            "action_args": {
+                                "fact": {
+                                    "msg": "hello"
+                                }
+                            }
+                        }
+                    },
+                    "condition": {
+                        "AllCondition": [
+                            {
+                                "IsDefinedExpression": {
+                                    "Event": "msg"
+                                }
+                            }
+                        ]
+                    },
+                    "enabled": true,
+                    "name": null
+                }
+            },
+            {
+                "Rule": {
+                    "action": {
+                        "Action": {
+                            "action": "debug",
+                            "action_args": {}
+                        }
+                    },
+                    "condition": {
+                        "AllCondition": [
+                            {
+                                "IsNotDefinedExpression": {
+                                    "Event": "msg"
+                                }
+                            }
+                        ]
+                    },
+                    "enabled": true,
+                    "name": null
+                }
+            }
+        ],
+        "sources": [
+            {
+                "EventSource": {
+                    "name": "range",
+                    "source_args": {
+                        "limit": 5
+                    },
+                    "source_filters": [],
+                    "source_name": "range"
+                }
+            }
+        ]
+}

@@ -1,5 +1,6 @@
 package org.drools.yaml.test.jpy;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.drools.yaml.api.JsonTest;
 import org.drools.yaml.api.RulesExecutor;
@@ -53,10 +54,30 @@ public class AstRulesEngineTest {
             String retractedFact = "{\"i\": 67}";
             String r = engine.retractFact(id, retractedFact);
 
-            List<Map<String, Map>> v = RulesExecutor.OBJECT_MAPPER.readValue(r, new TypeReference<>(){});
+            List<Map<String, Map>> v = resultOf(r);
 
             assertEquals(v.get(0).get("r_0").get("m"), new JSONObject(retractedFact).toMap());
         }
     }
 
+    @Test
+    public void is_not_defined_ast() throws IOException {
+        try (InputStream s = getClass().getClassLoader().getResourceAsStream("20_is_not_defined_ast.json")) {
+            String rules = new String(s.readAllBytes());
+
+            AstRulesEngine engine = new AstRulesEngine();
+            long id = engine.createRuleset(rules);
+            List<Map<String, Map>> r = resultOf(engine.assertFact(id, JSONObject.valueToString(Map.of("i", 1))));
+
+            assertEquals(r, List.of(
+                    Map.of("r_0", Map.of("m", Map.of("i", 1))),
+                    Map.of("r_2", Map.of())
+            ));
+        }
+    }
+
+
+    private static List<Map<String, Map>> resultOf(String r) throws JsonProcessingException {
+        return RulesExecutor.OBJECT_MAPPER.readValue(r, new TypeReference<>() {});
+    }
 }
