@@ -6,6 +6,7 @@ import java.util.Map;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
+import org.drools.model.PrototypeVariable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 import org.drools.yaml.api.RuleGenerationContext;
@@ -91,7 +92,7 @@ public class MapCondition implements Condition {
     private static ViewItem singleCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, Map.Entry entry) {
         ParsedCondition parsedCondition = condition.parseSingle(entry);
         PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
-        return parsedCondition.patternToViewItem(pattern);
+        return parsedCondition.patternToViewItem(ruleContext, pattern);
     }
 
     private ParsedCondition parseSingle(Map.Entry entry) {
@@ -111,15 +112,18 @@ public class MapCondition implements Condition {
         Index.ConstraintType operator = decodeOperation(expressionName);
 
         if (operator == EXISTS_PROTOTYPE_FIELD) {
-            return new ParsedCondition(map2Expr(expression), operator, fixedValue(true)).withNotPattern(expressionName.equals("IsNotDefinedExpression"));
+            return new ParsedCondition(map2Expr(expression).prototypeExpression, operator, fixedValue(true)).withNotPattern(expressionName.equals("IsNotDefinedExpression"));
         }
 
-        return new ParsedCondition(map2Expr(expression.get("lhs")), operator, map2Expr(expression.get("rhs")));
+        ConditionExpression left = map2Expr(expression.get("lhs"));
+        ConditionExpression right = map2Expr(expression.get("rhs"));
+        return new ParsedCondition(left.prototypeExpression, operator, right.prototypeExpression)
+                .withImplicitPattern(left.field && right.field && !left.prototypeName.equals(right.prototypeName));
     }
 
-    private static PrototypeExpression map2Expr(Object expr) {
+    private static ConditionExpression map2Expr(Object expr) {
         if (expr instanceof String) {
-            return prototypeField((String)expr);
+            return new ConditionExpression((String)expr);
         }
 
         Map<?,?> exprMap = (Map) expr;
@@ -132,11 +136,12 @@ public class MapCondition implements Condition {
             case "Integer":
             case "String":
             case "Boolean":
-                return fixedValue(value);
+                return new ConditionExpression(fixedValue(value));
         }
 
         if (value instanceof String) {
-            return prototypeField(key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("event") ? (String) value : key + "." + value);
+            String fieldName = key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("event") ? (String) value : key + "." + value;
+            return new ConditionExpression(fieldName);
         }
 
         if (value instanceof Map) {
@@ -145,6 +150,39 @@ public class MapCondition implements Condition {
         }
 
         throw new UnsupportedOperationException("Invalid expression: " + expr);
+    }
+
+    private static class ConditionExpression {
+        private final PrototypeExpression prototypeExpression;
+        private final boolean field;
+        private final String fieldName;
+        private final String prototypeName;
+
+        private ConditionExpression(String fieldName) {
+            this(prototypeField(fieldName), true, fieldName);
+        }
+
+        private ConditionExpression(PrototypeExpression prototypeExpression) {
+            this(prototypeExpression, false, null);
+        }
+
+        private ConditionExpression(PrototypeExpression prototypeExpression, boolean field, String fieldName) {
+            this.prototypeExpression = prototypeExpression;
+            this.field = field;
+            this.fieldName = fieldName;
+            this.prototypeName = field && fieldName.indexOf('.') > 0 ? fieldName.substring(0, fieldName.indexOf('.')) : fieldName;
+        }
+
+        public ConditionExpression composeWith(PrototypeExpression.BinaryOperation.Operator decodeBinaryOperator, ConditionExpression rhs) {
+            PrototypeExpression composed = prototypeExpression.composeWith(decodeBinaryOperator, rhs.prototypeExpression);
+            if (field) {
+                return new ConditionExpression(composed, true, fieldName);
+            }
+            if (rhs.field) {
+                return new ConditionExpression(composed, true, rhs.fieldName);
+            }
+            return new ConditionExpression(composed);
+        }
     }
 
     private static Index.ConstraintType decodeOperation(String expressionName) {

@@ -2,6 +2,7 @@ package org.drools.yaml.api;
 
 import org.drools.model.Prototype;
 import org.drools.model.impl.ModelImpl;
+import org.drools.model.view.ViewItem;
 import org.drools.modelcompiler.KieBaseBuilder;
 import org.drools.yaml.api.RuleGenerationContext;
 import org.drools.yaml.api.domain.Rule;
@@ -42,7 +43,7 @@ public class SessionGenerator {
         }
 
         RuleGenerationContext ruleContext = new RuleGenerationContext(prototypeFactory);
-        var pattern = rule.getCondition().toPattern(ruleContext);
+        ViewItem pattern = rule.getCondition().toPattern(ruleContext);
         var consequence = execute(drools -> rule.getAction().execute(rulesExecutor, drools));
 
         return rule( ruleName ).build(pattern, consequence);

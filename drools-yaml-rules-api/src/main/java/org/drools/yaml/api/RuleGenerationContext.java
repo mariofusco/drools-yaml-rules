@@ -29,7 +29,8 @@ public class RuleGenerationContext {
     }
 
     public PrototypeVariable getPatternVariable(String binding) {
-        return (PrototypeVariable) patterns.get(binding).getFirstVariable();
+        PrototypeDSL.PrototypePatternDef patternDef = patterns.get(binding);
+        return patternDef != null ? (PrototypeVariable) patternDef.getFirstVariable() : null;
     }
 
     public void pushContext() {
