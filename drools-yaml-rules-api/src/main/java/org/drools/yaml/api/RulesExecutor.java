@@ -118,15 +118,16 @@ public class RulesExecutor {
         return process(factMap, true);
     }
 
-    private List<Match> process(Map<String, Object> factMap, boolean ephemeral) {
+    private List<Match> process(Map<String, Object> factMap, boolean event) {
         Collection<FactHandle> fhs = insertFacts(factMap);
-        if (ephemeral) {
+        if (event) {
             fhs.stream()
                     .map(InternalFactHandle.class::cast)
                     .map(InternalFactHandle::getId)
                     .forEach(ephemeralFactHandleIds::add);
         }
-        return findMatchedRules();
+        List<Match> matches = findMatchedRules();
+        return !event || matches.size() < 2 ? matches : Collections.singletonList(matches.get(0));
     }
 
     private List<Match> findMatchedRules() {
