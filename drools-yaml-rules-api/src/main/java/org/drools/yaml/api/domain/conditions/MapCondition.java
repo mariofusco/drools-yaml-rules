@@ -131,6 +131,7 @@ public class MapCondition implements Condition {
         switch (key) {
             case "Integer":
             case "String":
+            case "Boolean":
                 return fixedValue(value);
         }
 

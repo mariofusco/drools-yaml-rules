@@ -144,6 +144,17 @@ public class JsonTest {
     }
 
     @Test
+    public void testProcessRuleWithBoolean() {
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Boolean\":true } } } }} ] }");
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":true } } }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
     public void testProcessRuleWithoutAction() {
         RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } } }} ] }");
 
