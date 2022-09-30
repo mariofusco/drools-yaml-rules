@@ -186,4 +186,20 @@ public class JsonTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testProcessNoteEqualsWithNull() {
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"NotEqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } } }} ] }");
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"j\":1 } } }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":2 } } }" );
+        assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }

@@ -59,6 +59,10 @@ public class ParsedCondition {
     }
 
     public ViewItem patternToViewItem(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
+        if (operator == ConstraintType.NOT_EQUAL) {
+            pattern.expr(getLeft(), ConstraintType.NOT_EQUAL, fixedValue(null));
+        }
+
         if (implicitPattern) {
             PrototypeDSL.PrototypePatternDef first = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), PROTOTYPE_NAME);
             pattern.expr(getLeft(), getOperator(), (PrototypeVariable) first.getFirstVariable(), getRight());
@@ -70,5 +74,10 @@ public class ParsedCondition {
             return not(pattern);
         }
         return pattern;
+    }
+
+    @Override
+    public String toString() {
+        return left + " " + operator + " " + right;
     }
 }
