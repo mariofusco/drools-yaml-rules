@@ -127,7 +127,10 @@ public class RulesExecutor {
                     .forEach(ephemeralFactHandleIds::add);
         }
         List<Match> matches = findMatchedRules();
-        return !event || matches.size() < 2 ? matches : Collections.singletonList(matches.get(0));
+        return !event || matches.size() < 2 ?
+                matches :
+                // when processing an event return only the matches for the first matched rule
+                matches.stream().takeWhile( match -> match.getRule().getName().equals(matches.get(0).getRule().getName())).collect(Collectors.toList());
     }
 
     private List<Match> findMatchedRules() {
