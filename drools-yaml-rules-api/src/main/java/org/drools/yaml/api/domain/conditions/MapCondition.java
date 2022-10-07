@@ -14,6 +14,7 @@ import org.drools.yaml.api.rulesmodel.ParsedCondition;
 
 import static org.drools.model.Index.ConstraintType.EXISTS_PROTOTYPE_FIELD;
 import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.PrototypeExpression.prototypeArrayItem;
 import static org.drools.model.PrototypeExpression.prototypeField;
 import static org.drools.yaml.api.SessionGenerator.PROTOTYPE_NAME;
 
@@ -123,7 +124,8 @@ public class MapCondition implements Condition {
 
     private static ConditionExpression map2Expr(Object expr) {
         if (expr instanceof String) {
-            return new ConditionExpression((String)expr);
+            String fieldName = (String)expr;
+            return new ConditionExpression(fieldName2PrototypeExpression(fieldName), true, fieldName);
         }
 
         Map<?,?> exprMap = (Map) expr;
@@ -141,7 +143,7 @@ public class MapCondition implements Condition {
 
         if (value instanceof String) {
             String fieldName = key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("event") ? (String) value : key + "." + value;
-            return new ConditionExpression(fieldName);
+            return new ConditionExpression(fieldName2PrototypeExpression(fieldName), true, fieldName);
         }
 
         if (value instanceof Map) {
@@ -152,15 +154,23 @@ public class MapCondition implements Condition {
         throw new UnsupportedOperationException("Invalid expression: " + expr);
     }
 
+    private static PrototypeExpression fieldName2PrototypeExpression(String fieldName) {
+        int arrayStart = fieldName.indexOf('[');
+        if (arrayStart >= 0) {
+            if (!fieldName.endsWith("]")) {
+                throw new UnsupportedOperationException("Invalid field name: " + fieldName);
+            }
+            int pos = Integer.parseInt(fieldName.substring(arrayStart+1, fieldName.length()-1));
+            return prototypeArrayItem(fieldName.substring(0, arrayStart), pos);
+        }
+        return prototypeField(fieldName);
+    }
+
     private static class ConditionExpression {
         private final PrototypeExpression prototypeExpression;
         private final boolean field;
         private final String fieldName;
         private final String prototypeName;
-
-        private ConditionExpression(String fieldName) {
-            this(prototypeField(fieldName), true, fieldName);
-        }
 
         private ConditionExpression(PrototypeExpression prototypeExpression) {
             this(prototypeExpression, false, null);
