@@ -181,10 +181,9 @@ public class RulesExecutor {
     private void populateFact(Fact fact, Map<?, ?> value, String fieldName) {
         for (Map.Entry<?, ?> entry : value.entrySet()) {
             String key = fieldName + entry.getKey();
+            fact.set(key, entry.getValue());
             if (entry.getValue() instanceof Map) {
                 populateFact(fact, (Map<?, ?>) entry.getValue(), key + ".");
-            } else {
-                fact.set(key, entry.getValue());
             }
         }
     }
