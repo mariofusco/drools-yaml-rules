@@ -10,6 +10,7 @@ import org.drools.model.PrototypeVariable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 import org.drools.yaml.api.RuleGenerationContext;
+import org.drools.yaml.api.RuleNotation;
 import org.drools.yaml.api.rulesmodel.ParsedCondition;
 
 import static org.drools.model.Index.ConstraintType.EXISTS_PROTOTYPE_FIELD;
@@ -122,7 +123,11 @@ public class MapCondition implements Condition {
     }
 
     private boolean hasImplicitPattern(RuleGenerationContext ruleContext, ConditionExpression left, ConditionExpression right) {
-        return left.field && right.field && !left.prototypeName.equals(right.prototypeName) && !ruleContext.isExistingBoundVariable(right.prototypeName);
+        boolean hasImplicitPattern = left.field && right.field && !left.prototypeName.equals(right.prototypeName) && !ruleContext.isExistingBoundVariable(right.prototypeName);
+        if (hasImplicitPattern && !ruleContext.hasOption(RuleNotation.RuleConfigurationOption.ALLOW_IMPLICIT_JOINS)) {
+            throw new UnsupportedOperationException("Cannot have an implicit pattern without using ALLOW_IMPLICIT_JOINS option");
+        }
+        return hasImplicitPattern;
     }
 
     private static ConditionExpression map2Expr(Object expr) {

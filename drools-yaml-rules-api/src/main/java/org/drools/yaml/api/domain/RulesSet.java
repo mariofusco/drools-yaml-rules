@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.drools.yaml.api.RuleNotation;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RulesSet {
     private String name;
     private List<String> hosts;
     private List<RuleContainer> rules;
+
+    private RuleNotation.RuleConfigurationOption[] options;
 
     public String getName() {
         return name;
@@ -33,6 +36,15 @@ public class RulesSet {
 
     public void setRules(List<RuleContainer> rules) {
         this.rules = rules;
+    }
+
+    public RuleNotation.RuleConfigurationOption[] getOptions() {
+        return options;
+    }
+
+    public RulesSet withOptions(RuleNotation.RuleConfigurationOption[] options) {
+        this.options = options;
+        return this;
     }
 
     @Override

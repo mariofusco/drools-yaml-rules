@@ -42,7 +42,7 @@ public class SessionGenerator {
             ruleName = "r_" + counter++;
         }
 
-        RuleGenerationContext ruleContext = new RuleGenerationContext(prototypeFactory);
+        RuleGenerationContext ruleContext = new RuleGenerationContext(prototypeFactory, rulesSet.getOptions());
         ViewItem pattern = rule.getCondition().toPattern(ruleContext);
         var consequence = execute(drools -> rule.getAction().execute(rulesExecutor, drools));
 

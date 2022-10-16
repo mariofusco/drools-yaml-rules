@@ -16,12 +16,15 @@ import static org.drools.model.PrototypeDSL.variable;
 public class RuleGenerationContext {
     private final PrototypeFactory prototypeFactory;
 
+    private final RuleNotation.RuleConfigurationOption[] options;
+
     private final StackedContext<String, PrototypeDSL.PrototypePatternDef> patterns = new StackedContext<>();
 
     private int bindingsCounter = 0;
 
-    RuleGenerationContext(PrototypeFactory prototypeFactory) {
+    RuleGenerationContext(PrototypeFactory prototypeFactory, RuleNotation.RuleConfigurationOption[] options) {
         this.prototypeFactory = prototypeFactory;
+        this.options = options;
     }
 
     public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name) {
@@ -49,6 +52,18 @@ public class RuleGenerationContext {
         String binding = bindingsCounter == 0 ? "m" : "m_" + bindingsCounter;
         bindingsCounter++;
         return binding;
+    }
+
+    public boolean hasOption(RuleNotation.RuleConfigurationOption option) {
+        if (options == null) {
+            return false;
+        }
+        for (RuleNotation.RuleConfigurationOption op : options) {
+            if (op == option) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isGeneratedBinding(String binding) {
