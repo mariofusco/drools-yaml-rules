@@ -119,7 +119,7 @@ public class RulesExecutor {
     }
 
     private List<Match> process(Map<String, Object> factMap, boolean event) {
-        Collection<FactHandle> fhs = insertFacts(factMap);
+        Collection<FactHandle> fhs = insertFacts(factMap, event);
         if (event) {
             fhs.stream()
                     .map(InternalFactHandle.class::cast)
@@ -139,10 +139,10 @@ public class RulesExecutor {
         return filter.getMatchedRules();
     }
 
-    private Collection<FactHandle> insertFacts(Map<String, Object> factMap) {
-        if (factMap.size() == 1 && factMap.containsKey("facts")) {
-            return ((List<Map<String, Object>>)factMap.get("facts")).stream()
-                    .flatMap(map -> this.insertFacts(map).stream())
+    private Collection<FactHandle> insertFacts(Map<String, Object> factMap, boolean event) {
+        if (factMap.size() == 1 && factMap.containsKey(event ? "events" : "facts")) {
+            return ((List<Map<String, Object>>)factMap.get(event ? "events" : "facts")).stream()
+                    .flatMap(map -> this.insertFacts(map, event).stream())
                     .collect(Collectors.toList());
         } else {
             return Collections.singletonList( insertFact(factMap) );

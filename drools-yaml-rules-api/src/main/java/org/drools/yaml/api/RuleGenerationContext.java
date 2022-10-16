@@ -33,6 +33,10 @@ public class RuleGenerationContext {
         return patternDef != null ? (PrototypeVariable) patternDef.getFirstVariable() : null;
     }
 
+    public boolean isExistingBoundVariable(String binding) {
+        return patterns.get(binding) != null;
+    }
+
     public void pushContext() {
         patterns.pushContext();
     }

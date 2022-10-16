@@ -24,7 +24,7 @@ public class MapCondition implements Condition {
 
     private String patternBinding;
 
-    public MapCondition() { }
+    public MapCondition() { } // used for serialization
 
     public MapCondition(Map<?,?> map) {
         this.map = map;
@@ -91,12 +91,12 @@ public class MapCondition implements Condition {
     }
 
     private static ViewItem singleCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, Map.Entry entry) {
-        ParsedCondition parsedCondition = condition.parseSingle(entry);
+        ParsedCondition parsedCondition = condition.parseSingle(ruleContext, entry);
         PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
         return parsedCondition.patternToViewItem(ruleContext, pattern);
     }
 
-    private ParsedCondition parseSingle(Map.Entry entry) {
+    private ParsedCondition parseSingle(RuleGenerationContext ruleContext, Map.Entry entry) {
         String expressionName = (String) entry.getKey();
         Map<?,?> expression = (Map<?,?>) entry.getValue();
 
@@ -107,7 +107,7 @@ public class MapCondition implements Condition {
 
             Map<?,?> assigned = (Map<?,?>) expression.get("rhs");
             assert(assigned.size() == 1);
-            return parseSingle(assigned.entrySet().iterator().next());
+            return parseSingle(ruleContext, assigned.entrySet().iterator().next());
         }
 
         Index.ConstraintType operator = decodeOperation(expressionName);
@@ -118,8 +118,11 @@ public class MapCondition implements Condition {
 
         ConditionExpression left = map2Expr(expression.get("lhs"));
         ConditionExpression right = map2Expr(expression.get("rhs"));
-        return new ParsedCondition(left.prototypeExpression, operator, right.prototypeExpression)
-                .withImplicitPattern(left.field && right.field && !left.prototypeName.equals(right.prototypeName));
+        return new ParsedCondition(left.prototypeExpression, operator, right.prototypeExpression).withImplicitPattern(hasImplicitPattern(ruleContext, left, right));
+    }
+
+    private boolean hasImplicitPattern(RuleGenerationContext ruleContext, ConditionExpression left, ConditionExpression right) {
+        return left.field && right.field && !left.prototypeName.equals(right.prototypeName) && !ruleContext.isExistingBoundVariable(right.prototypeName);
     }
 
     private static ConditionExpression map2Expr(Object expr) {

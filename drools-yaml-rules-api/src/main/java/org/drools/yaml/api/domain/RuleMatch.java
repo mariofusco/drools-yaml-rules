@@ -60,4 +60,12 @@ public class RuleMatch {
             addToNestedMap( (Map<String, Object>) result.computeIfAbsent(key.substring(0, dotPos), s -> new HashMap<>()), key.substring(dotPos+1), value);
         }
     }
+
+    @Override
+    public String toString() {
+        return "RuleMatch{" +
+                "ruleName='" + ruleName + '\'' +
+                ", facts=" + facts +
+                '}';
+    }
 }
