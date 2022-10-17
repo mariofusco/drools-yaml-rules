@@ -12,29 +12,29 @@ import static org.junit.Assert.fail;
 public class BetaEqualsTest {
     public static final String JSON1 =
             "{\n" +
-                    "    \"rules\": [\n" +
-                    "            {\n" +
-                    "                \"Rule\": {\n" +
-                    "                    \"condition\": {\n" +
-                    "                        \"AllCondition\": [\n" +
-                    "                            {\n" +
-                    "                                \"EqualsExpression\": {\n" +
-                    "                                    \"lhs\": {\n" +
-                    "                                        \"Event\": \"i\"\n" +
-                    "                                    },\n" +
-                    "                                    \"rhs\": {\n" +
-                    "                                        \"Fact\": \"custom.expected_index\"\n" +
-                    "                                    }\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        ]\n" +
-                    "                    },\n" +
-                    "                    \"enabled\": true,\n" +
-                    "                    \"name\": null\n" +
-                    "                }\n" +
-                    "            }\n" +
-                    "        ]\n" +
-                    "}";
+            "    \"rules\": [\n" +
+            "            {\n" +
+            "                \"Rule\": {\n" +
+            "                    \"condition\": {\n" +
+            "                        \"AllCondition\": [\n" +
+            "                            {\n" +
+            "                                \"EqualsExpression\": {\n" +
+            "                                    \"lhs\": {\n" +
+            "                                        \"Event\": \"i\"\n" +
+            "                                    },\n" +
+            "                                    \"rhs\": {\n" +
+            "                                        \"Fact\": \"custom.expected_index\"\n" +
+            "                                    }\n" +
+            "                                }\n" +
+            "                            }\n" +
+            "                        ]\n" +
+            "                    },\n" +
+            "                    \"enabled\": true,\n" +
+            "                    \"name\": null\n" +
+            "                }\n" +
+            "            }\n" +
+            "        ]\n" +
+            "}";
 
     @Test
     public void testExecuteRulesWithImplicitJoin() {

@@ -165,11 +165,16 @@ public class MapCondition implements Condition {
     private static PrototypeExpression fieldName2PrototypeExpression(String fieldName) {
         int arrayStart = fieldName.indexOf('[');
         if (arrayStart >= 0) {
-            if (!fieldName.endsWith("]")) {
-                throw new UnsupportedOperationException("Invalid field name: " + fieldName);
+            int arrayEnd = fieldName.indexOf(']');
+            int pos = Integer.parseInt(fieldName.substring(arrayStart+1, arrayEnd));
+            PrototypeExpression arrayExpr = prototypeArrayItem(fieldName.substring(0, arrayStart), pos);
+            if (arrayEnd+1 < fieldName.length()) {
+                if (fieldName.charAt(arrayEnd+1) != '.') {
+                    throw new UnsupportedOperationException("Invalid expression: " + fieldName);
+                }
+                arrayExpr = arrayExpr.andThen(fieldName2PrototypeExpression(fieldName.substring(arrayEnd+2)));
             }
-            int pos = Integer.parseInt(fieldName.substring(arrayStart+1, fieldName.length()-1));
-            return prototypeArrayItem(fieldName.substring(0, arrayStart), pos);
+            return arrayExpr;
         }
         return prototypeField(fieldName);
     }
