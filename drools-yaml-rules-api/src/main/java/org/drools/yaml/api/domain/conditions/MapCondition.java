@@ -151,7 +151,7 @@ public class MapCondition implements Condition {
         }
 
         if (value instanceof String) {
-            String fieldName = key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("event") ? (String) value : key + "." + value;
+            String fieldName = ignoreKey(key) ? (String) value : key + "." + value;
             return new ConditionExpression(fieldName2PrototypeExpression(fieldName), true, fieldName);
         }
 
@@ -161,6 +161,10 @@ public class MapCondition implements Condition {
         }
 
         throw new UnsupportedOperationException("Invalid expression: " + expr);
+    }
+
+    private static boolean ignoreKey(String key) {
+        return key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("facts") || key.equalsIgnoreCase("event") || key.equalsIgnoreCase("events");
     }
 
     private static class ConditionExpression {

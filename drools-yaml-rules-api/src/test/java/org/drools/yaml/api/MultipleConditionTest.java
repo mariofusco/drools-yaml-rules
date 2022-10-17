@@ -19,9 +19,6 @@ public class MultipleConditionTest {
 
     public static final String JSON1 =
             "{\n" +
-            "   \"sources\":{\n" +
-            "      \"EventSource\":\"test\"\n" +
-            "   },\n" +
             "   \"rules\":[\n" +
             "      {\n" +
             "         \"Rule\":{\n" +
@@ -74,7 +71,7 @@ public class MultipleConditionTest {
             "                              \"rhs\":{\n" +
             "                                 \"AdditionExpression\":{\n" +
             "                                    \"lhs\":{\n" +
-            "                                       \"Event\":\"first.i\"\n" +
+            "                                       \"Events\":\"first.i\"\n" +
             "                                    },\n" +
             "                                    \"rhs\":{\n" +
             "                                       \"Integer\":2\n" +
