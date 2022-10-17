@@ -14,6 +14,7 @@ import org.drools.yaml.api.RuleNotation;
 import org.drools.yaml.api.rulesmodel.ParsedCondition;
 
 import static org.drools.model.Index.ConstraintType.EXISTS_PROTOTYPE_FIELD;
+import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
 import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeArrayItem;
 import static org.drools.model.PrototypeExpression.prototypeField;
@@ -160,23 +161,6 @@ public class MapCondition implements Condition {
         }
 
         throw new UnsupportedOperationException("Invalid expression: " + expr);
-    }
-
-    private static PrototypeExpression fieldName2PrototypeExpression(String fieldName) {
-        int arrayStart = fieldName.indexOf('[');
-        if (arrayStart >= 0) {
-            int arrayEnd = fieldName.indexOf(']');
-            int pos = Integer.parseInt(fieldName.substring(arrayStart+1, arrayEnd));
-            PrototypeExpression arrayExpr = prototypeArrayItem(fieldName.substring(0, arrayStart), pos);
-            if (arrayEnd+1 < fieldName.length()) {
-                if (fieldName.charAt(arrayEnd+1) != '.') {
-                    throw new UnsupportedOperationException("Invalid expression: " + fieldName);
-                }
-                arrayExpr = arrayExpr.andThen(fieldName2PrototypeExpression(fieldName.substring(arrayEnd+2)));
-            }
-            return arrayExpr;
-        }
-        return prototypeField(fieldName);
     }
 
     private static class ConditionExpression {
