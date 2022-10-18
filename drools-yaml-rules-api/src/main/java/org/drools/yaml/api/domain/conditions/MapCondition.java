@@ -6,7 +6,6 @@ import java.util.Map;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeVariable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 import org.drools.yaml.api.RuleGenerationContext;
@@ -16,8 +15,6 @@ import org.drools.yaml.api.rulesmodel.ParsedCondition;
 import static org.drools.model.Index.ConstraintType.EXISTS_PROTOTYPE_FIELD;
 import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
 import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeArrayItem;
-import static org.drools.model.PrototypeExpression.prototypeField;
 import static org.drools.yaml.api.SessionGenerator.PROTOTYPE_NAME;
 
 public class MapCondition implements Condition {
@@ -49,53 +46,50 @@ public class MapCondition implements Condition {
 
     @Override
     public ViewItem toPattern(RuleGenerationContext ruleContext) {
-        return condition2Pattern(ruleContext, this);
+        return condition2Pattern(ruleContext, this, null);
     }
 
-    private static ViewItem condition2Pattern(RuleGenerationContext ruleContext, MapCondition condition) {
+    private static ViewItem condition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, PrototypeDSL.PrototypePatternDef existingPattern) {
         assert(condition.getMap().size() == 1);
         Map.Entry entry = condition.getMap().entrySet().iterator().next();
         String expressionName = (String) entry.getKey();
         switch (expressionName) {
             case "OrExpression":
-                return new CombinedExprViewItem(org.drools.model.Condition.Type.OR, new ViewItem[] {
-                        scopingCondition2Pattern(ruleContext, new MapCondition((Map)((Map) entry.getValue()).get("lhs"))),
-                        scopingCondition2Pattern(ruleContext, new MapCondition((Map)((Map) entry.getValue()).get("rhs")))
-
-                });
+                throw new UnsupportedOperationException("OrExpression");
             case "AndExpression":
-                return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, new ViewItem[] {
-                        condition2Pattern(ruleContext, new MapCondition((Map)((Map) entry.getValue()).get("lhs"))),
-                        condition2Pattern(ruleContext, new MapCondition((Map)((Map) entry.getValue()).get("rhs")))
-
-                });
+                MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs"));
+                MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs"));
+                PrototypeDSL.PrototypePatternDef pattern = (PrototypeDSL.PrototypePatternDef) condition2Pattern(ruleContext, lhs, existingPattern);
+                return condition2Pattern(ruleContext, rhs, pattern);
             case "AnyCondition":
                 List<Map> conditions = (List<Map>)entry.getValue();
                 if (conditions.size() == 1) {
-                    return condition2Pattern(ruleContext, new MapCondition(conditions.get(0)));
+                    return condition2Pattern(ruleContext, new MapCondition(conditions.get(0)), existingPattern);
                 }
-                return new CombinedExprViewItem(org.drools.model.Condition.Type.OR, conditions.stream().map(subC -> scopingCondition2Pattern(ruleContext, new MapCondition(subC))).toArray(ViewItem[]::new));
+                return new CombinedExprViewItem(org.drools.model.Condition.Type.OR, conditions.stream()
+                        .map(subC -> scopingCondition2Pattern(ruleContext, new MapCondition(subC), existingPattern)).toArray(ViewItem[]::new));
             case "AllCondition":
                 conditions = (List<Map>)entry.getValue();
                 if (conditions.size() == 1) {
-                    return condition2Pattern(ruleContext, new MapCondition(conditions.get(0)));
+                    return condition2Pattern(ruleContext, new MapCondition(conditions.get(0)), existingPattern);
                 }
-                return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, conditions.stream().map(subC -> condition2Pattern(ruleContext, new MapCondition(subC))).toArray(ViewItem[]::new));
+                return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, conditions.stream()
+                        .map(subC -> condition2Pattern(ruleContext, new MapCondition(subC), existingPattern)).toArray(ViewItem[]::new));
         }
-        return singleCondition2Pattern(ruleContext, condition, entry);
+        return singleCondition2Pattern(ruleContext, condition, entry, existingPattern);
     }
 
-    private static ViewItem scopingCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition) {
+    private static ViewItem scopingCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, PrototypeDSL.PrototypePatternDef existingPattern) {
         ruleContext.pushContext();
-        ViewItem pattern = condition2Pattern(ruleContext, condition);
+        ViewItem pattern = condition2Pattern(ruleContext, condition, existingPattern);
         ruleContext.popContext();
         return pattern;
     }
 
-    private static ViewItem singleCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, Map.Entry entry) {
+    private static ViewItem singleCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, Map.Entry entry, PrototypeDSL.PrototypePatternDef existingPattern) {
         ParsedCondition parsedCondition = condition.parseSingle(ruleContext, entry);
-        PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
-        return parsedCondition.patternToViewItem(ruleContext, pattern);
+        PrototypeDSL.PrototypePatternDef pattern = existingPattern != null ? existingPattern : ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
+        return parsedCondition.addConditionToPattern(ruleContext, pattern);
     }
 
     private ParsedCondition parseSingle(RuleGenerationContext ruleContext, Map.Entry entry) {

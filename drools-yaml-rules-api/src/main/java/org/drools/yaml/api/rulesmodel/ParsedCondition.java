@@ -1,7 +1,5 @@
 package org.drools.yaml.api.rulesmodel;
 
-import java.util.Map;
-
 import org.drools.model.Index.ConstraintType;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
@@ -9,7 +7,6 @@ import org.drools.model.PrototypeVariable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 import org.drools.yaml.api.RuleGenerationContext;
-import org.drools.yaml.api.domain.conditions.MapCondition;
 
 import static org.drools.model.DSL.not;
 import static org.drools.model.PrototypeExpression.fixedValue;
@@ -58,7 +55,7 @@ public class ParsedCondition {
         return this;
     }
 
-    public ViewItem patternToViewItem(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
+    public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
         if (implicitPattern) {
             PrototypeDSL.PrototypePatternDef first = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), PROTOTYPE_NAME);
             pattern.expr(getLeft(), getOperator(), (PrototypeVariable) first.getFirstVariable(), getRight());
