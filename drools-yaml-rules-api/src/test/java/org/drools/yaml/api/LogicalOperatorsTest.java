@@ -218,4 +218,57 @@ public class LogicalOperatorsTest {
         matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" );
         assertEquals( 1, matchedRules.size() );
     }
+
+    private static final String JSON3 =
+            "{\n" +
+            "   \"rules\":[\n" +
+            "      {\n" +
+            "         \"Rule\":{\n" +
+            "            \"condition\":{\n" +
+            "               \"AllCondition\":[\n" +
+            "                  {\n" +
+            "                     \"OrExpression\":{\n" +
+            "                        \"lhs\":{\n" +
+            "                           \"LessThanExpression\":{\n" +
+            "                              \"lhs\":{\n" +
+            "                                 \"Event\":\"i\"\n" +
+            "                              },\n" +
+            "                              \"rhs\":{\n" +
+            "                                 \"Integer\":1\n" +
+            "                              }\n" +
+            "                           }\n" +
+            "                        },\n" +
+            "                        \"rhs\":{\n" +
+            "                           \"GreaterThanExpression\":{\n" +
+            "                              \"lhs\":{\n" +
+            "                                 \"Event\":\"i\"\n" +
+            "                              },\n" +
+            "                              \"rhs\":{\n" +
+            "                                 \"Integer\":3\n" +
+            "                              }\n" +
+            "                           }\n" +
+            "                        }\n" +
+            "                     }\n" +
+            "                  }\n" +
+            "               ]\n" +
+            "            }\n" +
+            "         }\n" +
+            "      }\n" +
+            "   ]\n" +
+            "}";
+
+    @Test
+    public void testOr() {
+        System.out.println(JSON3);
+        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON3);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":0 }" );
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":2 }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" );
+        assertEquals( 1, matchedRules.size() );
+    }
 }
