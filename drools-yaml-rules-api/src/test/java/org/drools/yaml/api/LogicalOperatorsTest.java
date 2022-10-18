@@ -259,7 +259,6 @@ public class LogicalOperatorsTest {
 
     @Test
     public void testOr() {
-        System.out.println(JSON3);
         RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON3);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":0 }" );

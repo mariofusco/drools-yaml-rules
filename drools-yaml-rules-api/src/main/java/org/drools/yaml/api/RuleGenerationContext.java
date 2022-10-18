@@ -40,6 +40,10 @@ public class RuleGenerationContext {
         return patterns.get(binding) != null;
     }
 
+    public PrototypeDSL.PrototypePatternDef getBoundPattern(String binding) {
+        return patterns.get(binding);
+    }
+
     public void pushContext() {
         patterns.pushContext();
     }

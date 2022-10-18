@@ -2,17 +2,11 @@ package org.drools.yaml.api;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.yaml.api.domain.RuleMatch;
-import org.drools.yaml.api.domain.RulesSet;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.yaml.api.ObjectMapperFactory.createMapper;
 import static org.junit.Assert.assertEquals;
 
 public class MultipleConditionTest {
