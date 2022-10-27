@@ -76,7 +76,7 @@ public class SimpleJsonTest {
 
     @Test
     public void testExecuteRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
         int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 2, executedRules );
         rulesExecutor.dispose();
@@ -84,7 +84,7 @@ public class SimpleJsonTest {
 
     @Test
     public void testProcessRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
@@ -99,7 +99,7 @@ public class SimpleJsonTest {
 
     @Test
     public void testProcessRuleWithoutAction() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\" }} ] }");
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\" }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
@@ -110,7 +110,7 @@ public class SimpleJsonTest {
 
     @Test
     public void testProcessRuleWithUnknownAction() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\", \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\", \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );

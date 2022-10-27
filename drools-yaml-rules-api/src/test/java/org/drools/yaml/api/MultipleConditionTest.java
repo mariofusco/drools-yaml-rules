@@ -85,7 +85,7 @@ public class MultipleConditionTest {
 
     @Test
     public void testReadJson() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processEvents( "{ events: [ { \"i\":0 }, { \"i\":1 }, { \"i\":2 } ] }" );
 

@@ -50,7 +50,7 @@ public class AdditionTest {
 
     @Test
     public void testExecuteRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 2, \"j\":1 } }" );
         assertEquals( 1, matchedRules.size() );

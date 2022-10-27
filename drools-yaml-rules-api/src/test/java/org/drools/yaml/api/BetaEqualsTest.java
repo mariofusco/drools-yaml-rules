@@ -39,7 +39,7 @@ public class BetaEqualsTest {
 
     @Test
     public void testExecuteRulesWithImplicitJoin() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.ALLOW_IMPLICIT_JOINS), JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.ALLOW_IMPLICIT_JOINS), JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts("{ \"custom\": { \"expected_index\": 2 } }");
         assertEquals(0, matchedRules.size());
@@ -57,7 +57,7 @@ public class BetaEqualsTest {
     @Test
     public void testInvalidImplicitJoin() {
         try {
-            RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+            RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
             fail("It shouldn't compile");
         } catch (UnsupportedOperationException e) {
             // expected
@@ -104,7 +104,7 @@ public class BetaEqualsTest {
 
     @Test
     public void testExecuteRulesWithExplicitJoin() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON2);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
         List<Match> matchedRules = rulesExecutor.processFacts("{ \"custom\": { \"expected_index\": 2 } }");
         assertEquals(0, matchedRules.size());

@@ -11,7 +11,7 @@ import org.drools.yaml.api.RuleGenerationContext;
 import static org.drools.model.DSL.not;
 import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeField;
-import static org.drools.yaml.api.SessionGenerator.PROTOTYPE_NAME;
+import static org.drools.yaml.api.rulesmodel.PrototypeFactory.PROTOTYPE_NAME;
 
 public class ParsedCondition {
 

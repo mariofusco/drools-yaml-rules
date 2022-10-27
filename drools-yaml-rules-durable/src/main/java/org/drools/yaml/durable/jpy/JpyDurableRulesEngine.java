@@ -10,6 +10,7 @@ import java.util.function.Function;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.yaml.api.RulesExecutor;
 import org.drools.yaml.api.RulesExecutorContainer;
+import org.drools.yaml.api.RulesExecutorFactory;
 import org.drools.yaml.durable.DurableNotation;
 import org.drools.yaml.durable.domain.DurableRuleMatch;
 import org.kie.api.runtime.rule.Match;
@@ -21,7 +22,7 @@ public class JpyDurableRulesEngine {
     private Iterator<Map<String, Map>> lastResponse = Collections.emptyIterator();
 
     public long createRuleset(String ruleSetName, String rulesetString) {
-        RulesExecutor executor = RulesExecutor.createFromJson(
+        RulesExecutor executor = RulesExecutorFactory.createFromJson(
                 DurableNotation.INSTANCE,
                 String.format("{\"%s\":%s}", ruleSetName, rulesetString));
         return executor.getId();

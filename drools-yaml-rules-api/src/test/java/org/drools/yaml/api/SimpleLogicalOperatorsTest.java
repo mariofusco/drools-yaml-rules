@@ -86,7 +86,7 @@ public class SimpleLogicalOperatorsTest {
 
     @Test
     public void testProcessRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );

@@ -129,7 +129,7 @@ public class LogicalOperatorsTest {
 
     @Test
     public void testProcessRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
         assertEquals( 1, matchedRules.size() );
@@ -204,7 +204,7 @@ public class LogicalOperatorsTest {
 
     @Test
     public void testMultipleConditionOnSameFact() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON2);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":1 }" );
         assertEquals( 0, matchedRules.size() );
@@ -259,7 +259,7 @@ public class LogicalOperatorsTest {
 
     @Test
     public void testOr() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON3);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON3);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":0 }" );
         assertEquals( 1, matchedRules.size() );

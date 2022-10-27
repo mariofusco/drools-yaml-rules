@@ -19,7 +19,7 @@ import org.drools.yaml.api.rulesmodel.ParsedCondition;
 import static org.drools.model.Index.ConstraintType.EXISTS_PROTOTYPE_FIELD;
 import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
 import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.yaml.api.SessionGenerator.PROTOTYPE_NAME;
+import static org.drools.yaml.api.rulesmodel.PrototypeFactory.PROTOTYPE_NAME;
 
 public class MapCondition implements Condition {
 

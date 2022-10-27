@@ -3,6 +3,7 @@ package org.drools.yaml.benchmark;
 import java.util.concurrent.TimeUnit;
 
 import org.drools.yaml.api.RulesExecutor;
+import org.drools.yaml.api.RulesExecutorFactory;
 import org.drools.yaml.durable.DurableNotation;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -31,7 +32,7 @@ public class DroolsDurableBenchmark {
     @Setup
     public void setup() {
         String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$ex\": {\"event.i\": 1}}}]}}}";
-        rulesExecutor = RulesExecutor.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        rulesExecutor = RulesExecutorFactory.createFromJson(DurableNotation.INSTANCE, jsonRule);
     }
 
     @Benchmark

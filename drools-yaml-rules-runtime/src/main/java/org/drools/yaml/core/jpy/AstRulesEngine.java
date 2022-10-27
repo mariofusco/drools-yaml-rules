@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.yaml.api.RulesExecutor;
 import org.drools.yaml.api.RulesExecutorContainer;
+import org.drools.yaml.api.RulesExecutorFactory;
 import org.json.JSONObject;
 import org.kie.api.runtime.rule.Match;
 
@@ -21,7 +22,7 @@ public class AstRulesEngine {
      * AstRulesCompilation.createRuleset
      */
     public long createRuleset(String rulesetString) {
-        RulesExecutor executor = RulesExecutor.createFromJson(rulesetString);
+        RulesExecutor executor = RulesExecutorFactory.createFromJson(rulesetString);
         return executor.getId();
     }
 

@@ -56,7 +56,7 @@ public class ProcessEventTest {
 
     @Test
     public void testExecuteRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 1 }" );
         assertEquals( 1, matchedRules.size() );
@@ -103,7 +103,7 @@ public class ProcessEventTest {
 
     @Test
     public void testEventShouldProduceMultipleMatchesForSameRule() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON2);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
         rulesExecutor.processFacts( "{ \"host\": \"A\", \"os\": \"linux\" }" );
         rulesExecutor.processFacts( "{ \"host\": \"B\", \"os\": \"windows\" }" );

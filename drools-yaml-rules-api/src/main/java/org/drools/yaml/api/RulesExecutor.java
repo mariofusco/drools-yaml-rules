@@ -29,55 +29,16 @@ public class RulesExecutor {
 
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
+    private final RulesExecutorSession rulesExecutorSession;
 
-    private final SessionGenerator sessionGenerator;
-    private final KieSession ksession;
     private final long id;
 
     private final Set<Long> ephemeralFactHandleIds = ConcurrentHashMap.newKeySet();
 
-    // This class has the following issues:
-    // it is responsible to instantiate a KieSession (using the SessionGenerator)
-    // it holds the generated kiesession
-    // it is hold inside the RulesExecutorContainer just to provide anm (indirect) mapping between generated kiesession and evaluation requests
-    // it is also responsible for rule execution
-
-    // All the code contained inside SessionGenerator, written that way, would have to be copied over and over, if not already a copy,
-    // because it fullfill the basic behavior "return a kiebase containing an executable model  out of a set of rules"
-    // it mixes/bind the two phases, i.e. the creation of an executable model (that is a sort-of "compilation") and the execution of it (that is the runtime)
-    // invoking a method of a parameter, passing itself as parameter, smells a lot of anti-pattern
-    // sessionGenerator.build(this);
-    private RulesExecutor(SessionGenerator sessionGenerator, long id) {
-        this.sessionGenerator = sessionGenerator;
-        this.ksession = sessionGenerator.build(this);
+    RulesExecutor(RulesExecutorSession rulesExecutorSession, long id) {
+        this.rulesExecutorSession = rulesExecutorSession;
         this.id = id;
-    }
-
-    public static RulesExecutor createFromYaml(String yaml) {
-        return createFromYaml(RuleNotation.CoreNotation.INSTANCE, yaml);
-    }
-
-    public static RulesExecutor createFromYaml(RuleNotation notation, String yaml) {
-        return create(RuleFormat.YAML, notation, yaml);
-    }
-
-    public static RulesExecutor createFromJson(String json) {
-        return createFromJson(RuleNotation.CoreNotation.INSTANCE, json);
-    }
-
-    public static RulesExecutor createFromJson(RuleNotation notation, String json) {
-        return create(RuleFormat.JSON, notation, json);
-    }
-
-    private static RulesExecutor create(RuleFormat format, RuleNotation notation, String text) {
-        return createRulesExecutor( notation.toRulesSet( format, text ) );
-    }
-
-    public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {
-        RulesExecutor rulesExecutor = new RulesExecutor( new SessionGenerator(rulesSet), ID_GENERATOR.getAndIncrement());
-        RulesExecutorContainer.INSTANCE.register(rulesExecutor);
-        return rulesExecutor;
+        rulesExecutorSession.setRulesExecutor(this);
     }
 
     public long getId() {
@@ -86,11 +47,11 @@ public class RulesExecutor {
 
     public void dispose() {
         RulesExecutorContainer.INSTANCE.dispose(this);
-        ksession.dispose();
+        rulesExecutorSession.getKieSession().dispose();
     }
 
     public long rulesCount() {
-        return ksession.getKieBase().getKiePackages().stream().mapToLong(p -> p.getRules().size()).sum();
+        return rulesExecutorSession.getKieSession().getKieBase().getKiePackages().stream().mapToLong(p -> p.getRules().size()).sum();
     }
 
     public int executeFacts(String json) {
@@ -99,7 +60,7 @@ public class RulesExecutor {
 
     public int executeFacts(Map<String, Object> factMap) {
         insertFact( factMap );
-        return ksession.fireAllRules();
+        return rulesExecutorSession.getKieSession().fireAllRules();
     }
 
     public List<Match> processFacts(String json) {
@@ -134,8 +95,8 @@ public class RulesExecutor {
     }
 
     private List<Match> findMatchedRules() {
-        RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter(ksession, ephemeralFactHandleIds);
-        ksession.fireAllRules(filter);
+        RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter(rulesExecutorSession.getKieSession(), ephemeralFactHandleIds);
+        rulesExecutorSession.getKieSession().fireAllRules(filter);
         return filter.getMatchedRules();
     }
 
@@ -150,11 +111,11 @@ public class RulesExecutor {
     }
 
     public FactHandle insertFact(Map<String, Object> factMap) {
-        return ksession.insert( mapToFact(factMap) );
+        return rulesExecutorSession.getKieSession().insert( mapToFact(factMap) );
     }
 
     public int executeRetract(String json) {
-        return retractFact( new JSONObject(json).toMap() ) ? ksession.fireAllRules() : 0;
+        return retractFact( new JSONObject(json).toMap() ) ? rulesExecutorSession.getKieSession().fireAllRules() : 0;
     }
 
     public List<Match> processRetract(String json) {
@@ -164,16 +125,16 @@ public class RulesExecutor {
     public boolean retractFact(Map<String, Object> factMap) {
         Fact toBeRetracted = mapToFact(factMap);
 
-        return ksession.getFactHandles(o -> o instanceof Fact && Objects.equals(((Fact) o).asMap(), toBeRetracted.asMap()))
+        return rulesExecutorSession.getKieSession().getFactHandles(o -> o instanceof Fact && Objects.equals(((Fact) o).asMap(), toBeRetracted.asMap()))
                 .stream().findFirst()
                 .map( fh -> {
-                    ksession.delete( fh );
+                    rulesExecutorSession.getKieSession().delete( fh );
                     return true;
                 }).orElse(false);
     }
 
     private Fact mapToFact(Map<String, Object> factMap) {
-        Fact fact = createMapBasedFact( sessionGenerator.getPrototype() );
+        Fact fact = createMapBasedFact( rulesExecutorSession.getPrototypeFactory().getPrototype() );
         populateFact(fact, factMap, "");
         return fact;
     }
@@ -189,7 +150,7 @@ public class RulesExecutor {
     }
 
     public Collection<?> getAllFacts() {
-        return ksession.getObjects();
+        return rulesExecutorSession.getKieSession().getObjects();
     }
 
     public List<Map<String, Object>> getAllFactsAsMap() {
@@ -203,7 +164,6 @@ public class RulesExecutor {
             throw new RuntimeException(e);
         }
     }
-
 
     private static class RegisterOnlyAgendaFilter implements AgendaFilter {
 

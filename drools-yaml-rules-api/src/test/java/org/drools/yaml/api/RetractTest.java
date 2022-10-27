@@ -98,7 +98,7 @@ public class RetractTest {
 
     @Test
     public void testExecuteRules() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"msg\" : \"hello world\" }" );
         assertEquals( 1, matchedRules.size() );

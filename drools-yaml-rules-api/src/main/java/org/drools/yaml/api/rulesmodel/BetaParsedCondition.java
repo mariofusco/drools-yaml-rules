@@ -4,15 +4,8 @@ import org.drools.model.Index.ConstraintType;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
-import org.drools.model.Variable;
-import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 import org.drools.yaml.api.RuleGenerationContext;
-
-import static org.drools.model.DSL.not;
-import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeField;
-import static org.drools.yaml.api.SessionGenerator.PROTOTYPE_NAME;
 
 public class BetaParsedCondition extends ParsedCondition {
 

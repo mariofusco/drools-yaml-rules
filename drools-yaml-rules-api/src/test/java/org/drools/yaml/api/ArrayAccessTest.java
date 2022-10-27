@@ -36,7 +36,7 @@ public class ArrayAccessTest {
 
     @Test
     public void testArrayAccess() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{'host': 'A', 'os': {'array': ['abc']}}" );
         assertEquals( 0, matchedRules.size() );
@@ -76,7 +76,7 @@ public class ArrayAccessTest {
 
     @Test
     public void testNestedArrayAccess() {
-        RulesExecutor rulesExecutor = RulesExecutor.createFromJson(JSON2);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{\n" +
                 "   \"host\":\"B\",\n" +
