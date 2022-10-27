@@ -203,7 +203,7 @@ public class DurableRulesJsonTest {
         matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"j\": 1 } }" );
         assertEquals( 0, matchedRules.size() );
 
-        assertEquals( 2, rulesExecutor.getAllFactsAsMap().size() );
+        assertEquals( 1, rulesExecutor.getAllFactsAsMap().size() );
     }
 
     @Test

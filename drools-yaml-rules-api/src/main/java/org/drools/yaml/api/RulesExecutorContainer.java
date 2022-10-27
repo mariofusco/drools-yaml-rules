@@ -9,8 +9,9 @@ public enum RulesExecutorContainer {
 
     private Map<Long, RulesExecutor> rulesExecutors = new HashMap<>();
 
-    public void register(RulesExecutor rulesExecutor) {
+    public RulesExecutor register(RulesExecutor rulesExecutor) {
         rulesExecutors.put(rulesExecutor.getId(), rulesExecutor);
+        return rulesExecutor;
     }
 
     public void dispose(RulesExecutor rulesExecutor) {

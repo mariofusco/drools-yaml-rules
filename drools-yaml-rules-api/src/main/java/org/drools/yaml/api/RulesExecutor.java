@@ -6,19 +6,15 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.facttemplates.Fact;
-import org.drools.yaml.api.domain.RulesSet;
 import org.json.JSONObject;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
@@ -47,11 +43,11 @@ public class RulesExecutor {
 
     public void dispose() {
         RulesExecutorContainer.INSTANCE.dispose(this);
-        rulesExecutorSession.getKieSession().dispose();
+        rulesExecutorSession.dispose();
     }
 
     public long rulesCount() {
-        return rulesExecutorSession.getKieSession().getKieBase().getKiePackages().stream().mapToLong(p -> p.getRules().size()).sum();
+        return rulesExecutorSession.rulesCount();
     }
 
     public int executeFacts(String json) {
@@ -60,7 +56,7 @@ public class RulesExecutor {
 
     public int executeFacts(Map<String, Object> factMap) {
         insertFact( factMap );
-        return rulesExecutorSession.getKieSession().fireAllRules();
+        return rulesExecutorSession.fireAllRules();
     }
 
     public List<Match> processFacts(String json) {
@@ -95,8 +91,8 @@ public class RulesExecutor {
     }
 
     private List<Match> findMatchedRules() {
-        RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter(rulesExecutorSession.getKieSession(), ephemeralFactHandleIds);
-        rulesExecutorSession.getKieSession().fireAllRules(filter);
+        RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter(rulesExecutorSession, ephemeralFactHandleIds);
+        rulesExecutorSession.fireAllRules(filter);
         return filter.getMatchedRules();
     }
 
@@ -111,11 +107,11 @@ public class RulesExecutor {
     }
 
     public FactHandle insertFact(Map<String, Object> factMap) {
-        return rulesExecutorSession.getKieSession().insert( mapToFact(factMap) );
+        return rulesExecutorSession.insert( mapToFact(factMap) );
     }
 
     public int executeRetract(String json) {
-        return retractFact( new JSONObject(json).toMap() ) ? rulesExecutorSession.getKieSession().fireAllRules() : 0;
+        return retractFact( new JSONObject(json).toMap() ) ? rulesExecutorSession.fireAllRules() : 0;
     }
 
     public List<Match> processRetract(String json) {
@@ -123,18 +119,11 @@ public class RulesExecutor {
     }
 
     public boolean retractFact(Map<String, Object> factMap) {
-        Fact toBeRetracted = mapToFact(factMap);
-
-        return rulesExecutorSession.getKieSession().getFactHandles(o -> o instanceof Fact && Objects.equals(((Fact) o).asMap(), toBeRetracted.asMap()))
-                .stream().findFirst()
-                .map( fh -> {
-                    rulesExecutorSession.getKieSession().delete( fh );
-                    return true;
-                }).orElse(false);
+        return rulesExecutorSession.deleteFact( mapToFact(factMap) );
     }
 
     private Fact mapToFact(Map<String, Object> factMap) {
-        Fact fact = createMapBasedFact( rulesExecutorSession.getPrototypeFactory().getPrototype() );
+        Fact fact = createMapBasedFact( rulesExecutorSession.getPrototype() );
         populateFact(fact, factMap, "");
         return fact;
     }
@@ -150,7 +139,7 @@ public class RulesExecutor {
     }
 
     public Collection<?> getAllFacts() {
-        return rulesExecutorSession.getKieSession().getObjects();
+        return rulesExecutorSession.getObjects();
     }
 
     public List<Map<String, Object>> getAllFactsAsMap() {
@@ -167,13 +156,13 @@ public class RulesExecutor {
 
     private static class RegisterOnlyAgendaFilter implements AgendaFilter {
 
-        private final KieSession ksession;
+        private final RulesExecutorSession rulesExecutorSession;
         private final Set<Long> ephemeralFactHandleIds;
 
         private final Set<Match> matchedRules = new LinkedHashSet<>();
 
-        private RegisterOnlyAgendaFilter(KieSession ksession, Set<Long> ephemeralFactHandleIds) {
-            this.ksession = ksession;
+        private RegisterOnlyAgendaFilter(RulesExecutorSession rulesExecutorSession, Set<Long> ephemeralFactHandleIds) {
+            this.rulesExecutorSession = rulesExecutorSession;
             this.ephemeralFactHandleIds = ephemeralFactHandleIds;
         }
 
@@ -183,7 +172,7 @@ public class RulesExecutor {
             if (!ephemeralFactHandleIds.isEmpty()) {
                 for (FactHandle fh : match.getFactHandles()) {
                     if (ephemeralFactHandleIds.remove(((InternalFactHandle) fh).getId())) {
-                        ksession.delete(fh);
+                        rulesExecutorSession.delete(fh);
                     }
                 }
             }

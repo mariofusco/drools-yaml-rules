@@ -5,13 +5,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import org.drools.model.impl.ModelImpl;
-import org.drools.model.view.ViewItem;
 import org.drools.modelcompiler.KieBaseBuilder;
 import org.drools.yaml.api.domain.Rule;
 import org.drools.yaml.api.domain.RulesSet;
 import org.drools.yaml.api.rulesmodel.PrototypeFactory;
 import org.kie.api.KieBase;
-import org.kie.api.runtime.KieSession;
+import org.kie.api.conf.KieBaseMutabilityOption;
 
 import static org.drools.model.DSL.execute;
 import static org.drools.model.PatternDSL.rule;
@@ -42,8 +41,7 @@ public class RulesExecutorFactory {
 
     public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {
         RulesExecutor rulesExecutor = new RulesExecutor(createRulesExecutorSession(rulesSet), ID_GENERATOR.getAndIncrement());
-        RulesExecutorContainer.INSTANCE.register(rulesExecutor);
-        return rulesExecutor;
+        return RulesExecutorContainer.INSTANCE.register(rulesExecutor);
     }
 
     public static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {
@@ -55,22 +53,14 @@ public class RulesExecutorFactory {
         rulesSet.getRules().stream()
                 .map(rule -> toExecModelRule(rulesSet, rule, prototypeFactory, rulesExecutorHolder, ruleCounter))
                 .forEach(model::addRule);
-        KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model );
-        KieSession kieSession = kieBase.newKieSession();
-
-        return new RulesExecutorSession(prototypeFactory, kieSession, rulesExecutorHolder);
+        KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model, KieBaseMutabilityOption.DISABLED );
+        return new RulesExecutorSession(prototypeFactory, kieBase.newKieSession(), rulesExecutorHolder);
     }
 
-    private static org.drools.model.Rule toExecModelRule(RulesSet rulesSet, Rule rule, PrototypeFactory prototypeFactory, Supplier<RulesExecutor> rulesExecutorSupplier, AtomicInteger ruleCounter) {
-        String ruleName = rule.getName();
-        if (ruleName == null) {
-            ruleName = "r_" + ruleCounter.getAndIncrement();
-        }
-
-        RuleGenerationContext ruleContext = new RuleGenerationContext(prototypeFactory, rulesSet.getOptions());
-        ViewItem pattern = rule.getCondition().toPattern(ruleContext);
-        var consequence = execute(drools -> rule.getAction().execute(rulesExecutorSupplier.get(), drools));
-
-        return rule( ruleName ).build(pattern, consequence);
+    private static org.drools.model.Rule toExecModelRule(RulesSet rulesSet, Rule rule, PrototypeFactory prototypeFactory,
+                                                         Supplier<RulesExecutor> rulesExecutorSupplier, AtomicInteger ruleCounter) {
+        return rule( rule.getName() != null ? rule.getName() : "r_" + ruleCounter.getAndIncrement() )
+                .build( rule.getCondition().toPattern( new RuleGenerationContext(prototypeFactory, rulesSet.getOptions()) ),
+                        execute(drools -> rule.getAction().execute(rulesExecutorSupplier.get(), drools)) );
     }
 }
